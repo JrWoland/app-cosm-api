@@ -1,6 +1,5 @@
 const mongsoose = require('mongoose');
-const Order = require('../models/orders');
-const Product = require('../models/products');
+const Product = require('../models/productsModel');
 
 class ProductsController {
   getAllProducts(req, res, next) {
