@@ -7,7 +7,9 @@ const accountScheema = mongoose.Schema({
         ref: 'User',
         required: true
     },
-    services: [{ type: String }],
+    services: { type: [String], default: () => ['LASHES'] },
+    clients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client', unique: true }]
+
 })
 
 module.exports = mongoose.model('Account', accountScheema);

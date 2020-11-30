@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const UserService = require('../services/UserService')
+const AccountService = require('../services/AccountService')
 
 class UserController {
   async createUser(req, res, next) {
@@ -14,8 +15,9 @@ class UserController {
         return res.status(500).json({ message: 'Error occured while creating new user', error: err });
       } else {
         try {
-          const result = await UserService.createUser(req.body.email, hash)
-          console.log(result);
+          const user = await UserService.createUser(req.body.email, hash)
+          const account = await AccountService.createAccount(user)
+          console.log(user, account);
           res.status(201).json({ message: 'User created' });
         } catch (err) {
           console.log(err);
@@ -36,7 +38,7 @@ class UserController {
       }
       if (result) {
         const USER = { email: user[0].email, userId: user[0]._id }
-        const token = jwt.sign(USER, process.env.JWT_KEY, { expiresIn: '1h' });
+        const token = jwt.sign(USER, process.env.JWT_KEY, { expiresIn: '8h' });
         return res.status(200).json({ message: 'Auth succesfull', token });
       }
       res.status(401).json({ message: 'Auth failed by now' });

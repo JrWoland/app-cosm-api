@@ -7,6 +7,7 @@ const serverHeaders = require('./api/settings/serverHeaders')
 const productRoutes = require('./api/routes/productsRoutes');
 const orderRoutes = require('./api/routes/ordersRoutes');
 const userRoutes = require('./api/routes/userRoutes');
+const accountRoutes = require('./api/routes/accountRoutes');
 
 const MongoDatabase = require('./api/db/mongo')
 MongoDatabase.initConnection()
@@ -21,6 +22,7 @@ app.use('/uploads/images', express.static('uploads/images'));
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 app.use('/user', userRoutes);
+app.use('/account', accountRoutes);
 
 app.use((req, res, next) => {
   const error = new Error('Not found');
