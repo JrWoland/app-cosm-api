@@ -17,10 +17,8 @@ class UserController {
         try {
           const user = await UserService.createUser(req.body.email, hash)
           const account = await AccountService.createAccount(user)
-          console.log(user, account);
-          res.status(201).json({ message: 'User created' });
+          res.status(201).json({ message: 'User created', result: account });
         } catch (err) {
-          console.log(err);
           res.status(500).json({ message: 'Error occured while saving new user in database', error: err })
         }
       }

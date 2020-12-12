@@ -1,5 +1,6 @@
 const mongsoose = require('mongoose');
 const Client = require('../models/clientModel');
+const Visit = require('../models/visitModel');
 const AccountService = require('./AccountService')
 
 class ClientService {
@@ -9,7 +10,9 @@ class ClientService {
     }
 
     async getClient(clientId) {
-        const client = await Client.findById(clientId).exec()
+        const client = await Client.findById(clientId)
+            .select('_id name surname age visits._id visits.done visits.type visits.purpose')
+            .exec()
         return client
     }
 
@@ -28,17 +31,9 @@ class ClientService {
         return result
     }
 
-    updateClient(clientId, newData) {
-
-        console.log(clientId, newData, 'client  update');
-
-        // const update = {};
-
-
-        // for (const property in newData) {
-        //     // update[property] = property.value;
-        // }
-
+    async updateClient(clientId, newData) {
+        const client = await Client.updateOne({ _id: clientId }, { $set: newData }, { runValidators: true }).exec()
+        return client
     }
 
     async removeClient({ userData, params }) {
@@ -49,15 +44,61 @@ class ClientService {
         return client
     }
 
-    getVisitList() { }
+    async getVisitList({ params }) {
+        const client = await Client.findById(params.clientId)
+            .select('visits._id visits.done visits.type visits.purpose')
+            .exec()
+        return client.visits
+    }
 
-    getVisit(visitId) { }
+    async getVisit({ params }) {
+        const client = await Client.findById(params.clientId).exec()
+        const visit = client.visits.filter(item => item._id.toString() === params.visitId)
+        return visit
+    }
 
-    addVisit(visit) { }
+    async addVisit({ params, body }) {
+        const client = await Client.findById(params.clientId).exec()
+        const visit = new Visit({
+            ...body,
+            _id: mongsoose.Types.ObjectId()
+        })
+        client.visits.push(visit)
+        await client.save()
+        return { success: true }
+    }
 
-    updateVisit(visitId) { }
+    async updateVisit({ params, body }) {
+        const visit = Visit({
+            ...body,
+            _id: mongsoose.Types.ObjectId(params.visitId)
+        })
+        const client = await Client
+            .findByIdAndUpdate(
+                {
+                    _id: mongsoose.Types.ObjectId(params.clientId),
+                },
+                {
+                    $set: { 'visits.$[el]': visit }
+                },
+                {
+                    arrayFilters: [{ "el._id": mongsoose.Types.ObjectId(params.visitId) }],
+                    new: true,
+                    useFindAndModify: false
+                }
+            ).exec()
+        return client
+    }
 
-    removeVisit(visitId) { }
+    async removeVisit({ params }) {
+        const client = await Client
+            .findByIdAndUpdate({ _id: mongsoose.Types.ObjectId(params.clientId) },
+                {
+                    $pull: { visits: { _id: mongsoose.Types.ObjectId(params.visitId) } }
+                }
+            ).exec()
+        return client.visits.length
+    }
 }
 
 module.exports = new ClientService()

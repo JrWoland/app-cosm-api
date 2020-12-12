@@ -14,7 +14,6 @@ class AccountsController {
     async getClientsList(req, res) {
         try {
             const clientList = await ClientService.getClientsList(req.userData.userId)
-            console.log(clientList);
             res.status(200).json({ clients: clientList })
         } catch (error) {
             res.status(500).json(error);
@@ -41,37 +40,21 @@ class AccountsController {
     }
 
     async updateClient(req, res) {
-        const client = await ClientService.updateClient(req.params.clientId, req.body)
-        res.status(200).json({ message: 'Feature not yet implemented' });
-    }
-
-    async removeClient(req, res, next) {
         try {
-            const result = await ClientService.removeClient(req)
-            res.status(200).json({ message: 'Succesfully deleted client', result });
+            const client = await ClientService.updateClient(req.params.clientId, req.body)
+            res.status(200).json({ message: 'Feature not yet implemented', result: client });
         } catch (error) {
             res.status(500).json(error);
         }
     }
 
-    getVisitList(req, res, next) {
-        res.status(200).json({ message: 'Feature not yet implemented' });
-    }
-
-    getVisit(req, res, next) {
-        res.status(200).json({ message: 'Feature not yet implemented' });
-    }
-
-    addVisit(req, res, next) {
-        res.status(200).json({ message: 'Feature not yet implemented' });
-    }
-
-    updateVisit(req, res, next) {
-        res.status(200).json({ message: 'Feature not yet implemented' });
-    }
-
-    removeVisit(req, res, next) {
-        res.status(200).json({ message: 'Feature not yet implemented' });
+    async removeClient(req, res, next) {
+        try {
+            const result = await ClientService.removeClient(req)
+            res.status(200).json({ message: 'Succesfully updated client', result });
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 }
 

@@ -55,8 +55,6 @@ class ProductsController {
       .select('name price _id productImage')
       .exec()
       .then(doc => {
-        console.log(doc);
-        console.log(req.statusCode);
         if (doc !== null) {
           res.status(200).json(doc);
         } else {

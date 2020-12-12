@@ -37,7 +37,6 @@ class OrdersController {
         return order.save();
       })
       .then(result => {
-        console.log(result);
         res.status(201).json({
           message: 'Order stored',
           createdOrder: {
