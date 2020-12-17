@@ -30,8 +30,12 @@ class VisitsController {
     }
 
     async updateVisit(req, res, next) {
-        const result = await ClientService.updateVisit(req)
-        res.status(200).json(result);
+        try {
+            const result = await ClientService.updateVisit(req)
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 
     async removeVisit(req, res, next) {

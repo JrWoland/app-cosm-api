@@ -11,7 +11,7 @@ class ClientService {
 
     async getClient(clientId) {
         const client = await Client.findById(clientId)
-            .select('_id name surname age visits._id visits.done visits.type visits.purpose')
+            .select('_id name surname phone age')
             .exec()
         return client
     }
@@ -32,6 +32,7 @@ class ClientService {
     }
 
     async updateClient(clientId, newData) {
+        console.log(newData, 'new data');
         const client = await Client.updateOne({ _id: clientId }, { $set: newData }, { runValidators: true }).exec()
         return client
     }
@@ -46,7 +47,7 @@ class ClientService {
 
     async getVisitList({ params }) {
         const client = await Client.findById(params.clientId)
-            .select('visits._id visits.done visits.type visits.purpose')
+            .select('visits._id visits.done visits.type visits.purpose visits.date')
             .exec()
         return client.visits
     }
@@ -63,7 +64,7 @@ class ClientService {
             ...body,
             _id: mongsoose.Types.ObjectId()
         })
-        client.visits.push(visit)
+        client.visits.unshift(visit)
         await client.save()
         return { success: true }
     }
