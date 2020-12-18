@@ -12,6 +12,7 @@ const lashesScheema = mongoose.Schema({
     curve: [{ type: String }],
     width: [{ type: Number }],
     length: [{ type: Number }],
+    modeling: [{ type: Number }],
     price: { type: Number, default: () => 0 },
     notes: { type: String, default: () => '' }
 })
