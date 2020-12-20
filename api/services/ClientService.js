@@ -32,7 +32,6 @@ class ClientService {
     }
 
     async updateClient(clientId, newData) {
-        console.log(newData, 'new data');
         const client = await Client.updateOne({ _id: clientId }, { $set: newData }, { runValidators: true }).exec()
         return client
     }

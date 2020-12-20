@@ -6,8 +6,7 @@ const clientScheema = mongoose.Schema({
     surname: { type: String },
     phone: { type: String },
     age: { type: Number, min: 1, max: 85 },
-    visits: { type: [mongoose.Schema.Types.Mixed], unique: true }
-
+    visits: { type: [mongoose.Schema.Types.Mixed], sparse: true }
 })
 
 module.exports = mongoose.model('Client', clientScheema);

@@ -9,10 +9,11 @@ const lashesScheema = mongoose.Schema({
     glue: { type: String, default: () => '' },
     remover: { type: String, default: () => '' },
     purpose: { type: String, default: () => '' },
+    method: [{ type: String }],
     curve: [{ type: String }],
     width: [{ type: Number }],
     length: [{ type: Number }],
-    modeling: [{ type: Number }],
+    modeling: [{ type: String }],
     price: { type: Number, default: () => 0 },
     notes: { type: String, default: () => '' }
 })
