@@ -13,7 +13,7 @@ class MongoDatabase {
         mongoose.connect(CONNECTION_STRING, CONNECTION_SETTINGS)
             .then(() => console.log('Connected with database'))
             .catch(err => console.error(err))
-        console.log(mongoose.connection.states[mongoose.connection._readyState])
+        console.log('Database: ' + mongoose.connection.states[mongoose.connection._readyState])
     }
 }
 
