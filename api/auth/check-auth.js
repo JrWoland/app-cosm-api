@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const APP_CONFIG = require('../../app.settings.js')
+const APP_CONFIG = require('../../localSettings.js')
 module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];

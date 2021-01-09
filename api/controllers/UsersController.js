@@ -1,4 +1,4 @@
-const APP_CONFIG = require('../../app.settings.js')
+const APP_CONFIG = require('../../localSettings.js')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
