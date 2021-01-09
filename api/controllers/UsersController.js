@@ -1,3 +1,4 @@
+const APP_CONFIG = require('../../app.settings.js')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -36,7 +37,7 @@ class UserController {
       }
       if (result) {
         const USER = { email: user[0].email, userId: user[0]._id }
-        const token = jwt.sign(USER, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
+        const token = jwt.sign(USER, APP_CONFIG.JWT_KEY, { expiresIn: APP_CONFIG.JWT_EXPIRES_IN });
         return res.status(200).json({ message: 'Auth succesfull', token });
       }
       res.status(401).json({ message: 'Auth failed by now' });
