@@ -13,8 +13,8 @@ class OrdersController {
           count: docs.length,
           order: docs.map(doc => ({
             id: doc._id,
-            product: doc.product,
-            quantity: doc.quantity
+            product: doc,
+            quantity: doc
           }))
         };
         res.status(200).json(response);

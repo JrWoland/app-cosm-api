@@ -9,14 +9,14 @@ class ClientService {
         return account.clients
     }
 
-    async getClient(clientId) {
-        const client = await Client.findById(clientId)
-            .select('_id name surname phone age')
-            .exec()
+    async getClient({ userData, params }) {
+        const account = await AccountService.getAccount(userData.userId, 'clients')
+        const client = account.clients.find(item => item._id.toString() === params.clientId)
         return client
     }
 
     async addClient({ body, userData }) {
+        const account = await AccountService.getAccount(userData.userId)
         const client = new Client({
             _id: mongsoose.Types.ObjectId(),
             name: body.name,
@@ -25,7 +25,6 @@ class ClientService {
             age: body.age,
         })
         const result = await client.save()
-        const account = await AccountService.getAccount(userData.userId)
         account.clients.push(client)
         await account.save()
         return result
@@ -58,11 +57,11 @@ class ClientService {
     }
 
     async addVisit({ params, body }) {
-        const client = await Client.findById(params.clientId).exec()
         const visit = new Visit({
             ...body,
             _id: mongsoose.Types.ObjectId()
         })
+        const client = await Client.findById(params.clientId).exec()
         client.visits.unshift(visit)
         await client.save()
         return { success: true }

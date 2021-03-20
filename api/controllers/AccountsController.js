@@ -22,7 +22,7 @@ class AccountsController {
 
     async getClient(req, res) {
         try {
-            const client = await ClientService.getClient(req.params.clientId)
+            const client = await ClientService.getClient(req)
             if (!client) return res.status(404).json({ message: 'Client not found' });
             res.status(200).json(client);
         } catch (error) {

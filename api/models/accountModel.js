@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Client = require('../models/clientModel')
 
 const accountScheema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -8,7 +9,7 @@ const accountScheema = mongoose.Schema({
         required: true
     },
     services: { type: [String], default: () => ['LASHES'] },
-    clients: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client', unique: true }]
+    clients: [{ type: mongoose.Schema.Types.ObjectId, ref: Client, unique: true }]
 
 })
 

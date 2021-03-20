@@ -5,7 +5,7 @@ const clientScheema = mongoose.Schema({
     name: { type: String, required: true },
     surname: { type: String },
     phone: { type: String },
-    age: { type: Number, min: 1, max: 85 },
+    age: { type: Number, min: 0, max: 85 },
     visits: { type: [mongoose.Schema.Types.Mixed], sparse: true }
 })
 
