@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const serverHeaders = require('./api/settings/serverHeaders')
 
@@ -9,11 +8,8 @@ const orderRoutes = require('./api/routes/ordersRoutes');
 const userRoutes = require('./api/routes/userRoutes');
 const accountRoutes = require('./api/routes/accountRoutes');
 
-const MongoDatabase = require('./api/db/mongo')
-MongoDatabase.initConnection()
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(serverHeaders);
 app.use(morgan('dev'))
 

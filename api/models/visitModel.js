@@ -5,7 +5,7 @@ const lashesScheema = mongoose.Schema({
     done: { type: Boolean, default: () => false },
     date: { type: Date, default: () => Date.now() },
     time: { type: String, default: () => '' },
-    type: { type: String, default: () => '' },
+    type: { type: String, default: 'LASHES' },
     glue: { type: String, default: () => '' },
     remover: { type: String, default: () => '' },
     purpose: { type: String, default: () => '' },

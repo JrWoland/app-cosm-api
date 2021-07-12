@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Client = require('../models/clientModel')
 
-const accountScheema = mongoose.Schema({
+const accountScheema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,5 +12,7 @@ const accountScheema = mongoose.Schema({
     clients: [{ type: mongoose.Schema.Types.ObjectId, ref: Client, unique: true }]
 
 })
+
+accountScheema.set('autoIndex', false)
 
 module.exports = mongoose.model('Account', accountScheema);

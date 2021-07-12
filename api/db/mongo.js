@@ -6,13 +6,13 @@ const CONNECTION_STRING = 'mongodb://127.0.0.1:27017/?compressors=zlib&readPrefe
 
 const CONNECTION_SETTINGS = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 }
 
 class MongoDatabase {
     initConnection() {
         mongoose.connect(CONNECTION_STRING, CONNECTION_SETTINGS)
-            .then(() => console.log('Connected with database'))
+            .then(() => console.log('Connected with database: ' + APP_CONFIG.MONGO_ATLAS_DATABASE))
             .catch(err => console.error(err))
         console.log('Database: ' + mongoose.connection.states[mongoose.connection._readyState])
     }
