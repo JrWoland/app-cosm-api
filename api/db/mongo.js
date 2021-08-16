@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const APP_CONFIG = require('../../localSettings.js')
 
-// const CONNECTION_STRING = `mongodb+srv://${APP_CONFIG.MONGO_ATLAS_USER}:${APP_CONFIG.MONGO_ATLAS_PW}@node-rest-k9mgy.mongodb.net/${APP_CONFIG.MONGO_ATLAS_DATABASE}?retryWrites=true&w=majority`
-const CONNECTION_STRING = 'mongodb://127.0.0.1:27017/?compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass&ssl=false'
-
+const { CONNECTION_STRING, MONGO_ATLAS_DATABASE } = APP_CONFIG
 const CONNECTION_SETTINGS = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -12,7 +10,7 @@ const CONNECTION_SETTINGS = {
 class MongoDatabase {
     initConnection() {
         mongoose.connect(CONNECTION_STRING, CONNECTION_SETTINGS)
-            .then(() => console.log('Connected with database: ' + APP_CONFIG.MONGO_ATLAS_DATABASE))
+            .then(() => console.log('Connected with database: ' + MONGO_ATLAS_DATABASE))
             .catch(err => console.error(err))
         console.log('Database: ' + mongoose.connection.states[mongoose.connection._readyState])
     }
