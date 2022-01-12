@@ -1,0 +1,11 @@
+"use strict";
+var VisitsController = require('./VisitsController');
+var checkAuth = require('../../auth/check-auth');
+var express = require('express');
+var router = express.Router();
+router.get('/', checkAuth, VisitsController.getVisitList);
+router.get('/:visitId', checkAuth, VisitsController.getVisit);
+router.post('/', checkAuth, VisitsController.addVisit);
+router.patch('/:visitId', checkAuth, VisitsController.updateVisit);
+router.delete('/:visitId', checkAuth, VisitsController.removeVisit);
+module.exports = router;
