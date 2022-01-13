@@ -1,28 +1,28 @@
 import { AccountDocModel } from '../../../../infra/db/models/accountModel';
+import { Mapper } from '../../../../core/infra/Mapper';
+import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { Account } from '../../domain/Account';
 import { AccountPassword } from '../../domain/AccountPassword';
 
-interface IAccountMap<T> {
-  toPersistence(t: T): any;
-  toDomain(raw: any): T;
-}
-
-export class AccountMap implements IAccountMap<Account> {
+export class AccountMap implements Mapper<Account> {
   toPersistence(account: Account): AccountDocModel {
     return {
-      account_id: account.account_id.getValue(),
+      account_id: account.accountId.getValue(),
       email: account.email,
       password: account.password.value,
     };
   }
 
-  toDomain(raw: any): Account {
-    const password = AccountPassword.create({ value: raw });
+  toDomain(raw: AccountDocModel): Account {
+    const password = AccountPassword.create({ value: raw.password, hashed: true });
 
-    const account = Account.create({
-      email: '',
-      password: password.getValue(),
-    });
+    const account = Account.create(
+      {
+        email: raw.email,
+        password: password.getValue(),
+      },
+      new UniqueEntityID(raw.account_id),
+    );
 
     return account;
   }

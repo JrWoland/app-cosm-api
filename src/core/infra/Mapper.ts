@@ -1,4 +1,4 @@
-export interface Mapper {
-  toDomain(raw: any): any;
-  toPersistence(t: any): any;
+export interface Mapper<T> {
+  toPersistence(t: T): any;
+  toDomain(raw: any): T;
 }

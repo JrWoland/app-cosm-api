@@ -1,15 +1,19 @@
 import bcrypt from 'bcrypt';
+import { ValueObject } from '../../../core/domain/ValueObject';
 import { Result } from '../../../core/logic/Result';
 
 interface AccountPasswordProps {
   value: string;
+  hashed?: boolean;
 }
 
-export class AccountPassword {
-  constructor(private props: AccountPasswordProps) {}
+export class AccountPassword extends ValueObject<AccountPasswordProps> {
+  constructor(private accountProps: AccountPasswordProps) {
+    super(accountProps);
+  }
 
   get value() {
-    return this.props.value;
+    return this.accountProps.value;
   }
 
   private static hashPassword(password: string): string {
@@ -27,6 +31,9 @@ export class AccountPassword {
   }
 
   public static create(props: AccountPasswordProps) {
+    if (props.hashed) {
+      return Result.ok<AccountPassword>(new AccountPassword({ value: props.value }));
+    }
     if (!this.isAppropriateLength(props.value)) {
       return Result.fail<AccountPassword>('Password does not meet criteria, min 8 chars');
     } else {

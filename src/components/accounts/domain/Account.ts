@@ -8,12 +8,12 @@ interface AccountProps {
 }
 
 export class Account extends AggregateRoot {
-  private constructor(private props: AccountProps) {
-    super();
+  private constructor(private props: AccountProps, id?: UniqueEntityID) {
+    super(id);
     this.props = props;
   }
 
-  get account_id(): UniqueEntityID {
+  get accountId(): UniqueEntityID {
     return this._uniqueEntityId;
   }
 
@@ -25,7 +25,7 @@ export class Account extends AggregateRoot {
     return this.props.password;
   }
 
-  public static create(account: AccountProps) {
-    return new Account(account);
+  public static create(account: AccountProps, id?: UniqueEntityID) {
+    return new Account(account, id);
   }
 }
