@@ -1,19 +1,20 @@
 const mongoose = require('mongoose');
-const APP_CONFIG = require('../../localSettings.js')
+const APP_CONFIG = require('../../localSettings.js');
 
-const { CONNECTION_STRING, MONGO_ATLAS_DATABASE } = APP_CONFIG
+const { CONNECTION_STRING } = APP_CONFIG.default;
 const CONNECTION_SETTINGS = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
 
 class MongoDatabase {
-    initConnection() {
-        mongoose.connect(CONNECTION_STRING, CONNECTION_SETTINGS)
-            .then((data) => console.log('Connected with database: ' + data.connection.name))
-            .catch(err => console.error(err))
-        console.log('Database: ' + mongoose.connection.states[mongoose.connection._readyState])
-    }
+  initConnection() {
+    mongoose
+      .connect(CONNECTION_STRING, CONNECTION_SETTINGS)
+      .then((data) => console.log('Connected with database: ' + data.connection.name))
+      .catch((err) => console.error(err));
+    console.log('Database: ' + mongoose.connection.states[mongoose.connection._readyState]);
+  }
 }
 
-module.exports = new MongoDatabase()
+module.exports = new MongoDatabase();

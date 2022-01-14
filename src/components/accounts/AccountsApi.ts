@@ -1,10 +1,13 @@
 import express from 'express';
 import { createAccountController } from './useCase/createAccount';
 import checkAuth from '../../api/auth/check-auth';
+import { loginAccountController } from './useCase/loginToAccount';
 
 const accountRouter = express.Router();
 
 accountRouter.post('/register', (req, res, next) => createAccountController.execute(req, res, next));
+
+accountRouter.post('/login', (req, res, next) => loginAccountController.execute(req, res, next));
 
 // accountRouter.post('/login', AccountsController.login);
 
