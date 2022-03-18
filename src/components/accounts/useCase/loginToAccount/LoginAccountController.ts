@@ -1,3 +1,4 @@
+import { token } from 'morgan';
 import { BaseController } from '../../../../core/infra/BaseController';
 import { LoginAccountDTO, LoggedAccountDTO } from './LoginAccountDTO';
 import { LoginAccountUseCase } from './LoginAccountUsecCase';
@@ -9,6 +10,19 @@ export class LoginAccountController extends BaseController {
     this.useCase = useCase;
   }
 
+  private loggedIn(dto: LoggedAccountDTO) {
+    return this.res
+      .cookie('access_token', dto.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        signed: true,
+        maxAge: 1000 * 60 * 60 * 24,
+      })
+      .status(200)
+      .json({ message: 'Logged in successfully.', token: dto.token });
+  }
+
   async executeImpl(): Promise<any> {
     const loginAccountDTO: LoginAccountDTO = this.req.body;
 
@@ -16,12 +30,12 @@ export class LoginAccountController extends BaseController {
       const result = await this.useCase.execute(loginAccountDTO);
 
       if (result.isSuccess) {
-        this.ok<LoggedAccountDTO>(this.res, result.getValue());
+        this.loggedIn(result.getValue());
       } else {
         this.unprocesable(result.error?.toString());
       }
     } catch (error: any) {
-      return this.fail(error.message);
+      this.fail('Could not log in.');
     }
   }
 }

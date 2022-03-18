@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 export interface AccountDocModel {
-  account_id: string;
+  _id?: mongoose.Types.ObjectId;
   email: string;
   password: string;
   services?: [any];
@@ -15,7 +15,12 @@ export interface AccountDocModel {
 
 const accountScheema = new mongoose.Schema<AccountDocModel>(
   {
-    account_id: { type: String, unique: true, required: true },
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      index: true,
+      required: true,
+      auto: true,
+    },
     email: {
       type: String,
       required: true,

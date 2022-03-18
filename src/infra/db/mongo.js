@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const APP_CONFIG = require('../../localSettings.js');
+const APP_CONFIG = require('../../localSettings');
 
 const { CONNECTION_STRING } = APP_CONFIG.default;
 const CONNECTION_SETTINGS = {

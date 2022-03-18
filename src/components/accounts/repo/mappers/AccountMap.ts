@@ -7,7 +7,6 @@ import { AccountPassword } from '../../domain/AccountPassword';
 export class AccountMap implements Mapper<Account> {
   toPersistence(account: Account): AccountDocModel {
     return {
-      account_id: account.accountId.getValue(),
       email: account.email,
       password: account.password.value,
     };
@@ -21,7 +20,7 @@ export class AccountMap implements Mapper<Account> {
         email: raw.email,
         password: password.getValue(),
       },
-      new UniqueEntityID(raw.account_id),
+      new UniqueEntityID(raw._id?.toString()),
     );
 
     return account;

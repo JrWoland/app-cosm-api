@@ -18,7 +18,7 @@ export class AccountRepo implements IAccountRepo {
     try {
       const account = await this.model.find({ email: email }).exec();
       if (account.length === 0) {
-        throw new Error('Acount does not exists');
+        throw new Error('Account does not exists.');
       }
       return new AccountMap().toDomain(account[0]);
     } catch (error: any) {
@@ -28,12 +28,8 @@ export class AccountRepo implements IAccountRepo {
 
   public async exists(email: string): Promise<boolean> {
     try {
-      const account = await this.model.find({ email: email }).exec();
-      if (account.length >= 1) {
-        return true;
-      } else {
-        return false;
-      }
+      const accountExists = await this.model.exists({ email: email });
+      return accountExists;
     } catch (error: any) {
       throw new Error(error.message);
     }

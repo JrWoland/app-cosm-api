@@ -16,7 +16,7 @@ export class CreateAccountController extends BaseController {
       const result = await this.useCase.execute(newAccountDTO);
 
       if (result.isSuccess) {
-        this.created('Account created');
+        this.created(result.getValue());
       } else {
         this.unprocesable(result.error);
       }

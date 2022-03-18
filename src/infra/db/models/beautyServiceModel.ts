@@ -5,7 +5,7 @@ const BeautyServicesTypes = {
   NAILS: 'NAILS',
 };
 
-const beautyServiceScheema = new mongoose.Schema(
+export const beautyServiceScheema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -17,18 +17,10 @@ const beautyServiceScheema = new mongoose.Schema(
     },
     expires: {
       type: Date,
-      default: function () {
-        if (this.name === BeautyServicesTypes.LASHES) {
-          return new Date(2100, 1, 1);
-        } else {
-          return Date.now();
-        }
-      },
+      default: Date.now(),
     },
   },
   { timestamps: true },
 );
 
 const BeautyServiceModel = mongoose.model('BeautyService', beautyServiceScheema);
-
-export { beautyServiceScheema };

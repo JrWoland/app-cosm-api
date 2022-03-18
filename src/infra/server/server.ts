@@ -1,16 +1,21 @@
 require('dotenv').config();
 import express, { NextFunction, Request, Response } from 'express';
 const app = express();
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import serverHeaders from './settings/serverHeaders';
 import MORGAN_SETTING_STRING from './settings/morganSettings';
+import APP_SETTINGS from '../../localSettings';
 
 import { routerV1 } from '../server/api/rest-v1';
 
 export class ExpressServer {
-  create(serverVersion: number) {
+  constructor() {}
+
+  public create(serverVersion?: string) {
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
+    app.use(cookieParser(APP_SETTINGS.COOKIE_SECRET));
     app.use(serverHeaders);
     app.use(morgan(MORGAN_SETTING_STRING));
 

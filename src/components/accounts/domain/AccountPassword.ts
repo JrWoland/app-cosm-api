@@ -8,7 +8,7 @@ interface AccountPasswordProps {
 }
 
 export class AccountPassword extends ValueObject<AccountPasswordProps> {
-  constructor(private accountProps: AccountPasswordProps) {
+  private constructor(private accountProps: AccountPasswordProps) {
     super(accountProps);
   }
 
@@ -31,11 +31,12 @@ export class AccountPassword extends ValueObject<AccountPasswordProps> {
   }
 
   public static create(props: AccountPasswordProps) {
-    if (props.hashed) {
-      return Result.ok<AccountPassword>(new AccountPassword({ value: props.value }));
-    }
     if (!this.isAppropriateLength(props.value)) {
       return Result.fail<AccountPassword>('Password does not meet criteria, min 8 chars');
+    }
+
+    if (props.hashed) {
+      return Result.ok<AccountPassword>(new AccountPassword({ value: props.value }));
     } else {
       return Result.ok<AccountPassword>(new AccountPassword({ value: this.hashPassword(props.value) }));
     }

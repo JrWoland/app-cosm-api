@@ -23,6 +23,6 @@ export class CreateAccountUseCase implements UseCase<CreateAccountDTO, Promise<R
 
     await this.accountRepo.save(account);
 
-    return Result.ok('Account created');
+    return Result.ok('Account created.');
   }
 }

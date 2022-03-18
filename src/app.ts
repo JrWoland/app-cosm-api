@@ -1,6 +1,6 @@
-const http = require('http');
-const { ExpressServer } = require('./infra/server/server');
-const MongoDatabase = require('./infra/db/mongo')
+import http from 'http';
+import { ExpressServer } from './infra/server/server';
+import MongoDatabase from './infra/db/mongo';
 const { version } = require('../package.json')
 
 const port = process.env.PORT || 3000;

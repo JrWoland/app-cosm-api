@@ -63,7 +63,6 @@ export abstract class BaseController {
   }
 
   public fail(error: Error | string) {
-    console.log(error);
     return this.res.status(500).json({
       message: error.toString(),
     });
