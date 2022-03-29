@@ -12,7 +12,7 @@ export class LoginAccountUseCase implements UseCase<LoginAccountDTO, Promise<Res
   constructor(private accountRepo: IAccountRepo) {}
 
   private generateJwtToken(account: Omit<Account, 'password' | 'id' | 'email'>): string {
-    const jwtPayload = { accountId: account.accountId.getValue() };
+    const jwtPayload = { accountId: account.accountId };
     const token = jwt.sign(jwtPayload, APP_CONFIG.JWT_KEY, { expiresIn: APP_CONFIG.JWT_EXPIRES_IN });
     return token;
   }

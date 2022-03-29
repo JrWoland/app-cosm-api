@@ -1,4 +1,5 @@
-import { AccountModel } from '../../../infra/db/models/accountModel';
+import { Model } from 'mongoose';
+import { AccountDocModel } from '../../../infra/db/models/accountModel';
 import { Account } from '../domain/Account';
 import { AccountMap } from './mappers/AccountMap';
 
@@ -9,10 +10,7 @@ export interface IAccountRepo {
 }
 
 export class AccountRepo implements IAccountRepo {
-  private model;
-  constructor() {
-    this.model = AccountModel;
-  }
+  constructor(private model: Model<AccountDocModel>) {}
 
   public async findAccountByEmail(email: string): Promise<Account> {
     try {

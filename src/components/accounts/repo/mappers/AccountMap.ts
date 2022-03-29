@@ -23,6 +23,6 @@ export class AccountMap implements Mapper<Account> {
       new UniqueEntityID(raw._id?.toString()),
     );
 
-    return account;
+    return account.getValue();
   }
 }

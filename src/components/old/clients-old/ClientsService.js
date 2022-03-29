@@ -1,7 +1,7 @@
 const mongsoose = require('mongoose');
 const Client = require('./ClientsModel');
 
-const AccountsService = require('../accounts/old/AccountsService');
+const AccountsService = require('../accounts-old/AccountsService');
 
 class ClientService {
   async getClientsList(userId) {

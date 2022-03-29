@@ -1,5 +1,7 @@
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
+import { Result } from '../../../core/logic/Result';
+import { AccountId } from './AccountId';
 import { AccountPassword } from './AccountPassword';
 
 interface AccountProps {
@@ -7,14 +9,13 @@ interface AccountProps {
   password: AccountPassword;
 }
 
-export class Account extends AggregateRoot {
-  private constructor(private props: AccountProps, id?: UniqueEntityID) {
-    super(id);
-    this.props = props;
+export class Account extends AggregateRoot<AccountProps> {
+  private constructor(props: AccountProps, id?: UniqueEntityID) {
+    super(props, id);
   }
 
-  get accountId(): UniqueEntityID {
-    return this._uniqueEntityId;
+  get accountId(): AccountId {
+    return AccountId.create(this._uniqueEntityId).getValue();
   }
 
   get email(): string {
@@ -25,7 +26,11 @@ export class Account extends AggregateRoot {
     return this.props.password;
   }
 
-  public static create(account: AccountProps, id?: UniqueEntityID) {
-    return new Account(account, id);
+  public static create(account: AccountProps, id?: UniqueEntityID): Result<Account> {
+    const isNewUser = id ? false : true;
+    if (isNewUser) {
+      // event
+    }
+    return Result.ok<Account>(new Account(account, id));
   }
 }

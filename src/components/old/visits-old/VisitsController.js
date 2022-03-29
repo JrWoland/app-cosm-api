@@ -1,5 +1,5 @@
-const ClientService = require('../clients/ClientsService');
-const AccountService = require('../accounts/old/AccountsService');
+const ClientService = require('../clients-old/ClientsService');
+const AccountService = require('../accounts-old/AccountsService');
 const VisitService = require('./VisitsService');
 
 class VisitsController {

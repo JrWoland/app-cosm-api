@@ -3,14 +3,15 @@ import mongoose from 'mongoose';
 
 const mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
+type Services = 'LASHES' | 'NAILS';
 export interface AccountDocModel {
   _id?: mongoose.Types.ObjectId;
   email: string;
   password: string;
-  services?: [any];
+  services?: [Services];
   payments?: [];
-  createdAt?: Date;
-  updatedAt?: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 const accountScheema = new mongoose.Schema<AccountDocModel>(
@@ -33,7 +34,7 @@ const accountScheema = new mongoose.Schema<AccountDocModel>(
     },
     payments: { type: [Object] },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
 accountScheema.set('autoIndex', false);

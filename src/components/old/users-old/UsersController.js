@@ -1,9 +1,9 @@
-const APP_CONFIG = require('../../localSettings.js');
+const APP_CONFIG = require('../../../localSettings.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const UserService = require('./UsersService');
-const AccountService = require('../accounts/old/AccountsService');
+const AccountService = require('../accounts-old/AccountsService');
 class UserController {
   async createUser(req, res, next) {
     try {

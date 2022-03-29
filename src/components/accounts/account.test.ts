@@ -2,8 +2,11 @@ import { ExpressServer } from '../../infra/server/server';
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { AccountModel } from '../../infra/db/models/accountModel';
+import cookieParser from 'cookie-parser';
 
 const app = new ExpressServer().create();
+
+app.use(cookieParser());
 
 beforeEach((done) => {
   mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());

@@ -1,8 +1,5 @@
+import { Result } from '../logic/Result';
 import { Entity } from './Entity';
 import { UniqueEntityID } from './UniqueId';
 
-export abstract class AggregateRoot extends Entity {
-  get id(): UniqueEntityID {
-    return this._uniqueEntityId;
-  }
-}
+export abstract class AggregateRoot<T> extends Entity<T> {}
