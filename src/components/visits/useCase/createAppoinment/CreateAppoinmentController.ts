@@ -1,15 +1,21 @@
 import { BaseController } from '../../../../core/infra/BaseController';
 import { CreateAppoinmentDTO } from './CreateAppoinmentDTO';
 import { CreateAppoinmentUseCase } from './CreateAppoinmentUseCase';
+import * as express from 'express';
 
-export class CreateAccountController extends BaseController {
+interface DecodedReq extends express.Request {
+  accountId: string;
+}
+export class CreateAppoinmentController extends BaseController {
   constructor(private useCase: CreateAppoinmentUseCase) {
     super();
     this.useCase = useCase;
   }
 
-  async executeImpl(): Promise<any> {
+  public async executeImpl(req: DecodedReq): Promise<any> {
     const newAppoinmentDTO: CreateAppoinmentDTO = this.req.body;
+
+    newAppoinmentDTO.accountId = req.accountId;
 
     try {
       const result = await this.useCase.execute(newAppoinmentDTO);

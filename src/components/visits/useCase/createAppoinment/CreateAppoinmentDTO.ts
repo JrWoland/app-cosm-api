@@ -1,8 +1,7 @@
-import { AppointmentStatus } from '../../domain/AppointmentStatus';
-
 export interface CreateAppoinmentDTO {
+  accountId: string;
   date: Date;
-  clientId: string;
+  clientId?: string;
   startTime: number;
   duration: number;
   treatments: [];

@@ -1,40 +1,50 @@
 import mongoose from 'mongoose';
-
-// type AppointmentStatus = 'NEW' | 'FINISHED' | 'DECLINED' | 'CLIENT_NOT_APPEARD';
+import { v4 } from 'uuid';
+import { AppointmentStatus } from '../../../components/visits/domain/AppointmentStatus';
 
 export interface AppointmentDocModel {
-  _id: mongoose.Types.ObjectId;
-  account_id: mongoose.Schema.Types.ObjectId;
+  _id: string;
+  account_id: string;
+  client_id?: string;
   date: Date;
   start_time: number;
   duration: number;
-  status: string;
-  services: [];
+  status: AppointmentStatus;
+  services: any[];
   created_at?: Date;
   updated_at?: Date;
 }
 // dayjs.duration(1, )
-const appointmentSheema = new mongoose.Schema<AppointmentDocModel>({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId,
-    index: true,
-    required: true,
-    auto: true,
+const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
+  {
+    _id: {
+      type: String,
+      index: true,
+      required: true,
+    },
+    account_id: {
+      type: String,
+      required: true,
+      ref: 'Account',
+    },
+    client_id: {
+      type: String,
+      required: false,
+      ref: 'Client',
+    },
+    date: { type: Date },
+    start_time: { type: Number, required: true, min: 0, max: 1440 }, // minutes
+    duration: { type: Number, required: true, min: 0 }, // minutes
+    status: {
+      type: String,
+      required: true,
+      values: [AppointmentStatus.New, AppointmentStatus.ClientNotAppeard, AppointmentStatus.Declined, AppointmentStatus.Finished],
+    },
   },
-  account_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Account',
-  },
-  date: { type: Date },
-  start_time: { type: Number, required: true, min: 0, max: 1440 }, // minutes
-  duration: { type: Number, required: true, min: 0 }, // minutes
-  status: {
-    type: String,
-    required: true,
-    // values: [AppointmentStatus.New, AppointmentStatus.ClientNotAppear, AppointmentStatus.Declined, AppointmentStatus.Finished],
-  },
-});
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+);
+
+appointmentSheema.set('autoIndex', false);
 
 const AppointmentModel = mongoose.model<AppointmentDocModel>('Appointment', appointmentSheema);
 

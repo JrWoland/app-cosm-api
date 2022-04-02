@@ -2,8 +2,8 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Entity } from '../../../core/domain/Entity';
 import { Result } from '../../../core/logic/Result';
 
-export class AppointmentId extends Entity<null> {
-  get id(): UniqueEntityID {
+export class ClientId extends Entity<null> {
+  get clientId(): UniqueEntityID {
     return this._uniqueEntityId;
   }
 
@@ -11,7 +11,7 @@ export class AppointmentId extends Entity<null> {
     super(null, id);
   }
 
-  public static create(id?: UniqueEntityID): Result<AppointmentId> {
-    return Result.ok<AppointmentId>(new AppointmentId(id));
+  public static create(id?: UniqueEntityID): Result<ClientId> {
+    return Result.ok<ClientId>(new ClientId(id));
   }
 }

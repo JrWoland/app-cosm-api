@@ -17,11 +17,11 @@ export class LoginAccountUseCase implements UseCase<LoginAccountDTO, Promise<Res
     return token;
   }
 
-  async execute(request: LoginAccountDTO): Promise<Response> {
+  public async execute(request: LoginAccountDTO): Promise<Response> {
     const { email, password } = request;
 
     try {
-      const account = await this.accountRepo.findAccountByEmail(email);
+      const account = await this.accountRepo.findAccountByAccountEmail(email);
 
       const isPasswordValid = AccountPassword.comparePassword(account.password.value, password);
 

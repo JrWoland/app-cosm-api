@@ -4,7 +4,7 @@ const router = express.Router();
 
 const OrderControllers = require('../controllers/OrdersController');
 
-const checkAuth = require('../auth/check-auth');
+const checkAuth = require('../auth/check-auth').default;
 
 router.get('/', checkAuth, OrderControllers.getAllOrders);
 router.get('/:orderId', checkAuth, OrderControllers.getOrderById);

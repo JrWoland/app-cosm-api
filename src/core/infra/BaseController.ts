@@ -5,13 +5,13 @@ export abstract class BaseController {
   protected res!: express.Response;
   protected next!: express.NextFunction;
 
-  protected abstract executeImpl(): Promise<void | any>;
+  protected abstract executeImpl(req: express.Request, res: express.Response): Promise<void | any>;
 
   public execute(req: express.Request, res: express.Response, next: express.NextFunction): void {
     this.req = req;
     this.res = res;
     this.next = next;
-    this.executeImpl();
+    this.executeImpl(req, res);
   }
 
   public static jsonResponse(res: express.Response, code: number, message: string) {

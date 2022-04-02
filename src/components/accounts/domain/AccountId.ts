@@ -3,7 +3,7 @@ import { Entity } from '../../../core/domain/Entity';
 import { Result } from '../../../core/logic/Result';
 
 export class AccountId extends Entity<null> {
-  get accountId(): UniqueEntityID {
+  get id(): UniqueEntityID {
     return this._uniqueEntityId;
   }
 

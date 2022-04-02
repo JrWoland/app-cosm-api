@@ -9,7 +9,7 @@ type Response = Result<any>;
 export class CreateAccountUseCase implements UseCase<CreateAccountDTO, Promise<Response>> {
   constructor(private accountRepo: IAccountRepo) {}
 
-  async execute(request: CreateAccountDTO): Promise<Response> {
+  public async execute(request: CreateAccountDTO): Promise<Response> {
     const { email, password } = request;
 
     const hashedPassword = AccountPassword.create({ value: password });

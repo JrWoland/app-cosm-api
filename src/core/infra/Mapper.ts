@@ -1,4 +1,4 @@
-export interface Mapper<T> {
-  toPersistence(t: T): any;
-  toDomain(raw: any): T;
+export interface Mapper<Entity, DocModel> {
+  toPersistence(t: Entity): DocModel;
+  toDomain(raw: DocModel): Entity;
 }

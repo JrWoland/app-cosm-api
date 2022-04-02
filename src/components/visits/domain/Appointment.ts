@@ -2,13 +2,14 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
+import { ClientId } from '../../clients/domain/ClientId';
 import { AppointmentId } from './AppoinmentId';
 import { AppointmentStatus } from './AppointmentStatus';
 import { Treatment } from './Treatment';
 
 interface AppointmentProps {
   accountId: AccountId;
-  clientId: string; // TODO
+  clientId?: ClientId;
   date: Date;
   startTime: number;
   duration: number;
@@ -46,6 +47,12 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   }
 
   public static create(props: AppointmentProps, id?: UniqueEntityID): Result<Appointment> {
+    const validationResult = this.validator(props);
+
+    if (validationResult.isFailure) {
+      return Result.fail<Appointment>(validationResult.error);
+    }
+
     const appointment = new Appointment(
       {
         accountId: props.accountId,

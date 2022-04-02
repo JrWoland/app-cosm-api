@@ -5,7 +5,7 @@ const mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+
 
 type Services = 'LASHES' | 'NAILS';
 export interface AccountDocModel {
-  _id?: mongoose.Types.ObjectId;
+  _id: string;
   email: string;
   password: string;
   services?: [Services];
@@ -17,10 +17,9 @@ export interface AccountDocModel {
 const accountScheema = new mongoose.Schema<AccountDocModel>(
   {
     _id: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       index: true,
       required: true,
-      auto: true,
     },
     email: {
       type: String,
