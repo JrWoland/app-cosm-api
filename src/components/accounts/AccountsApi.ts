@@ -1,5 +1,4 @@
 import express from 'express';
-import checkAuth from '../../api/auth/check-auth';
 import { createAccountController } from './useCase/createAccount';
 import { loginAccountController } from './useCase/loginToAccount';
 

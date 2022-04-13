@@ -8,7 +8,7 @@ import { appoinmentRouter } from '../../../components/visits/VisitApi';
 const routerV1 = express.Router();
 
 routerV1.use('/account', accountRouter);
-routerV1.use('/appoinment', appoinmentRouter);
+routerV1.use('/appointment', appoinmentRouter);
 // routerV1.use('/clients', clientsApi);
 // routerV1.use('/visits', visitsApi);
 
