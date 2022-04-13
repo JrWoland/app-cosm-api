@@ -11,6 +11,7 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
     return {
       _id: appointment.appointmentId.id.getValue(),
       account_id: appointment.props.accountId.id.getValue(),
+      client_id: appointment.props.clientId?.clientId.getValue(),
       date: appointment.props.date,
       duration: appointment.props.duration,
       start_time: appointment.props.startTime,
@@ -26,7 +27,7 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
     const appointment = Appointment.create(
       {
         accountId: accountId.getValue(),
-        clientId: clientId.getValue(),
+        clientId: raw.client_id ? clientId.getValue() : null,
         status: raw.status as AppointmentStatus,
         date: raw.date,
         duration: raw.duration,

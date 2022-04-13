@@ -1,7 +1,7 @@
 export interface CreateAppoinmentDTO {
   accountId: string;
   date: Date;
-  clientId?: string;
+  clientId?: string | null | undefined;
   startTime: number;
   duration: number;
   treatments: [];

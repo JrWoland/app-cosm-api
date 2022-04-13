@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { AppointmentDocModel } from '../../../infra/db/models/appointmentModel';
-import { AppointmentId } from '../domain/AppoinmentId';
+import { AppointmentId } from '../domain/AppointmentId';
 import { Appointment } from '../domain/Appointment';
 import { AppointmentMap } from './mappers/AppoinmentMap';
 

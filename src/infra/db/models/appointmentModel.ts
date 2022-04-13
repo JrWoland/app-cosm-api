@@ -32,7 +32,7 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
       required: false,
       ref: 'Client',
     },
-    date: { type: Date },
+    date: { type: Date, required: true },
     start_time: { type: Number, required: true, min: 0, max: 1440 }, // minutes
     duration: { type: Number, required: true, min: 0 }, // minutes
     status: {

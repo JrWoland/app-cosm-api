@@ -17,13 +17,14 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
     const { accountId, date, duration, startTime, treatments, clientId } = request;
 
     const accountIdToAssign = AccountId.create(new UniqueEntityID(accountId));
+
     const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
     try {
       const newAppoinment = Appointment.create(
         {
           accountId: accountIdToAssign.getValue(),
-          clientId: clientIdToAssign.getValue(),
+          clientId: clientId ? clientIdToAssign.getValue() : null,
           date: date,
           duration: duration,
           startTime: startTime,
