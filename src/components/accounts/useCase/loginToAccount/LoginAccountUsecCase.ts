@@ -6,10 +6,11 @@ import { AccountPassword } from '../../domain/AccountPassword';
 import { Account } from '../../domain/Account';
 import APP_CONFIG from '../../../../localSettings';
 import jwt from 'jsonwebtoken';
+import { IAuthService } from '../../services/AuthService';
 
 type Response = Result<LoggedAccountDTO>;
 export class LoginAccountUseCase implements UseCase<LoginAccountDTO, Promise<Response>> {
-  constructor(private accountRepo: IAccountRepo) {}
+  constructor(private accountRepo: IAccountRepo, private authService: IAuthService) {}
 
   private generateJwtToken(account: Omit<Account, 'password' | 'id' | 'email'>): string {
     const jwtPayload = { accountId: account.accountId };
@@ -26,7 +27,7 @@ export class LoginAccountUseCase implements UseCase<LoginAccountDTO, Promise<Res
       const isPasswordValid = AccountPassword.comparePassword(account.password.value, password);
 
       if (isPasswordValid) {
-        const jwtToken = this.generateJwtToken(account);
+        const jwtToken = this.authService.generateJwtToken(account);
         return Result.ok<LoggedAccountDTO>({ token: jwtToken });
       } else {
         return Result.fail('Password or email is invalid.');
