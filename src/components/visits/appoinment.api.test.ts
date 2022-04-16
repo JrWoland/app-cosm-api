@@ -18,39 +18,40 @@ const getCookie = (cookie: string) => {
 };
 
 const testUser = { email: 'test@test.com', password: 'testtest' };
-const appoinment = {
+
+const testAppointment = {
   clientId: null,
-  date: '2022-05-03T15:53:43.202Z',
+  date: Date.now(),
   startTime: 500,
   duration: 800,
   treatments: [],
 };
 
 it('Create appointment /appointment/create', async () => {
-  //dont use done(), some error can appear
-  const logged = await request(app).post('/api/account/login').send(testUser);
-  const cookie = logged.headers['set-cookie'][0];
-  const { access_token } = getCookie(cookie);
-  const appointment = await request(app)
-    .post('/api/appointment/create')
-    .set('Cookie', [`access_token=${access_token}`])
-    .send(appoinment);
+  const appointment = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
   expect(appointment.status).toEqual(201);
   expect(appointment.body.message).toEqual('Appointment created.');
+  expect(appointment.body.appointmentId).toBeTruthy();
+
+  await AppointmentModel.deleteOne({ _id: appointment.body.appointmentId });
 });
 
-it('Remove appoinment /appointment', async () => {
-  //dont use done(), some error can appear
-  // const logged = await request(app).post('/api/account/login').send(testUser);
-  // const appointment = await request(app).post('/api/appointment').send({});
-  // expect(appointment.status).toEqual(201);
-  // expect(appointment.body.message).toEqual('Appointment created.');
-});
+it('Update testAppointment /appointment', async () => {
+  //create Appointment
+  await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 
-it('Update appoinment /appointment', async () => {
-  //dont use done(), some error can appear
-  // const logged = await request(app).post('/api/account/login').send(testUser);
-  // const appointment = await request(app).post('/api/appointment').send({});
-  // expect(appointment.status).toEqual(201);
-  // expect(appointment.body.message).toEqual('Appointment created.');
+  // and update
+  const updatedAppointment = await request(app).patch('/api/appointment/update').auth(testUser.email, testUser.password, { type: 'basic' }).send({
+    clientId: null,
+    date: Date.now(),
+    startTime: 1000,
+    duration: 1000,
+    treatments: [],
+  });
+  expect(updatedAppointment.status).toEqual(200);
+  expect(updatedAppointment.body.message).toEqual('Appointment updated.');
+  expect(updatedAppointment.body.appointmentId).toBeTruthy();
+
+  // and delete
+  await AppointmentModel.deleteOne({ _id: updatedAppointment.body.appointmentId });
 });
