@@ -14,7 +14,7 @@ export class AuthService implements IAuthService {
   constructor(private accountRepo: IAccountRepo) {}
 
   public generateJwtToken(account: Omit<Account, 'password' | 'id' | 'email'>): string {
-    const jwtPayload = { accountId: account.accountId };
+    const jwtPayload = { accountId: account.accountId.id.getValue() };
     const token = jwt.sign(jwtPayload, APP_CONFIG.JWT_KEY, { expiresIn: APP_CONFIG.JWT_EXPIRES_IN });
     return token;
   }
@@ -29,7 +29,7 @@ export class AuthService implements IAuthService {
         return Result.ok<Account>(account);
       }
     } catch (error) {
-      throw new Error('Auth failed');
+      return Result.fail<Account>('Auth failed');
     }
   }
 }

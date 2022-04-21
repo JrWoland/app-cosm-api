@@ -21,9 +21,12 @@ export class CreateAppoinmentController extends BaseController {
       const result = await this.useCase.execute(newAppoinmentDTO);
 
       if (result.isSuccess) {
-        this.created(result.getValue());
+        this.res.status(201).send({
+          message: result.getValue().message,
+          appointmentId: result.getValue().appointmentId,
+        });
       } else {
-        this.unprocesable(result.error);
+        this.unprocesable(result.error?.toString());
       }
     } catch (error: any) {
       return this.fail(error.message);

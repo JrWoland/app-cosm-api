@@ -3,15 +3,10 @@ import { verify } from 'jsonwebtoken';
 import { authService } from '../../../components/accounts/services';
 import APP_CONFIG from '../../../localSettings';
 
-// interface AccountClaims extends express.Request {
-//   accountId: string;
-//   accountData?: any;
-// }
-
 export class AuthMiddleware {
   public static async ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
-      if (req.headers.authorization) {
+      if (req.headers.authorization?.startsWith('Basic')) {
         const [user, password] = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
         const basicAuth = await authService.basicAccountAuth(user, password);
 
@@ -29,8 +24,7 @@ export class AuthMiddleware {
       if (req.signedCookies.access_token) {
         const token = req.signedCookies.access_token;
         const decoded = verify(token, APP_CONFIG.JWT_KEY);
-        Object.defineProperty(req, 'accountId', { value: decoded.accountId._uniqueEntityId.id });
-        Object.defineProperty(req, 'accountData', { value: decoded });
+        Object.defineProperty(req, 'accountId', { value: decoded.accountId });
         next();
       }
     } catch (error) {
