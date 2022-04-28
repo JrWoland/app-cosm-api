@@ -3,8 +3,12 @@ import { Entity } from '../../../core/domain/Entity';
 import { Result } from '../../../core/logic/Result';
 
 export class AppointmentId extends Entity<null> {
-  get id(): UniqueEntityID {
-    return this._uniqueEntityId;
+  // get id(): UniqueEntityID {
+  //   return this._uniqueEntityId;
+  // }
+
+  get value(): string {
+    return this._uniqueEntityId.getValue();
   }
 
   private constructor(id?: UniqueEntityID) {

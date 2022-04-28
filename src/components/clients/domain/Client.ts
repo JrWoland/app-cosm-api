@@ -27,6 +27,18 @@ export class Client extends AggregateRoot<ClientProps> {
       return Result.fail<Client>('Client need to pass at least name.');
     }
 
-    return Result.ok<Client>(new Client(props, id));
+    const client = new Client(
+      {
+        accountId: props.accountId,
+        name: props.name,
+        surname: props.surname,
+        age: props.age,
+        email: props.email,
+        phone: props.phone,
+      },
+      id,
+    );
+
+    return Result.ok<Client>(client);
   }
 }

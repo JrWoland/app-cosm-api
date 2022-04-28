@@ -15,7 +15,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
 
   public async findAppointmentByAppointmentId(appointmentId: AppointmentId): Promise<Appointment> {
     try {
-      const appoinment = await this.model.find({ _id: appointmentId.toString() });
+      const appoinment = await this.model.find({ _id: appointmentId.value.toString() });
 
       if (appoinment.length === 0) {
         throw new Error('Appoinment does not exists.');

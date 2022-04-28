@@ -60,7 +60,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
 
       await this.appoinmentRepo.save(newAppoinment.getValue());
 
-      return Result.ok({ message: 'Appointment created.', appointmentId: newAppoinment.getValue().appointmentId.id.getValue() });
+      return Result.ok({ message: 'Appointment created.', appointmentId: newAppoinment.getValue().appointmentId.value });
     } catch (error: any) {
       return Result.fail(error.message);
     }

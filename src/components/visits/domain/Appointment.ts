@@ -32,10 +32,10 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
 
   private static validator(props: AppointmentProps): Result<any> {
     const validation: string[] = [];
-    const isDurationPositive = props.duration > 0 ? true : validation.push('Duration must be grater than 0.');
-    const isStartTimePositive = props.startTime > 0 ? true : validation.push('Start time must be grater than 0.');
-    const isDateValid = props.date ? true : validation.push('Appoinment date must be provided.');
-    const isStatusValid = this.isAppoinmentStatusValid(props.status) ? true : validation.push(`Status is not valid: ${props.status}.`);
+    props.duration > 0 ? true : validation.push('Duration must be grater than 0.');
+    props.startTime > 0 ? true : validation.push('Start time must be grater than 0.');
+    props.date ? true : validation.push('Appoinment date must be provided.');
+    this.isAppoinmentStatusValid(props.status) ? true : validation.push(`Status is not valid: ${props.status}.`);
     if (validation.length) {
       return Result.fail<Appointment>(validation.join(' '));
     }
@@ -45,6 +45,19 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   public addTreatment(treatment: Treatment): Result<string> {
     this.props.treatments.push(treatment);
     return Result.ok<string>('Treatment added.');
+  }
+
+  public updateAppoinmentStatus(status: AppointmentStatus): void {
+    this.props.status = status;
+  }
+
+  public updateAll(data: Omit<AppointmentProps, 'accountId'>): void {
+    this.props.date = data.date;
+    this.props.duration = data.duration;
+    this.props.status = data.status;
+    this.props.startTime = data.startTime;
+    this.props.clientId = data.clientId;
+    this.props.treatments = data.treatments;
   }
 
   public static create(props: AppointmentProps, id?: UniqueEntityID): Result<Appointment> {

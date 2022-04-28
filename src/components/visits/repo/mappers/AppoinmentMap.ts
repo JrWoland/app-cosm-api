@@ -9,7 +9,7 @@ import { AppointmentStatus } from '../../domain/AppointmentStatus';
 export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> {
   toPersistence(appointment: Appointment): AppointmentDocModel {
     return {
-      _id: appointment.appointmentId.id.getValue(),
+      _id: appointment.appointmentId.value,
       account_id: appointment.props.accountId.id.getValue(),
       client_id: appointment.props.clientId?.clientId.getValue(),
       date: appointment.props.date,
