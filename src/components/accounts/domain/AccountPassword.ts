@@ -16,6 +16,10 @@ export class AccountPassword extends ValueObject<AccountPasswordProps> {
     return this.accountProps.value;
   }
 
+  get hashed() {
+    return this.accountProps.hashed;
+  }
+
   private static hashPassword(password: string): string {
     const hashedPassword = bcrypt.hashSync(password, 10);
     return hashedPassword;
@@ -32,13 +36,11 @@ export class AccountPassword extends ValueObject<AccountPasswordProps> {
 
   public static create(props: AccountPasswordProps) {
     if (!this.isAppropriateLength(props.value)) {
-      return Result.fail<AccountPassword>('Password does not meet criteria, min 8 chars');
+      return Result.fail<AccountPassword>('Password does not meet criteria, min 8 chars.');
     }
 
-    if (props.hashed) {
-      return Result.ok<AccountPassword>(new AccountPassword({ value: props.value }));
-    } else {
-      return Result.ok<AccountPassword>(new AccountPassword({ value: this.hashPassword(props.value) }));
-    }
+    const passwordToProvide = props.hashed ? props.value : this.hashPassword(props.value);
+
+    return Result.ok<AccountPassword>(new AccountPassword({ value: passwordToProvide, hashed: true }));
   }
 }

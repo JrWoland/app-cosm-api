@@ -40,7 +40,7 @@ export class UpdateAppoinmentUseCase implements UseCase<UpdateAppointmentDTO, Pr
 
       const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
-      appointment.updateAll({
+      const updateResult = appointment.updateAll({
         date: date,
         clientId: clientIdToAssign.getValue(),
         duration: duration,
@@ -48,6 +48,10 @@ export class UpdateAppoinmentUseCase implements UseCase<UpdateAppointmentDTO, Pr
         status: status,
         treatments: treatments,
       });
+
+      if (updateResult.isFailure) {
+        return Result.fail(updateResult.error);
+      }
 
       this.appoinmentRepo.save(appointment);
 

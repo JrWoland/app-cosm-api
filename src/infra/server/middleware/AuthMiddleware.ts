@@ -3,6 +3,7 @@ import { verify } from 'jsonwebtoken';
 import { authService } from '../../../components/accounts/services';
 import APP_CONFIG from '../../../localSettings';
 
+const ERROR_MESSAGE = 'Auth failed. Login first.';
 export class AuthMiddleware {
   public static async ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
@@ -16,7 +17,7 @@ export class AuthMiddleware {
           return next();
         } else {
           return res.status(401).json({
-            message: 'Auth failed. Login first.',
+            message: ERROR_MESSAGE,
           });
         }
       }
@@ -25,11 +26,13 @@ export class AuthMiddleware {
         const token = req.signedCookies.access_token;
         const decoded = verify(token, APP_CONFIG.JWT_KEY);
         Object.defineProperty(req, 'accountId', { value: decoded.accountId });
-        next();
+        return next();
       }
+
+      throw new Error(ERROR_MESSAGE);
     } catch (error) {
       return res.status(401).json({
-        message: 'Auth failed. Login first.',
+        message: ERROR_MESSAGE,
       });
     }
   }

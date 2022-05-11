@@ -30,7 +30,7 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return [AppointmentStatus.ClientNotAppeard, AppointmentStatus.Declined, AppointmentStatus.Finished, AppointmentStatus.New].includes(status);
   }
 
-  private static validator(props: AppointmentProps): Result<any> {
+  private static validator(props: Omit<AppointmentProps, 'accountId'>): Result<any> {
     const validation: string[] = [];
     props.duration > 0 ? true : validation.push('Duration must be grater than 0.');
     props.startTime > 0 ? true : validation.push('Start time must be grater than 0.');
@@ -51,13 +51,21 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     this.props.status = status;
   }
 
-  public updateAll(data: Omit<AppointmentProps, 'accountId'>): void {
+  public updateAll(data: Omit<AppointmentProps, 'accountId'>): Result<any> {
+    const validationResult = Appointment.validator(data);
+
+    if (validationResult.isFailure) {
+      return Result.fail<Appointment>(validationResult.error);
+    }
+
     this.props.date = data.date;
     this.props.duration = data.duration;
     this.props.status = data.status;
     this.props.startTime = data.startTime;
     this.props.clientId = data.clientId;
     this.props.treatments = data.treatments;
+
+    return Result.ok('Appointment updated successfully.');
   }
 
   public static create(props: AppointmentProps, id?: UniqueEntityID): Result<Appointment> {
