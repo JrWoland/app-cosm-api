@@ -6,7 +6,6 @@ import { DecodedExpressReq } from '../../DecodedExpressReq';
 export class CreateAppoinmentController extends BaseController {
   constructor(private useCase: CreateAppoinmentUseCase) {
     super();
-    this.useCase = useCase;
   }
 
   public async executeImpl(req: DecodedExpressReq): Promise<any> {

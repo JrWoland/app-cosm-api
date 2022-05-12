@@ -14,7 +14,7 @@ interface AppointmentResponseDTO {
 }
 type Response = Result<AppointmentResponseDTO>;
 
-export class UpdateAppoinmentUseCase implements UseCase<UpdateAppointmentDTO, Promise<Response>> {
+export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, Promise<Response>> {
   constructor(private appoinmentRepo: IAppoinmentRepo) {}
 
   public async execute(request: UpdateAppointmentDTO): Promise<Response> {
@@ -28,13 +28,12 @@ export class UpdateAppoinmentUseCase implements UseCase<UpdateAppointmentDTO, Pr
       return Result.fail('Invalid appointment id.');
     }
 
-    const authAccount = AccountId.create(new UniqueEntityID(accountId)).getValue();
     const appId = AppointmentId.create(new UniqueEntityID(appointmentId)).getValue();
 
     try {
       const appointment = await this.appoinmentRepo.findAppointmentByAppointmentId(appId);
 
-      if (authAccount.id.getValue() !== accountId) {
+      if (appointment.props.accountId.id.getValue() !== accountId) {
         return Result.fail('Appointment not found.');
       }
 
