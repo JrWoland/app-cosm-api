@@ -1,32 +1,43 @@
-import { AggregateRoot } from '../../../core/domain/AggregateRoot';
+import { Entity } from '../../../core/domain/Entity';
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
-
-type TreatmentsType = 'LASHES' | 'NAILS';
-interface LashesTreatment {
-  glue: string;
-  remover: string;
-}
-
-interface NailsTreatment {
-  length: string;
-  colors: string;
-}
+import { AccountId } from '../../accounts/domain/AccountId';
+import { TreatmentId } from './TreatmentId';
+import { TreatmentCardId } from './TreatmentCardId';
 
 export interface TreatmentProps {
-  type: TreatmentsType;
-  price: number;
-  duration: number;
-  notes: string;
-  details: object;
+  accountId: AccountId;
+  treatmentCardId: TreatmentCardId | null;
+  name: string;
+  price?: number;
+  duration?: number;
+  notes?: string;
 }
 
-export class Treatment extends AggregateRoot<TreatmentProps> {
+export class Treatment extends Entity<TreatmentProps> {
   private constructor(props: TreatmentProps, id?: UniqueEntityID) {
     super(props, id);
   }
 
-  public static create(props: TreatmentProps, id: UniqueEntityID): Result<any> {
-    throw new Error('Method not implemented.');
+  get treatmentId() {
+    return TreatmentId.create(this._uniqueEntityId).getValue();
+  }
+
+  public static create(props: TreatmentProps, id: UniqueEntityID): Result<Treatment> {
+    if (!props.accountId) {
+      return Result.fail<Treatment>('Can not create new treatment without accountId.');
+    }
+
+    const treatment = new Treatment(
+      {
+        accountId: props.accountId,
+        name: props.name,
+        notes: props.notes,
+        treatmentCardId: props.treatmentCardId, // 1 or 2
+      },
+      id,
+    );
+
+    return Result.ok<Treatment>(treatment);
   }
 }
