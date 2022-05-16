@@ -1,7 +1,7 @@
 import { BaseController } from '../../../../core/infra/BaseController';
 import { CreateAppoinmentDTO } from './CreateAppoinmentDTO';
 import { CreateAppoinmentUseCase } from './CreateAppoinmentUseCase';
-import { DecodedExpressReq } from '../../DecodedExpressReq';
+import { DecodedExpressReq } from '../../../../infra/server/api/DecodedExpressReq';
 
 export class CreateAppoinmentController extends BaseController {
   constructor(private useCase: CreateAppoinmentUseCase) {

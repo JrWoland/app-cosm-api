@@ -7,8 +7,8 @@ import { ClientId } from './ClientId';
 interface ClientProps {
   accountId: AccountId;
   name: string;
-  surname: string;
-  age?: number;
+  surname?: string;
+  birthDay?: Date | undefined;
   phone?: string;
   email?: string;
 }
@@ -32,7 +32,7 @@ export class Client extends AggregateRoot<ClientProps> {
         accountId: props.accountId,
         name: props.name,
         surname: props.surname,
-        age: props.age,
+        birthDay: props.birthDay,
         email: props.email,
         phone: props.phone,
       },

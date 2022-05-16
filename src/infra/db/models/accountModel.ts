@@ -1,7 +1,6 @@
-import { beautyServiceScheema } from './beautyServiceModel';
 import mongoose from 'mongoose';
-
-const mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+import { beautyServiceScheema } from './beautyServiceModel';
+import { mailRegex } from '../../../core/utils/mailRegex';
 
 type Services = 'LASHES' | 'NAILS';
 export interface AccountDocModel {

@@ -1,5 +1,5 @@
 import { BaseController } from '../../../../core/infra/BaseController';
-import { DecodedExpressReq } from '../../DecodedExpressReq';
+import { DecodedExpressReq } from '../../../../infra/server/api/DecodedExpressReq';
 import { UpdateAppointmentDTO } from './UpdateAppointmentDTO';
 import { UpdateAppointmentUseCase } from './UpdateAppointmentUseCase';
 

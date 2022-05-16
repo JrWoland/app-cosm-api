@@ -7,6 +7,10 @@ export class ClientId extends Entity<null> {
     return this._uniqueEntityId;
   }
 
+  get value(): string {
+    return this._uniqueEntityId.getValue();
+  }
+
   private constructor(id?: UniqueEntityID) {
     super(null, id);
   }

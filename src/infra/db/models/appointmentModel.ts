@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { v4 } from 'uuid';
 import { AppointmentStatus } from '../../../components/visits/domain/AppointmentStatus';
 
 export interface AppointmentDocModel {
@@ -32,9 +31,21 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
       required: false,
       ref: 'Client',
     },
-    date: { type: Date, required: true },
-    start_time: { type: Number, required: true, min: 0, max: 1440 }, // minutes
-    duration: { type: Number, required: true, min: 0 }, // minutes
+    date: {
+      type: Date,
+      required: true,
+    },
+    start_time: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 1440,
+    }, // minutes
+    duration: {
+      type: Number,
+      required: true,
+      min: 0,
+    }, // minutes
     status: {
       type: String,
       required: true,

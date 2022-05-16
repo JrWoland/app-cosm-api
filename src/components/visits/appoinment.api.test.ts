@@ -28,16 +28,6 @@ const testAppointment = {
   treatments: [],
 };
 
-const updated = {
-  appointmentId: null,
-  clientId: null,
-  date: Date.now(),
-  startTime: 0,
-  duration: 0,
-  treatments: [],
-  status: 'RANDOM_VALUE',
-};
-
 it('Should create appointment /api/appointment/create', async () => {
   const appointment = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
   expect(appointment.status).toEqual(201);
@@ -50,9 +40,20 @@ it('Should create appointment /api/appointment/create', async () => {
   await AppointmentModel.deleteOne({ _id: appointment.body.appointmentId });
 });
 
+const getMock = () => ({
+  appointmentId: null,
+  clientId: null,
+  date: Date.now(),
+  startTime: 0,
+  duration: 0,
+  treatments: [],
+  status: 'RANDOM_VALUE',
+});
+
 describe('Test update appointment scenarios /api/appointment/update when:', () => {
   it('Should not update the appointment when duration or startTime is 0 or less', async () => {
     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const updated = getMock();
     updated.appointmentId = result.body.appointmentId;
     updated.duration = 0;
 
@@ -66,6 +67,7 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
 
   it('Should not update the appointment when appointmentId is null.', async () => {
     await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const updated = getMock();
     updated.appointmentId = null;
     updated.duration = 500;
 
@@ -77,6 +79,7 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
 
   it('Should not be able to update appointment from another account.', async () => {
     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const updated = getMock();
     updated.appointmentId = result.body.appointmentId;
     updated.duration = 500;
 
