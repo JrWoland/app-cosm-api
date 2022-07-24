@@ -28,7 +28,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
   }
 
   public async execute(request: CreateAppoinmentDTO): Promise<Response> {
-    const { accountId, date, duration, startTime, treatments, clientId } = request;
+    const { accountId, date, duration, startTime, treatments, clientId, status } = request;
 
     const accountIdToAssign = AccountId.create(new UniqueEntityID(accountId));
 
@@ -49,7 +49,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
           duration: duration,
           startTime: startTime,
           treatments: treatments,
-          status: AppointmentStatus.New,
+          status: status || AppointmentStatus.New,
         },
         new UniqueEntityID(),
       );

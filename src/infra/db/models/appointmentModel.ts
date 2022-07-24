@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { AppointmentStatus } from '../../../components/visits/domain/AppointmentStatus';
+import { AppointmentStatus } from '../../../components/appointment/domain/AppointmentStatus';
 
 export interface AppointmentDocModel {
   _id: string;

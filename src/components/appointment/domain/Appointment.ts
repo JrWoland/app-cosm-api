@@ -5,7 +5,7 @@ import { AccountId } from '../../accounts/domain/AccountId';
 import { ClientId } from '../../clients/domain/ClientId';
 import { AppointmentId } from './AppointmentId';
 import { AppointmentStatus } from './AppointmentStatus';
-import { Treatment } from './Treatment';
+import { TreatmentId } from '../../treatment/domain/TreatmentId';
 
 interface AppointmentProps {
   accountId: AccountId;
@@ -14,8 +14,10 @@ interface AppointmentProps {
   startTime: number;
   duration: number;
   status: AppointmentStatus;
-  treatments: Treatment[];
+  treatments: TreatmentId[];
 }
+
+type Minutes = number;
 
 export class Appointment extends AggregateRoot<AppointmentProps> {
   private constructor(props: AppointmentProps, id?: UniqueEntityID) {
@@ -24,6 +26,27 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
 
   get appointmentId(): AppointmentId {
     return AppointmentId.create(this._uniqueEntityId).getValue();
+  }
+  get accountId() {
+    return this.props.accountId;
+  }
+  get clientId() {
+    return this.props.clientId;
+  }
+  get date() {
+    return this.props.date;
+  }
+  get startTime() {
+    return this.props.startTime;
+  }
+  get duration() {
+    return this.props.duration;
+  }
+  get status() {
+    return this.props.status;
+  }
+  get treatments() {
+    return this.props.treatments;
   }
 
   private static isAppoinmentStatusValid(status: AppointmentStatus): boolean {
@@ -42,13 +65,42 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok(true);
   }
 
-  public addTreatment(treatment: Treatment): Result<string> {
+  public setAppointmentStatus(status: AppointmentStatus): Result<string> {
+    if (!Appointment.isAppoinmentStatusValid(status)) return Result.fail<string>('Invalid appoinment status.');
+    this.props.status = status;
+    return Result.ok<string>('Appoinment status changed successfully.');
+  }
+
+  public setAppointmentDate(date: Date) {
+    this.props.date = date;
+  }
+
+  public setAppointmentDuration(duration: Minutes): Result<string> {
+    if (duration <= 0) return Result.fail<string>('Duration must be bigger than 0.');
+    this.props.duration = duration;
+    return Result.ok<string>('Duration changed successfully');
+  }
+
+  public setAppointmentStartTime(startTime: Minutes): Result<string> {
+    if (startTime <= 0) return Result.fail<string>('Start time must be bigger than 0.');
+    this.props.startTime = startTime;
+    return Result.ok<string>('Appointment staring time changed successfully.');
+  }
+
+  public setAppointmentClientId(clientId?: ClientId | null | undefined): Result<string> {
+    this.props.clientId = clientId;
+    return Result.ok<string>('Client id has been changed.');
+  }
+
+  public addTreatment(treatment: TreatmentId): Result<string> {
     this.props.treatments.push(treatment);
     return Result.ok<string>('Treatment added.');
   }
 
-  public updateAppoinmentStatus(status: AppointmentStatus): void {
-    this.props.status = status;
+  public removeTreatment(treatmentId: TreatmentId): Result<string> {
+    if (this.props.treatments.length === 0) return Result.fail<string>('No treatments.');
+    this.props.treatments = this.props.treatments.filter((t) => t.value !== treatmentId.value);
+    return Result.ok<string>('Treatment has been removed.');
   }
 
   public updateAll(data: Omit<AppointmentProps, 'accountId'>): Result<any> {
@@ -58,14 +110,14 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
       return Result.fail<Appointment>(validationResult.error);
     }
 
-    this.props.date = data.date;
-    this.props.duration = data.duration;
-    this.props.status = data.status;
-    this.props.startTime = data.startTime;
-    this.props.clientId = data.clientId;
+    this.setAppointmentDuration(data.duration);
+    this.setAppointmentStartTime(data.startTime);
+    this.setAppointmentDate(data.date);
+    this.setAppointmentClientId(data.clientId);
+    this.setAppointmentStatus(data.status);
     this.props.treatments = data.treatments;
 
-    return Result.ok('Appointment updated successfully.');
+    return Result.ok<string>('Appointment updated successfully.');
   }
 
   public static create(props: AppointmentProps, id?: UniqueEntityID): Result<Appointment> {

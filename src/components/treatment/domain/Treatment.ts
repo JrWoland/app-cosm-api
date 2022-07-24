@@ -22,6 +22,24 @@ export class Treatment extends Entity<TreatmentProps> {
   get treatmentId() {
     return TreatmentId.create(this._uniqueEntityId).getValue();
   }
+  get accountId() {
+    return this.props.accountId;
+  }
+  get name() {
+    return this.props.name;
+  }
+  get notes() {
+    return this.props.notes;
+  }
+  get duration() {
+    return this.props.duration;
+  }
+  get price() {
+    return this.props.price;
+  }
+  get treatmentCardId() {
+    return this.props.treatmentCardId;
+  }
 
   public static create(props: TreatmentProps, id: UniqueEntityID): Result<Treatment> {
     if (!props.accountId) {
@@ -33,6 +51,8 @@ export class Treatment extends Entity<TreatmentProps> {
         accountId: props.accountId,
         name: props.name,
         notes: props.notes,
+        duration: props.duration,
+        price: props.price,
         treatmentCardId: props.treatmentCardId, // 1 or 2
       },
       id,

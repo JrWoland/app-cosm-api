@@ -1,10 +1,8 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
-import { AccountId } from '../../../accounts/domain/AccountId';
 import { ClientId } from '../../../clients/domain/ClientId';
 import { AppointmentId } from '../../domain/AppointmentId';
-import { AppointmentStatus } from '../../domain/AppointmentStatus';
 import { IAppoinmentRepo } from '../../repo/AppoinmentRepo';
 import { UpdateAppointmentDTO } from './UpdateAppointmentDTO';
 

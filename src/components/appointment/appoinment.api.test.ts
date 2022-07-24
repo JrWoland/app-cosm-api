@@ -40,7 +40,7 @@ it('Should create appointment /api/appointment/create', async () => {
   await AppointmentModel.deleteOne({ _id: appointment.body.appointmentId });
 });
 
-const getMock = () => ({
+const getMockAppointment = () => ({
   appointmentId: null,
   clientId: null,
   date: Date.now(),
@@ -53,7 +53,7 @@ const getMock = () => ({
 describe('Test update appointment scenarios /api/appointment/update when:', () => {
   it('Should not update the appointment when duration or startTime is 0 or less', async () => {
     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
-    const updated = getMock();
+    const updated = getMockAppointment();
     updated.appointmentId = result.body.appointmentId;
     updated.duration = 0;
 
@@ -67,7 +67,7 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
 
   it('Should not update the appointment when appointmentId is null.', async () => {
     await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
-    const updated = getMock();
+    const updated = getMockAppointment();
     updated.appointmentId = null;
     updated.duration = 500;
 
@@ -77,9 +77,9 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
     expect(updatedAppointment.body.message).toEqual('Invalid appointment id.');
   });
 
-  it('Should not be able to update appointment from another account.', async () => {
+  it('Should not be able to access appointment from another account.', async () => {
     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
-    const updated = getMock();
+    const updated = getMockAppointment();
     updated.appointmentId = result.body.appointmentId;
     updated.duration = 500;
 
@@ -87,5 +87,15 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
 
     expect(updatedAppointment.status).toEqual(422);
     expect(updatedAppointment.body.message).toEqual('Appointment not found.');
+  });
+});
+
+describe('Test delete appointment.', () => {
+  it('Should be able to delete the appointment.', async () => {
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const resultDeleted = await request(app).delete('/api/appointment/delete').auth(testUser.email, testUser.password, { type: 'basic' }).send({ appointmentId: result.body.appointmentId });
+
+    expect(resultDeleted.status).toEqual(200);
+    expect(resultDeleted.status).toEqual('Appointment has been deleted.');
   });
 });

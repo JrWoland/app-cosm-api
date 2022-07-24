@@ -1,4 +1,5 @@
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
+import { TreatmentId } from '../../../treatment/domain/TreatmentId';
 
 export interface UpdateAppointmentDTO {
   accountId: string;
@@ -7,6 +8,6 @@ export interface UpdateAppointmentDTO {
   date: Date;
   startTime: number;
   duration: number;
-  treatments: [];
+  treatments: TreatmentId[];
   status: AppointmentStatus;
 }
