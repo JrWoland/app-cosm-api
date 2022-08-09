@@ -1,8 +1,8 @@
-export interface CreateClientDTO {
+export interface UpdateClientDTO {
   accountId: string;
   name: string;
   surname?: string;
-  birthDate?: Date;
+  age?: number;
   phone?: string;
   email?: string;
 }

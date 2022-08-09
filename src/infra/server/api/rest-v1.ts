@@ -10,7 +10,7 @@ const routerV1 = express.Router();
 
 routerV1.use('/account', accountRouter);
 routerV1.use('/appointment', appoinmentRouter);
-routerV1.use('/clients', clientRouter);
+routerV1.use('/client', clientRouter);
 // routerV1.use('/clients', clientsApi);
 // routerV1.use('/visits', visitsApi);
 

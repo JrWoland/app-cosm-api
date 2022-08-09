@@ -7,7 +7,7 @@ import { ClientMap } from './mappers/ClientMap';
 export interface IClientRepo {
   findClientById(clientId: ClientId): Promise<Client>;
   exist(clientId: ClientId): Promise<boolean>;
-  save(clientId: Client): Promise<void>;
+  save(client: Client): Promise<void>;
 }
 
 export class ClientRepo implements IClientRepo {
@@ -37,7 +37,7 @@ export class ClientRepo implements IClientRepo {
     try {
       const clientToSave = new ClientMap().toPersistence(client);
 
-      const exists = this.exist(client.clientId);
+      const exists = await this.exist(client.clientId);
 
       if (!exists) {
         const newClient = new this.model(clientToSave);
