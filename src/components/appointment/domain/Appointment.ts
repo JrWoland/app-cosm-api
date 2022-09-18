@@ -87,7 +87,7 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
 
   public setAppointmentDuration(duration: Minutes): Result<string> {
     if (duration <= 0) {
-      const error = Result.fail<string>('Duration must be bigger than 0');
+      const error = Result.fail<string>('Duration must be bigger than 0.');
       this.registerError(error);
       return error;
     }

@@ -4,13 +4,16 @@ import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { TreatmentId } from './TreatmentId';
 import { TreatmentCardId } from './TreatmentCardId';
+import { TREATMENT_ERRORS } from './TreatmentErrors';
 
+type TreatmentDurationInMinutes = number;
+type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
-  treatmentCardId: TreatmentCardId | null;
   name: string;
-  price?: number;
-  duration?: number;
+  treatmentCardId?: TreatmentCardId | null;
+  price?: Price;
+  duration?: TreatmentDurationInMinutes;
   notes?: string;
 }
 
@@ -39,6 +42,43 @@ export class Treatment extends Entity<TreatmentProps> {
   }
   get treatmentCardId() {
     return this.props.treatmentCardId;
+  }
+
+  public setName(name: string): Result<string> {
+    const hasName = !!name;
+    if (!hasName) {
+      const error = Result.fail<string>(TREATMENT_ERRORS.NAME_ERROR_MESSAGE);
+      this.registerError(error);
+      return error;
+    }
+    this.props.name = name;
+    return Result.ok('Treatment name has been set.');
+  }
+  public setNotes(notes: string): Result<string> {
+    this.props.notes = notes;
+    return Result.ok('Treatment notes has been set.');
+  }
+  public setDuration(duration: TreatmentDurationInMinutes): Result<string> {
+    if (duration < 0) {
+      const error = Result.fail<string>('Duration must be greater than 0.');
+      this.registerError(error);
+      return error;
+    }
+    this.props.duration = duration;
+    return Result.ok('Treatment duration has been set.');
+  }
+  public setPrice(price: Price): Result<string> {
+    if (price < 0) {
+      const error = Result.fail<string>('Price must be greater than 0.');
+      this.registerError(error);
+      return error;
+    }
+    this.props.price = price;
+    return Result.ok('Treatment price has been set.');
+  }
+  public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
+    this.props.treatmentCardId = cardId;
+    return Result.ok('Treatment card has been set.');
   }
 
   public static create(props: TreatmentProps, id: UniqueEntityID): Result<Treatment> {
