@@ -89,14 +89,23 @@ describe('Test updating particular props with wrong values.', () => {
     expect(result.isFailure).toEqual(true);
     expect(result.error).toEqual('Invalid appoinment status.');
   });
+
   it('Set wrong duration.', async () => {
     const result = appointment.setAppointmentDuration(-1);
     expect(result.isFailure).toEqual(true);
     expect(result.error).toEqual('Duration must be bigger than 0.');
   });
+
   it('Set wrong start time.', async () => {
     const result = appointment.setAppointmentStartTime(-1);
     expect(result.isFailure).toEqual(true);
     expect(result.error).toEqual('Start time must be bigger than 0.');
+  });
+
+  it('Set wrong appointment date.', async () => {
+    const date = 'fake' as unknown as Date; // force to put wrong calue to setAppointmentDate() method
+    const result = appointment.setAppointmentDate(date);
+    expect(result.isFailure).toEqual(true);
+    expect(result.error).toEqual('Date must be instance of Date.');
   });
 });

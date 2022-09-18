@@ -13,7 +13,7 @@ export interface IAuthService {
 export class AuthService implements IAuthService {
   constructor(private accountRepo: IAccountRepo) {}
 
-  public generateJwtToken(account: Omit<Account, 'password' | 'id' | 'email'>): string {
+  public generateJwtToken(account: Omit<Account, 'password' | 'id' | 'email' | 'props'>): string {
     const jwtPayload = { accountId: account.accountId.id.getValue() };
     const token = jwt.sign(jwtPayload, APP_CONFIG.JWT_KEY, { expiresIn: APP_CONFIG.JWT_EXPIRES_IN });
     return token;

@@ -13,19 +13,31 @@ afterEach((done) => {
   mongoose.connection.close(() => done());
 });
 
+interface ClientReq {
+  clientId?: string;
+  name: string;
+  surname?: string;
+  phone?: string;
+  status?: string;
+  email?: string;
+}
+
+const mockClient = (): ClientReq => ({
+  name: 'Prosto',
+  surname: 'Prosto surname',
+  phone: '123123123',
+  email: 'good@email.com',
+});
+
 const testUser = { email: 'test@test.com', password: 'testtest' };
 const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 
 it('Should create client /api/client/create', async () => {
-  const testClient = {
-    name: 'Prosto',
-    surname: 'Prosto surname',
-    phone: '123123123',
-  };
+  const testClient = mockClient();
   const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
-  expect(client.status).toEqual(201);
   expect(client.body.message).toEqual('Client created.');
   expect(client.body.clientId).toBeTruthy();
+  expect(client.status).toEqual(201);
 
   const result = await ClientModel.exists({ _id: client.body.clientId });
   expect(result).toEqual(true);
@@ -34,24 +46,109 @@ it('Should create client /api/client/create', async () => {
 });
 
 it('Should not create client without name /api/client/create', async () => {
-  const testClientNoName = {
-    name: '',
-    surname: 'Prosto surname',
-    phone: '123123123',
-  };
+  const testClientNoName = mockClient();
+  testClientNoName.name = '';
   const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientNoName);
-  expect(client.status).toEqual(422);
   expect(client.body.message).toEqual('Client need to have name.');
+  expect(client.status).toEqual(422);
 });
 
 it('Should not create client with wrong email structure /api/client/create', async () => {
-  const testClientWrongEmail = {
-    name: 'Prosto',
-    surname: 'Prosto surname',
-    phone: '123123123',
-    email: 'fake#email.com',
-  };
+  const testClientWrongEmail = mockClient();
+  testClientWrongEmail.email = 'wrong#email.com';
   const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientWrongEmail);
-  expect(client.status).toEqual(422);
   expect(client.body.message).toEqual('Email structure is invalid.');
+  expect(client.status).toEqual(422);
+});
+
+describe('Test update client scenarios /api/client/update', () => {
+  it('Should update client', async () => {
+    const testClient = mockClient();
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    expect(createdClient.status).toEqual(201);
+    expect(createdClient.body.message).toEqual('Client created.');
+
+    testClient.clientId = createdClient.body.clientId;
+    testClient.name = 'Fas';
+    testClient.surname = 'Bar';
+    testClient.email = 'new@email.com';
+
+    const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Client updated.');
+    expect(updatedClient.status).toEqual(200);
+    expect(updatedClient.body.clientId).toEqual(createdClient.body.clientId);
+  });
+
+  it('Should update client status', async () => {
+    const testClient = mockClient();
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    expect(createdClient.body.message).toEqual('Client created.');
+    expect(createdClient.status).toEqual(201);
+
+    testClient.clientId = createdClient.body.clientId;
+    testClient.status = 'BANNED';
+
+    const updatedClient = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Client status updated.');
+    expect(updatedClient.body.clientId).toEqual(createdClient.body.clientId);
+    expect(updatedClient.body.newStatus).toEqual('BANNED');
+    expect(updatedClient.status).toEqual(200);
+  });
+
+  it('Should not update client status', async () => {
+    const testClient = mockClient();
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    expect(createdClient.status).toEqual(201);
+    expect(createdClient.body.message).toEqual('Client created.');
+
+    testClient.clientId = createdClient.body.clientId;
+    testClient.status = 'FAKE_STATUS';
+
+    const updatedClient = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Invalid client status.');
+    expect(updatedClient.status).toEqual(422);
+  });
+
+  it('Should not be able to update client from another account', async () => {
+    const testClient = mockClient();
+
+    // client created within account 1
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    testClient.clientId = createdClient.body.clientId;
+
+    // try access from account 2
+    const updatedClient = await request(app).patch('/api/client/update').auth(testUser2.email, testUser2.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Client not found.');
+    expect(updatedClient.status).toEqual(422);
+  });
+
+  it('Should not be able to update client without clientId property', async () => {
+    const testClient = mockClient();
+    await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    delete testClient['clientId'];
+
+    const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Missing property: clientId.');
+    expect(updatedClient.status).toEqual(422);
+  });
+
+  it('Should not be able to update client with not existing clientId /api/client/update', async () => {
+    const testClient = mockClient();
+
+    await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    testClient.clientId = 'some-random-id';
+
+    const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(updatedClient.body.message).toEqual('Client not found.');
+    expect(updatedClient.status).toEqual(422);
+  });
 });

@@ -7,6 +7,7 @@ import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { Account } from '../../../accounts/domain/Account';
 import { Client } from '../../domain/Client';
+import { ClientStatus } from '../../domain/ClientStatus';
 
 interface ClientResponseDTO {
   message: string;
@@ -35,6 +36,7 @@ export class CreateClientUseCase implements UseCase<CreateClientDTO, Promise<Res
           accountId: account.accountId,
           name: name,
           surname: surname,
+          status: ClientStatus.Active,
           birthDay: birthDate,
           email: email,
           phone: phone,

@@ -66,23 +66,41 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   }
 
   public setAppointmentStatus(status: AppointmentStatus): Result<string> {
-    if (!Appointment.isAppoinmentStatusValid(status)) return Result.fail<string>('Invalid appoinment status.');
+    if (!Appointment.isAppoinmentStatusValid(status)) {
+      const error = Result.fail<string>('Invalid appoinment status.');
+      this.registerError(error);
+      return error;
+    }
     this.props.status = status;
     return Result.ok<string>('Appoinment status changed successfully.');
   }
 
   public setAppointmentDate(date: Date) {
+    if (!(date instanceof Date)) {
+      const error = Result.fail<string>('Date must be instance of Date.');
+      this.registerError(error);
+      return error;
+    }
     this.props.date = date;
+    return Result.ok<string>('Appointment date changed successfully');
   }
 
   public setAppointmentDuration(duration: Minutes): Result<string> {
-    if (duration <= 0) return Result.fail<string>('Duration must be bigger than 0.');
+    if (duration <= 0) {
+      const error = Result.fail<string>('Duration must be bigger than 0');
+      this.registerError(error);
+      return error;
+    }
     this.props.duration = duration;
     return Result.ok<string>('Duration changed successfully');
   }
 
   public setAppointmentStartTime(startTime: Minutes): Result<string> {
-    if (startTime <= 0) return Result.fail<string>('Start time must be bigger than 0.');
+    if (startTime <= 0) {
+      const error = Result.fail<string>('Start time must be bigger than 0.');
+      this.registerError(error);
+      return error;
+    }
     this.props.startTime = startTime;
     return Result.ok<string>('Appointment staring time changed successfully.');
   }

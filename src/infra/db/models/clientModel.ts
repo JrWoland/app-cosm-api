@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
+import { ClientStatus } from '../../../components/clients/domain/ClientStatus';
 import { mailRegex } from '../../../core/utils/mailRegex';
 
 export interface ClientDocModel {
   _id: string;
   account_id: string;
   name: string;
+  status: ClientStatus;
   surname?: string;
   birth_day?: Date;
   phone?: string;
@@ -25,6 +27,11 @@ const clientScheema = new mongoose.Schema<ClientDocModel>(
     name: {
       type: String,
       required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      values: [ClientStatus.Archived, ClientStatus.Active, ClientStatus.Banned],
     },
     surname: {
       type: String,

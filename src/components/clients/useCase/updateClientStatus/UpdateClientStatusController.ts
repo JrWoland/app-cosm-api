@@ -1,15 +1,15 @@
 import { BaseController } from '../../../../core/infra/BaseController';
 import { DecodedExpressReq } from '../../../../infra/server/api/DecodedExpressReq';
-import { UpdateClientDTO } from './UpdateClientDTO';
-import { UpdateClientUseCase } from './UpdateClientUseCase';
+import { UpdateClientStatusDTO } from './UpdateClientStatusDTO';
+import { UpdateClientStatusUseCase } from './UpdateClientStatusUseCase';
 
-export class UpdateClientController extends BaseController {
-  constructor(private useCase: UpdateClientUseCase) {
+export class UpdateClientStatusController extends BaseController {
+  constructor(private useCase: UpdateClientStatusUseCase) {
     super();
   }
 
   public async executeImpl(req: DecodedExpressReq): Promise<any> {
-    const clientDto: UpdateClientDTO = this.req.body;
+    const clientDto: UpdateClientStatusDTO = this.req.body;
 
     clientDto.accountId = req.accountId;
 
@@ -21,6 +21,7 @@ export class UpdateClientController extends BaseController {
       return this.res.status(200).send({
         message: result.getValue().message,
         clientId: result.getValue().clientId,
+        newStatus: result.getValue().newStatus,
       });
     } catch (error: any) {
       return this.fail(error.message);

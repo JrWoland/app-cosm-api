@@ -1,8 +1,9 @@
 export interface UpdateClientDTO {
   accountId: string;
+  clientId: string;
   name: string;
   surname?: string;
-  age?: number;
+  birthDate?: Date;
   phone?: string;
   email?: string;
 }

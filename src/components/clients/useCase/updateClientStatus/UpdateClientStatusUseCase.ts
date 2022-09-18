@@ -1,27 +1,28 @@
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
-import { UpdateClientDTO } from './UpdateClientDTO';
+import { UpdateClientStatusDTO } from './UpdateClientStatusDTO';
 import { IClientRepo } from '../../repo/ClientRepo';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Client } from '../../domain/Client';
 import { ClientId } from '../../domain/ClientId';
 import { CLIENT_ERROR } from '../../domain/ClientErrors';
 
-interface UpdateClientResponseDTO {
+interface UpdateClientStatusResponseDTO {
   message: string;
   clientId: string;
+  newStatus: string;
 }
 
-type Response = Result<UpdateClientResponseDTO>;
+type Response = Result<UpdateClientStatusResponseDTO>;
 
-export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Response>> {
+export class UpdateClientStatusUseCase implements UseCase<UpdateClientStatusDTO, Promise<Response>> {
   constructor(private clientRepo: IClientRepo, private accountRepo: IAccountRepo) {}
 
-  public async execute(request: UpdateClientDTO): Promise<Response> {
+  public async execute(request: UpdateClientStatusDTO): Promise<Response> {
     let client: Client;
 
-    const { accountId, clientId, name, birthDate, email, phone, surname } = request;
+    const { status, clientId, accountId } = request;
 
     if (!clientId) {
       return Result.fail(CLIENT_ERROR.MISSING_CLIENT_ID);
@@ -37,11 +38,7 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
-    client.setName(name);
-    client.setSurname(surname);
-    client.setPhone(phone);
-    client.setBirthDay(birthDate);
-    client.setEmail(email);
+    client.setClientStatus(status);
 
     if (client.isAnyErrorRegistered) {
       return Result.fail(client.errors.reduce((prev, curr) => (prev += curr.error), ''));
@@ -49,6 +46,6 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
 
     await this.clientRepo.save(client);
 
-    return Result.ok({ message: 'Client updated.', clientId: clientId });
+    return Result.ok({ message: 'Client status updated.', clientId: clientId, newStatus: status });
   }
 }
