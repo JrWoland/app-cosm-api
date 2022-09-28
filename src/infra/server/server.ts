@@ -1,5 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 const app = express();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
@@ -10,8 +11,6 @@ import APP_SETTINGS from '../../localSettings';
 import { routerV1 } from '../server/api/rest-v1';
 
 export class ExpressServer {
-  constructor() {}
-
   public create(serverVersion?: string) {
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
@@ -30,7 +29,7 @@ export class ExpressServer {
       next(error);
     });
 
-    app.use((err: { status: number }, req: Request, res: Response, next: NextFunction) => {
+    app.use((err: { status: number }, req: Request, res: Response) => {
       res.status(err.status || 500);
       res.json({
         message: 'Could not found a proper route',

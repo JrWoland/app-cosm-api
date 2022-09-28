@@ -2,7 +2,9 @@ import * as express from 'express';
 
 export abstract class BaseController {
   protected req!: express.Request;
+
   protected res!: express.Response;
+
   protected next!: express.NextFunction;
 
   protected abstract executeImpl(req: express.Request, res: express.Response): Promise<void | any>;
@@ -19,7 +21,7 @@ export abstract class BaseController {
   }
 
   public ok<T>(res: express.Response, dto?: T) {
-    if (!!dto) {
+    if (dto) {
       return res.status(200).json(dto);
     } else {
       return res.sendStatus(200);

@@ -1,10 +1,10 @@
-import { token } from 'morgan';
 import { BaseController } from '../../../../core/infra/BaseController';
 import { LoginAccountDTO, LoggedAccountDTO } from './LoginAccountDTO';
 import { LoginAccountUseCase } from './LoginAccountUsecCase';
 
 export class LoginAccountController extends BaseController {
   private useCase: LoginAccountUseCase;
+
   constructor(useCase: LoginAccountUseCase) {
     super();
     this.useCase = useCase;

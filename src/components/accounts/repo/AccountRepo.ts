@@ -13,6 +13,7 @@ export interface IAccountRepo {
 
 export class AccountRepo implements IAccountRepo {
   constructor(private model: Model<AccountDocModel>) {}
+
   public async findAccountByAccountEmail(email: string): Promise<Account> {
     try {
       const account = await this.model.find({ email: email }).exec();

@@ -2,7 +2,9 @@ import { Result } from '../logic/Result';
 import { UniqueEntityID } from './UniqueId';
 export abstract class Entity<T> {
   protected readonly _uniqueEntityId: UniqueEntityID;
+
   public readonly props: T;
+
   public readonly errors: Result<string>[];
 
   constructor(props: T, id?: UniqueEntityID) {

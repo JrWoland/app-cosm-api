@@ -7,7 +7,8 @@
     "test": "jest --testTimeout=5000",
     "serve:dev": "nodemon",
     "start": "node ./src/app.ts",
-    "build": "rimraf ./build && tsc"
+    "build": "rimraf ./build && tsc",
+    "lint": "./node_modules/.bin/eslint --ext .ts --ignore-path .gitignore ."
   },
   "keywords": [
     "node",

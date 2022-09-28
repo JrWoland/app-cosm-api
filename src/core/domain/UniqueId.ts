@@ -2,6 +2,7 @@ import { v4 } from 'uuid';
 
 export class UniqueEntityID {
   private id: string;
+
   constructor(id?: string | null) {
     this.id = id || v4();
   }

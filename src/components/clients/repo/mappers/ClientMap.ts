@@ -17,6 +17,7 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
       phone: client.props.phone,
     };
   }
+
   toDomain(raw: ClientDocModel): Client {
     const accountId = AccountId.create(new UniqueEntityID(raw.account_id));
 

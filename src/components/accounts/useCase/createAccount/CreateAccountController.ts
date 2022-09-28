@@ -4,6 +4,7 @@ import { CreateAccountUseCase } from './CreateAccountUseCase';
 
 export class CreateAccountController extends BaseController {
   private useCase: CreateAccountUseCase;
+
   constructor(useCase: CreateAccountUseCase) {
     super();
     this.useCase = useCase;

@@ -25,6 +25,7 @@ export class ClientRepo implements IClientRepo {
       throw new Error(`Cant find client by id: ${error}`);
     }
   }
+
   public async exist(clientId: ClientId): Promise<boolean> {
     try {
       const clientExists = await this.model.exists({ _id: clientId.value });
@@ -33,6 +34,7 @@ export class ClientRepo implements IClientRepo {
       throw new Error(`Can not check if client exists: ${error}`);
     }
   }
+
   public async save(client: Client): Promise<void> {
     try {
       const clientToSave = new ClientMap().toPersistence(client);

@@ -1,7 +1,10 @@
 export class Result<T> {
   public isSuccess: boolean;
+
   public isFailure: boolean;
+
   public error: T | string | null;
+
   private _value: T;
 
   private constructor(isSuccess: boolean, error: T | string | null, value: T) {
@@ -17,6 +20,7 @@ export class Result<T> {
     this.error = error;
     this._value = value;
   }
+
   public getValue(): T {
     if (!this.isSuccess) {
       const errorMessage = String(this.error) || `Cant retrieve the value from a failed result.`;
