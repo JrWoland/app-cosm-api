@@ -28,10 +28,10 @@ export class AppoinmentRepo implements IAppoinmentRepo {
 
   public async exists(appointmentId: AppointmentId): Promise<boolean> {
     try {
-      const appoinmentExists = await this.model.exists({ _id: appointmentId.toString() });
+      const appoinmentExists = await this.model.exists({ _id: appointmentId.value });
       return appoinmentExists;
     } catch (error: any) {
-      throw new Error('Cant check if appoinment exists.');
+      throw new Error('Can not check if appoinment exists.');
     }
   }
 
@@ -39,7 +39,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
     try {
       const appointmentToSave = new AppointmentMap().toPersistence(appointment);
 
-      const exists = await this.model.exists({ _id: appointment.appointmentId.toString() });
+      const exists = await this.model.exists({ _id: appointment.appointmentId.value });
 
       if (!exists) {
         const newAppoinment = new this.model(appointmentToSave);
@@ -47,7 +47,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
       } else {
         await this.model.findOneAndUpdate(
           {
-            _id: appointment.appointmentId.toString(),
+            _id: appointment.appointmentId.value,
           },
           appointmentToSave,
         );

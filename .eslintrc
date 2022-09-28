@@ -14,9 +14,11 @@
   ],
   "rules": {
     "no-console": 1,
-    "prettier/prettier": 2,
-    "function-paren-newline": ["error", "never"],
-    "max-len": ["error", { "code": 200 }]
+    "prettier/prettier": ["error", {
+      "endOfLine":"auto"
+    }],
+    "max-len": ["error", { "code": 300 }],
+    "lines-between-class-members": ["error", "always"]
   },
   "env": {
     "browser": true,

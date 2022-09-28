@@ -4,10 +4,12 @@ export interface TreatmentDocModel {
   _id: string;
   account_id: string;
   name: string;
-  notes: string;
-  duration: string;
-  price: { value: string; currency: string };
-  treatmentCardId: string; // 1 or 2
+  notes?: string;
+  duration?: number;
+  price?: { value?: number; currency?: string };
+  treatment_card_id?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 const treatmentScheema = new mongoose.Schema<TreatmentDocModel>(
@@ -35,7 +37,7 @@ const treatmentScheema = new mongoose.Schema<TreatmentDocModel>(
     },
     price: {
       value: {
-        type: String,
+        type: Number,
         required: false,
       },
       currency: {

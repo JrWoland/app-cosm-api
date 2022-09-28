@@ -11,35 +11,41 @@ type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
   name: string;
-  treatmentCardId?: TreatmentCardId | null;
+  treatmentCardId?: TreatmentCardId | null | undefined;
   price?: Price;
   duration?: TreatmentDurationInMinutes;
   notes?: string;
 }
 
 export class Treatment extends Entity<TreatmentProps> {
-  private constructor(props: TreatmentProps, id?: UniqueEntityID) {
+  private constructor(readonly props: TreatmentProps, id?: UniqueEntityID) {
     super(props, id);
   }
 
   get treatmentId() {
     return TreatmentId.create(this._uniqueEntityId).getValue();
   }
+
   get accountId() {
     return this.props.accountId;
   }
+
   get name() {
     return this.props.name;
   }
+
   get notes() {
     return this.props.notes;
   }
+
   get duration() {
     return this.props.duration;
   }
+
   get price() {
     return this.props.price;
   }
+
   get treatmentCardId() {
     return this.props.treatmentCardId;
   }
@@ -54,10 +60,12 @@ export class Treatment extends Entity<TreatmentProps> {
     this.props.name = name;
     return Result.ok('Treatment name has been set.');
   }
+
   public setNotes(notes: string): Result<string> {
     this.props.notes = notes;
     return Result.ok('Treatment notes has been set.');
   }
+
   public setDuration(duration: TreatmentDurationInMinutes): Result<string> {
     if (duration < 0) {
       const error = Result.fail<string>('Duration must be greater than 0.');
@@ -67,6 +75,7 @@ export class Treatment extends Entity<TreatmentProps> {
     this.props.duration = duration;
     return Result.ok('Treatment duration has been set.');
   }
+
   public setPrice(price: Price): Result<string> {
     if (price < 0) {
       const error = Result.fail<string>('Price must be greater than 0.');
@@ -76,6 +85,7 @@ export class Treatment extends Entity<TreatmentProps> {
     this.props.price = price;
     return Result.ok('Treatment price has been set.');
   }
+
   public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
     this.props.treatmentCardId = cardId;
     return Result.ok('Treatment card has been set.');
@@ -93,7 +103,7 @@ export class Treatment extends Entity<TreatmentProps> {
         notes: props.notes,
         duration: props.duration,
         price: props.price,
-        treatmentCardId: props.treatmentCardId, // 1 or 2
+        treatmentCardId: props.treatmentCardId,
       },
       id,
     );

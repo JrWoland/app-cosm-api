@@ -27,24 +27,31 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   get appointmentId(): AppointmentId {
     return AppointmentId.create(this._uniqueEntityId).getValue();
   }
+
   get accountId() {
     return this.props.accountId;
   }
+
   get clientId() {
     return this.props.clientId;
   }
+
   get date() {
     return this.props.date;
   }
+
   get startTime() {
     return this.props.startTime;
   }
+
   get duration() {
     return this.props.duration;
   }
+
   get status() {
     return this.props.status;
   }
+
   get treatments() {
     return this.props.treatments;
   }
@@ -53,7 +60,7 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return [AppointmentStatus.ClientNotAppeard, AppointmentStatus.Declined, AppointmentStatus.Finished, AppointmentStatus.New].includes(status);
   }
 
-  private static validator(props: Omit<AppointmentProps, 'accountId'>): Result<any> {
+  private static validator(props: Omit<AppointmentProps, 'accountId'>): Result<Appointment | boolean> {
     const validation: string[] = [];
     props.duration > 0 ? true : validation.push('Duration must be grater than 0.');
     props.startTime > 0 ? true : validation.push('Start time must be grater than 0.');
@@ -121,7 +128,7 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok<string>('Treatment has been removed.');
   }
 
-  public updateAll(data: Omit<AppointmentProps, 'accountId'>): Result<any> {
+  public updateAll(data: Omit<AppointmentProps, 'accountId'>): Result<Appointment | string> {
     const validationResult = Appointment.validator(data);
 
     if (validationResult.isFailure) {
