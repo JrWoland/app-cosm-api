@@ -6,8 +6,8 @@ import { TreatmentId } from './TreatmentId';
 import { TreatmentCardId } from './TreatmentCardId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 
-type TreatmentDurationInMinutes = number;
-type Price = number;
+export type TreatmentDurationInMinutes = number;
+export type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
   name: string;
