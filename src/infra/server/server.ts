@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 const app = express();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
@@ -24,12 +24,13 @@ export class ExpressServer {
 
     app.use('/api', routerV1);
 
-    app.use((req, res, next) => {
+    app.use((req: Request, res: Response, next: NextFunction) => {
       const error = { message: 'Not found', status: 404 };
       next(error);
     });
 
-    app.use((err: { status: number }, req: Request, res: Response) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    app.use((err: { status: number }, req: Request, res: Response, next: NextFunction) => {
       res.status(err.status || 500);
       res.json({
         message: 'Could not found a proper route',
