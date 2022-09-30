@@ -1,4 +1,4 @@
-import { Entity } from '../../../core/domain/Entity';
+import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
@@ -17,7 +17,7 @@ export interface TreatmentProps {
   notes?: string;
 }
 
-export class Treatment extends Entity<TreatmentProps> {
+export class Treatment extends AggregateRoot<TreatmentProps> {
   private constructor(readonly props: TreatmentProps, id?: UniqueEntityID) {
     super(props, id);
   }
@@ -54,14 +54,13 @@ export class Treatment extends Entity<TreatmentProps> {
     const hasName = !!name;
     if (!hasName) {
       const error = Result.fail<string>(TREATMENT_ERRORS.NAME_ERROR_MESSAGE);
-      this.registerError(error);
       return error;
     }
     this.props.name = name;
     return Result.ok('Treatment name has been set.');
   }
 
-  public setNotes(notes: string): Result<string> {
+  public setNotes(notes: string | undefined): Result<string> {
     this.props.notes = notes;
     return Result.ok('Treatment notes has been set.');
   }
@@ -69,7 +68,6 @@ export class Treatment extends Entity<TreatmentProps> {
   public setDuration(duration: TreatmentDurationInMinutes): Result<string> {
     if (duration < 0) {
       const error = Result.fail<string>('Duration must be greater than 0.');
-      this.registerError(error);
       return error;
     }
     this.props.duration = duration;
@@ -79,7 +77,6 @@ export class Treatment extends Entity<TreatmentProps> {
   public setPrice(price: Price): Result<string> {
     if (price < 0) {
       const error = Result.fail<string>('Price must be greater than 0.');
-      this.registerError(error);
       return error;
     }
     this.props.price = price;

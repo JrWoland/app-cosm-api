@@ -66,7 +66,6 @@ export class Client extends AggregateRoot<ClientProps> {
     const hasName = !!val;
     if (!hasName) {
       const error = Result.fail<string>(NAME_ERROR_MESSAGE);
-      this.registerError(error);
       return error;
     }
     this.props.name = val;
@@ -76,7 +75,6 @@ export class Client extends AggregateRoot<ClientProps> {
   public setClientStatus(status: ClientStatus): Result<string> {
     if (![ClientStatus.Active, ClientStatus.Archived, ClientStatus.Banned].includes(status)) {
       const error = Result.fail<string>('Invalid client status.');
-      this.registerError(error);
       return error;
     }
     this.props.status = status;
@@ -91,7 +89,6 @@ export class Client extends AggregateRoot<ClientProps> {
   public setBirthDay(val: Date | undefined): Result<string> {
     if (!dayjs(val).isValid()) {
       const error = Result.fail<string>(BIRTHDAY_ERROR_MESSAGE);
-      this.registerError(error);
       return error;
     }
     this.props.birthDay = val;
@@ -106,7 +103,6 @@ export class Client extends AggregateRoot<ClientProps> {
   public setEmail(val: string | undefined): Result<string> {
     if (!Client.isEmailValid(val)) {
       const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
-      this.registerError(error);
       return error;
     }
     this.props.phone = val;

@@ -5,6 +5,7 @@ import { Account } from '../../../accounts/domain/Account';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Treatment } from '../../domain/Treatment';
+import { TreatmentCardId } from '../../domain/TreatmentCardId';
 import { ITreatmentRepo } from '../../repo/TreatmentRepo';
 import { CreateTreatmentDTO } from './CreateTreatmentDTO';
 
@@ -29,6 +30,8 @@ export class CreateTreatmentUseCase implements UseCase<CreateTreatmentDTO, Promi
       return Result.fail(error.message);
     }
 
+    const cardId = treatmentCardId ? TreatmentCardId.create(new UniqueEntityID(treatmentCardId)).getValue() : null;
+
     try {
       const newTreatment = Treatment.create(
         {
@@ -37,7 +40,7 @@ export class CreateTreatmentUseCase implements UseCase<CreateTreatmentDTO, Promi
           duration: duration,
           notes: notes,
           price: price,
-          treatmentCardId: treatmentCardId,
+          treatmentCardId: cardId,
         },
         new UniqueEntityID(),
       );

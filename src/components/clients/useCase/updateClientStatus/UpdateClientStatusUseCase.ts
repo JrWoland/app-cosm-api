@@ -38,10 +38,10 @@ export class UpdateClientStatusUseCase implements UseCase<UpdateClientStatusDTO,
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
-    client.setClientStatus(status);
+    const result = client.setClientStatus(status);
 
-    if (client.isAnyErrorRegistered) {
-      return Result.fail(client.errors.reduce((prev, curr) => (prev += curr.error), ''));
+    if (result.isFailure) {
+      return Result.fail(result.error);
     }
 
     await this.clientRepo.save(client);

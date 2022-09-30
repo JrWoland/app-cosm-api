@@ -75,7 +75,6 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   public setAppointmentStatus(status: AppointmentStatus): Result<string> {
     if (!Appointment.isAppoinmentStatusValid(status)) {
       const error = Result.fail<string>('Invalid appoinment status.');
-      this.registerError(error);
       return error;
     }
     this.props.status = status;
@@ -85,7 +84,6 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   public setAppointmentDate(date: Date) {
     if (!(date instanceof Date)) {
       const error = Result.fail<string>('Date must be instance of Date.');
-      this.registerError(error);
       return error;
     }
     this.props.date = date;
@@ -95,7 +93,6 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   public setAppointmentDuration(duration: Minutes): Result<string> {
     if (duration <= 0) {
       const error = Result.fail<string>('Duration must be bigger than 0.');
-      this.registerError(error);
       return error;
     }
     this.props.duration = duration;
@@ -105,7 +102,6 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
   public setAppointmentStartTime(startTime: Minutes): Result<string> {
     if (startTime <= 0) {
       const error = Result.fail<string>('Start time must be bigger than 0.');
-      this.registerError(error);
       return error;
     }
     this.props.startTime = startTime;

@@ -1,9 +1,9 @@
 import { Price, TreatmentDurationInMinutes } from '../../domain/Treatment';
 
-export interface CreateTreatmentDTO {
+export interface UpdateTreatmentDTO {
   accountId: string;
+  treatmentId: string;
   name: string;
-  treatmentCardId?: string;
   price?: Price;
   duration?: TreatmentDurationInMinutes;
   notes?: string;

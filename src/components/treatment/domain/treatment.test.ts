@@ -38,8 +38,8 @@ describe('treatment.setName()', () => {
     expect(treatment.name).toEqual('New name');
   });
   it('Should throw error when name is not provided', () => {
-    treatment.setName('');
-    expect(treatment.errorsListAsString).toEqual('Treatment need to have a name.');
+    const res = treatment.setName('');
+    expect(res.error).toEqual('Treatment need to have a name.');
   });
 });
 

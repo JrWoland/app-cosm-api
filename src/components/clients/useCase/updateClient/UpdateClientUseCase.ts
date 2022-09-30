@@ -43,10 +43,6 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
     client.setBirthDay(birthDate);
     client.setEmail(email);
 
-    if (client.isAnyErrorRegistered) {
-      return Result.fail(client.errors.reduce((prev, curr) => (prev += curr.error), ''));
-    }
-
     await this.clientRepo.save(client);
 
     return Result.ok({ message: 'Client updated.', clientId: clientId });
