@@ -3,6 +3,7 @@ import express from 'express';
 import { accountRouter } from '../../../components/accounts/AccountsApi';
 import { appoinmentRouter } from '../../../components/appointment/VisitApi';
 import { clientRouter } from '../../../components/clients/ClientApi';
+import { AuthMiddleware } from '../middleware/AuthMiddleware';
 // import clientsApi from '../../api/components/clients/ClientsApi';
 // import visitsApi from '../../api/components/visits/VisitsApi';
 

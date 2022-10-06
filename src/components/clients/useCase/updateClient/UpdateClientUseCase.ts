@@ -29,7 +29,7 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
 
     try {
       client = await this.clientRepo.findClientById(ClientId.create(new UniqueEntityID(clientId)).getValue());
-    } catch (error: any) {
+    } catch (error) {
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
@@ -37,11 +37,17 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
-    client.setName(name);
-    client.setSurname(surname);
-    client.setPhone(phone);
-    client.setBirthDay(birthDate);
-    client.setEmail(email);
+    const resultlName = client.setName(name);
+    const resultSurname = client.setSurname(surname);
+    const resultPhone = client.setPhone(phone);
+    const resultBirthDate = client.setBirthDay(birthDate);
+    const resultEmail = client.setEmail(email);
+
+    const bulkCheck = Result.bulkCheck([resultlName, resultSurname, resultPhone, resultBirthDate, resultEmail]);
+
+    if (bulkCheck.isFailure) {
+      return Result.fail(bulkCheck.error);
+    }
 
     await this.clientRepo.save(client);
 

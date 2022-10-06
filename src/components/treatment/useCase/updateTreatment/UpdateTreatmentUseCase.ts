@@ -40,34 +40,19 @@ export class UpdateTreatmentUseCase implements UseCase<UpdateTreatmentDTO, Promi
       return Result.fail(UPDATE_TREATMENT_ERROR.TREATMENT_NOT_FOUND);
     }
 
-    treatment.setName(name);
-    treatment.setNotes(notes);
-    treatment.setDuration(duration || 0);
-    treatment.setPrice(price || 0);
+    const resultName = treatment.setName(name);
+    const resultNotes = treatment.setNotes(notes);
+    const resultDuration = treatment.setDuration(duration || 0);
+    const resultPrice = treatment.setPrice(price || 0);
 
-    //   try {
-    //     const newTreatment = Treatment.create(
-    //       {
-    //         accountId: account.accountId,
-    //         name: name,
-    //         duration: duration,
-    //         notes: notes,
-    //         price: price,
-    //         treatmentCardId: treatmentCardId,
-    //       },
-    //       new UniqueEntityID(),
-    //     );
+    const bulkResult = Result.bulkCheck([resultName, resultNotes, resultDuration, resultPrice]);
 
-    //     if (newTreatment.isFailure) {
-    //       return Result.fail(newTreatment.error);
-    //     }
+    if (bulkResult.isFailure) {
+      return Result.fail(bulkResult.error);
+    }
 
-    //     await this.treatmentRepo.save(newTreatment.getValue());
+    await this.treatmentRepo.save(treatment);
 
-    //     return Result.ok({ message: 'Treatment created.', treatmentId: newTreatment.getValue().treatmentId.value });
-    //   } catch (error) {
-    //     return Result.fail(error.message);
-    //   }
-    // }
+    return Result.ok({ message: 'Client updated.', treatmentId: treatmentId });
   }
 }

@@ -139,6 +139,18 @@ describe('Test update client scenarios /api/client/update', () => {
     expect(updatedClient.status).toEqual(422);
   });
 
+  it('Should not be able to update client with wrong email structure /api/client/update', async () => {
+    const testClient = mockClient();
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    testClient.clientId = createdClient.body.clientId;
+    testClient.email = 'wrong#email.com';
+
+    const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    expect(updatedClient.body.message).toEqual('Email structure is invalid.');
+    expect(updatedClient.status).toEqual(422);
+  });
+
   it('Should not be able to update client with not existing clientId /api/client/update', async () => {
     const testClient = mockClient();
 

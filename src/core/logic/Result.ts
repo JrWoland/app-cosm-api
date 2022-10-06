@@ -37,4 +37,18 @@ export class Result<T> {
   public static fail<U>(error: any): Result<U> {
     return new Result<U>(false, error, error);
   }
+
+  public static bulkCheck<U>(results: Result<U>[]) {
+    const errors = results.some((i) => i.isFailure);
+
+    if (!errors) {
+      return Result.ok(true);
+    }
+
+    const mergedErrors = results
+      .filter((i) => i.isFailure)
+      .map((i) => i.error)
+      .join('. ');
+    return Result.fail(mergedErrors);
+  }
 }

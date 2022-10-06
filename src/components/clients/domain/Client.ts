@@ -58,8 +58,8 @@ export class Client extends AggregateRoot<ClientProps> {
     return this.props.status;
   }
 
-  private static isEmailValid(email: string | undefined): boolean {
-    return mailRegex.test(email || '');
+  private static isEmailValid(email: string): boolean {
+    return mailRegex.test(email);
   }
 
   public setName(val: string): Result<string> {
@@ -101,11 +101,15 @@ export class Client extends AggregateRoot<ClientProps> {
   }
 
   public setEmail(val: string | undefined): Result<string> {
+    if (val === undefined || val === null || val === '') {
+      this.props.email = undefined;
+      return Result.ok('Email has been changed.');
+    }
     if (!Client.isEmailValid(val)) {
       const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
       return error;
     }
-    this.props.phone = val;
+    this.props.email = val;
     return Result.ok('Email has been changed.');
   }
 
