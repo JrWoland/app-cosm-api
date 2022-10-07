@@ -10,13 +10,13 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
   toPersistence(appointment: Appointment): AppointmentDocModel {
     return {
       _id: appointment.appointmentId.value,
-      account_id: appointment.props.accountId.id.getValue(),
-      client_id: appointment.props.clientId?.clientId.getValue(),
-      date: appointment.props.date,
-      duration: appointment.props.duration,
-      start_time: appointment.props.startTime,
-      status: appointment.props.status,
-      services: appointment.props.treatments,
+      account_id: appointment.accountId.id.getValue(),
+      client_id: appointment.clientId?.clientId.getValue(),
+      date: appointment.date,
+      duration: appointment.duration,
+      start_time: appointment.startTime,
+      status: appointment.status,
+      services: appointment.treatments,
     };
   }
 

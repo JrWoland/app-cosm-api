@@ -8,13 +8,13 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
   toPersistence(client: Client): ClientDocModel {
     return {
       _id: client.clientId.value,
-      account_id: client.props.accountId.id.getValue(),
-      name: client.props.name,
-      status: client.props.status,
-      surname: client.props.surname,
-      birth_day: client.props.birthDay,
-      email: client.props.email,
-      phone: client.props.phone,
+      account_id: client.accountId.id.getValue(),
+      name: client.name,
+      status: client.status,
+      surname: client.surname,
+      birth_day: client.birthDay,
+      email: client.email,
+      phone: client.phone,
     };
   }
 

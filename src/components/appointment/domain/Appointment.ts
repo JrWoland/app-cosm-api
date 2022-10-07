@@ -10,9 +10,9 @@ import { TreatmentId } from '../../treatment/domain/TreatmentId';
 interface AppointmentProps {
   accountId: AccountId;
   clientId?: ClientId | null;
+  duration: number;
   date: Date;
   startTime: number;
-  duration: number;
   status: AppointmentStatus;
   treatments: TreatmentId[];
 }
@@ -24,35 +24,35 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     super(props, id);
   }
 
-  get appointmentId(): AppointmentId {
+  public get appointmentId(): AppointmentId {
     return AppointmentId.create(this._uniqueEntityId).getValue();
   }
 
-  get accountId() {
+  public get accountId() {
     return this.props.accountId;
   }
 
-  get clientId() {
+  public get clientId() {
     return this.props.clientId;
   }
 
-  get date() {
+  public get date() {
     return this.props.date;
   }
 
-  get startTime() {
+  public get startTime() {
     return this.props.startTime;
   }
 
-  get duration() {
+  public get duration() {
     return this.props.duration;
   }
 
-  get status() {
+  public get status() {
     return this.props.status;
   }
 
-  get treatments() {
+  public get treatments() {
     return this.props.treatments;
   }
 
@@ -62,8 +62,8 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
 
   private static validator(props: Omit<AppointmentProps, 'accountId'>): Result<Appointment | boolean> {
     const validation: string[] = [];
-    props.duration > 0 ? true : validation.push('Duration must be grater than 0.');
-    props.startTime > 0 ? true : validation.push('Start time must be grater than 0.');
+    props.duration > 0 ? true : validation.push('Duration must be greater than 0.');
+    props.startTime > 0 ? true : validation.push('Start time must be greater than 0.');
     props.date ? true : validation.push('Appoinment date must be provided.');
     this.isAppoinmentStatusValid(props.status) ? true : validation.push(`Status is not valid: ${props.status}.`);
     if (validation.length) {
@@ -72,16 +72,7 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok(true);
   }
 
-  public setAppointmentStatus(status: AppointmentStatus): Result<string> {
-    if (!Appointment.isAppoinmentStatusValid(status)) {
-      const error = Result.fail<string>('Invalid appoinment status.');
-      return error;
-    }
-    this.props.status = status;
-    return Result.ok<string>('Appoinment status changed successfully.');
-  }
-
-  public setAppointmentDate(date: Date) {
+  private setAppointmentDate(date: Date) {
     if (!(date instanceof Date)) {
       const error = Result.fail<string>('Date must be instance of Date.');
       return error;
@@ -90,27 +81,36 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok<string>('Appointment date changed successfully');
   }
 
-  public setAppointmentDuration(duration: Minutes): Result<string> {
-    if (duration <= 0) {
-      const error = Result.fail<string>('Duration must be bigger than 0.');
+  private setAppointmentDuration(duration: Minutes): Result<string> {
+    if (duration < 0) {
+      const error = Result.fail<string>('Duration must be greater than 0.');
       return error;
     }
     this.props.duration = duration;
     return Result.ok<string>('Duration changed successfully');
   }
 
-  public setAppointmentStartTime(startTime: Minutes): Result<string> {
-    if (startTime <= 0) {
-      const error = Result.fail<string>('Start time must be bigger than 0.');
+  private setAppointmentStartTime(startTime: Minutes): Result<string> {
+    if (startTime < 0) {
+      const error = Result.fail<string>('Start time must be greater than 0.');
       return error;
     }
     this.props.startTime = startTime;
     return Result.ok<string>('Appointment staring time changed successfully.');
   }
 
-  public setAppointmentClientId(clientId?: ClientId | null | undefined): Result<string> {
+  private setAppointmentClientId(clientId?: ClientId | null | undefined): Result<string> {
     this.props.clientId = clientId;
     return Result.ok<string>('Client id has been changed.');
+  }
+
+  public setAppointmentStatus(status: AppointmentStatus): Result<string> {
+    if (!Appointment.isAppoinmentStatusValid(status)) {
+      const error = Result.fail<string>('Invalid appointment status.');
+      return error;
+    }
+    this.props.status = status;
+    return Result.ok<string>('Appoinment status changed successfully.');
   }
 
   public addTreatment(treatment: TreatmentId): Result<string> {
@@ -124,19 +124,25 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok<string>('Treatment has been removed.');
   }
 
-  public updateAll(data: Omit<AppointmentProps, 'accountId'>): Result<Appointment | string> {
+  public updateDetails(data: Omit<AppointmentProps, 'accountId'>): Result<Appointment | string> {
     const validationResult = Appointment.validator(data);
 
     if (validationResult.isFailure) {
       return Result.fail<Appointment>(validationResult.error);
     }
 
-    this.setAppointmentDuration(data.duration);
-    this.setAppointmentStartTime(data.startTime);
-    this.setAppointmentDate(data.date);
-    this.setAppointmentClientId(data.clientId);
-    this.setAppointmentStatus(data.status);
+    const resultDuration = this.setAppointmentDuration(data.duration);
+    const resultStartDate = this.setAppointmentStartTime(data.startTime);
+    const resultDate = this.setAppointmentDate(data.date);
+    const resultClientId = this.setAppointmentClientId(data.clientId);
+    const resultStatus = this.setAppointmentStatus(data.status);
     this.props.treatments = data.treatments;
+
+    const bulkValidation = Result.bulkCheck([resultDuration, resultStartDate, resultDate, resultClientId, resultStatus]);
+
+    if (bulkValidation.isFailure) {
+      return Result.fail(bulkValidation.error);
+    }
 
     return Result.ok<string>('Appointment updated successfully.');
   }

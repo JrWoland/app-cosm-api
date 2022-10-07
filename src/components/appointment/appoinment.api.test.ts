@@ -60,8 +60,8 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
     const updatedAppointment = await request(app).patch('/api/appointment/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(updated);
 
     expect(updatedAppointment.status).toEqual(422);
-    expect(updatedAppointment.body.message).toContain('Duration must be grater than 0.');
-    expect(updatedAppointment.body.message).toContain('Start time must be grater than 0.');
+    expect(updatedAppointment.body.message).toContain('Duration must be greater than 0.');
+    expect(updatedAppointment.body.message).toContain('Start time must be greater than 0.');
     expect(updatedAppointment.body.message).toContain('Status is not valid: RANDOM_VALUE.');
   });
 

@@ -31,13 +31,13 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
     try {
       const appointment = await this.appoinmentRepo.findAppointmentByAppointmentId(appId);
 
-      if (appointment.props.accountId.id.getValue() !== accountId) {
+      if (appointment.accountId.id.getValue() !== accountId) {
         return Result.fail('Appointment not found.');
       }
 
       const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
-      const updateResult = appointment.updateAll({
+      const updateResult = appointment.updateDetails({
         date: date,
         clientId: clientIdToAssign.getValue(),
         duration: duration,
