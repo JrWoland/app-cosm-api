@@ -42,13 +42,14 @@ export class Result<T> {
     const errors = results.some((i) => i.isFailure);
 
     if (!errors) {
-      return Result.ok(true);
+      const messages = results.reduce((prev, curr) => (prev += curr.getValue()), '');
+      return Result.ok(messages);
     }
 
     const mergedErrors = results
       .filter((i) => i.isFailure)
       .map((i) => i.error)
       .join('. ');
-    return Result.fail(mergedErrors);
+    return Result.fail<string>(mergedErrors);
   }
 }

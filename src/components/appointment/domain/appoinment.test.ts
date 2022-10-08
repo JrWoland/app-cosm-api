@@ -68,8 +68,8 @@ describe('Test addTreatment().', () => {
     const treatment = Treatment.create(
       {
         accountId: testAppointment().accountId,
-        name: '',
-        treatmentCardId: null,
+        name: 'Test',
+        treatmentCardId: undefined,
         duration: 500,
         notes: '',
         price: 12,

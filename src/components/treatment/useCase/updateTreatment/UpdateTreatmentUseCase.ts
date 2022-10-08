@@ -40,15 +40,10 @@ export class UpdateTreatmentUseCase implements UseCase<UpdateTreatmentDTO, Promi
       return Result.fail(UPDATE_TREATMENT_ERROR.TREATMENT_NOT_FOUND);
     }
 
-    const resultName = treatment.setName(name);
-    const resultNotes = treatment.setNotes(notes);
-    const resultDuration = treatment.setDuration(duration || 0);
-    const resultPrice = treatment.setPrice(price || 0);
+    const updateResult = treatment.updateDetails({ name, duration, notes, price });
 
-    const bulkResult = Result.bulkCheck([resultName, resultNotes, resultDuration, resultPrice]);
-
-    if (bulkResult.isFailure) {
-      return Result.fail(bulkResult.error);
+    if (updateResult.isFailure) {
+      return Result.fail(updateResult.error);
     }
 
     await this.treatmentRepo.save(treatment);
