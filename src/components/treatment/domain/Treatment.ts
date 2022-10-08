@@ -68,7 +68,7 @@ export class Treatment extends AggregateRoot<TreatmentProps> {
 
   private setDuration(duration: TreatmentDurationInMinutes): Result<string> {
     if (duration < 0) {
-      const error = Result.fail<string>('Duration must be greater than 0.');
+      const error = Result.fail<string>(TREATMENT_ERRORS.DURATION_ERROR_MESSAGE);
       return error;
     }
     this.props.duration = duration;
@@ -77,7 +77,7 @@ export class Treatment extends AggregateRoot<TreatmentProps> {
 
   private setPrice(price: Price): Result<string> {
     if (price < 0) {
-      const error = Result.fail<string>('Price must be greater than 0.');
+      const error = Result.fail<string>(TREATMENT_ERRORS.PRICE_ERROR_MESSAGE);
       return error;
     }
     this.props.price = price;
@@ -122,10 +122,10 @@ export class Treatment extends AggregateRoot<TreatmentProps> {
       return Result.fail<Treatment>('Can not create new treatment without name property.');
     }
     if ((props.duration || 0) < 0) {
-      return Result.fail<Treatment>('Duration must be greater than 0.');
+      return Result.fail<Treatment>(TREATMENT_ERRORS.DURATION_ERROR_MESSAGE);
     }
     if ((props.price || 0) < 0) {
-      return Result.fail<Treatment>('Price must be greater than 0.');
+      return Result.fail<Treatment>(TREATMENT_ERRORS.PRICE_ERROR_MESSAGE);
     }
 
     const treatment = new Treatment(
