@@ -30,7 +30,7 @@ export class CreateTreatmentUseCase implements UseCase<CreateTreatmentDTO, Promi
       return Result.fail(error.message);
     }
 
-    const cardId = treatmentCardId ? TreatmentCardId.create(new UniqueEntityID(treatmentCardId)).getValue() : null;
+    const cardId = treatmentCardId ? TreatmentCardId.create(new UniqueEntityID(treatmentCardId)).getValue() : undefined;
 
     try {
       const newTreatment = Treatment.create(
