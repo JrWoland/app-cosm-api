@@ -3,7 +3,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { TreatmentId } from './TreatmentId';
-import { TreatmentCardId } from './TreatmentCardId';
+import { TreatmentCardId } from '../../treatmentCard/domain/TreatmentCardId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 

@@ -1,7 +1,6 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { Treatment } from './Treatment';
-import { TreatmentCardId } from './TreatmentCardId';
 
 const accountId = AccountId.create().getValue();
 
