@@ -1,11 +1,7 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
-import { Account } from '../../../accounts/domain/Account';
-import { AccountId } from '../../../accounts/domain/AccountId';
-import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Treatment } from '../../domain/Treatment';
-import { TreatmentCardId } from '../../domain/TreatmentCardId';
 import { TreatmentId } from '../../domain/TreatmentId';
 import { ITreatmentRepo } from '../../repo/TreatmentRepo';
 import { UpdateTreatmentDTO } from './UpdateTreatmentDTO';
