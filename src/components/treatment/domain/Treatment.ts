@@ -84,7 +84,7 @@ export class Treatment extends AggregateRoot<TreatmentProps> {
     return Result.ok('Treatment price has been set.');
   }
 
-  private setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
+  public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
     this.props.treatmentCardId = cardId;
     return Result.ok('Treatment card has been set.');
   }
