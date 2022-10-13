@@ -1,5 +1,3 @@
-import { UniqueEntityID } from '../../../core/domain/UniqueId';
-import { AccountId } from '../../accounts/domain/AccountId';
 import { Account } from './Account';
 import { AccountPassword } from './AccountPassword';
 

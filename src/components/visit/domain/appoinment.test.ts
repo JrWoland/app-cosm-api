@@ -2,7 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { Appointment } from './Appointment';
 import { AppointmentStatus } from './AppointmentStatus';
-import { Treatment } from '../../treatment/domain/Treatment';
+import { Treatment } from './Treatment';
 
 const testAppointment = () => ({
   accountId: AccountId.create().getValue(),

@@ -5,7 +5,7 @@ import { AccountId } from '../../accounts/domain/AccountId';
 import { ClientId } from '../../clients/domain/ClientId';
 import { AppointmentId } from './AppointmentId';
 import { AppointmentStatus } from './AppointmentStatus';
-import { TreatmentId } from '../../treatment/domain/TreatmentId';
+import { TreatmentId } from './TreatmentId';
 
 interface AppointmentProps {
   accountId: AccountId;

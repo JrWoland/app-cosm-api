@@ -5,6 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "jest --testTimeout=5000",
+    "test:api": "jest --testTimeout=5000 .api.test.ts",
+    "test:domain": "jest --testTimeout=5000 /domain/",
     "serve:dev": "nodemon",
     "start": "node ./src/app.ts",
     "build": "rimraf ./build && tsc",

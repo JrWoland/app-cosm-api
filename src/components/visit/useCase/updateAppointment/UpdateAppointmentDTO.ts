@@ -1,5 +1,5 @@
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
-import { TreatmentId } from '../../../treatment/domain/TreatmentId';
+import { TreatmentId } from '../../domain/TreatmentId';
 
 export interface UpdateAppointmentDTO {
   accountId: string;

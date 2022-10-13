@@ -1,10 +1,9 @@
 import express from 'express';
 
 import { accountRouter } from '../../../components/accounts/AccountsApi';
-import { appoinmentRouter } from '../../../components/appointment/VisitApi';
+import { appoinmentRouter } from '../../../components/visit/AppointmentApi';
 import { clientRouter } from '../../../components/clients/ClientApi';
-import { treatmentRouter } from '../../../components/treatment/TreatmentApi';
-import { AuthMiddleware } from '../middleware/AuthMiddleware';
+import { treatmentRouter } from '../../../components/visit/TreatmentApi';
 // import clientsApi from '../../api/components/clients/ClientsApi';
 // import visitsApi from '../../api/components/visits/VisitsApi';
 
