@@ -1,4 +1,3 @@
-import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
@@ -6,6 +5,7 @@ import { TreatmentId } from './TreatmentId';
 import { TreatmentCardId } from '../../treatmentCard/domain/TreatmentCardId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
+import { Entity } from '../../../core/domain/Entity';
 
 export type TreatmentDurationInMinutes = number;
 export type Price = number;
@@ -18,7 +18,7 @@ export interface TreatmentProps {
   notes?: string;
 }
 
-export class Treatment extends AggregateRoot<TreatmentProps> {
+export class Treatment extends Entity<TreatmentProps> {
   private constructor(readonly props: TreatmentProps, id?: UniqueEntityID) {
     super(props, id);
   }

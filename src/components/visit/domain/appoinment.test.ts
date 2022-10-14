@@ -3,6 +3,7 @@ import { AccountId } from '../../accounts/domain/AccountId';
 import { Appointment } from './Appointment';
 import { AppointmentStatus } from './AppointmentStatus';
 import { Treatment } from './Treatment';
+import { Treatments } from './Treatments';
 
 const testAppointment = () => ({
   accountId: AccountId.create().getValue(),
@@ -11,7 +12,7 @@ const testAppointment = () => ({
   status: AppointmentStatus.New,
   startTime: 40,
   clientId: null,
-  treatments: [],
+  treatments: Treatments.create([]),
 });
 
 const updatedAppointment = () => ({
@@ -21,7 +22,7 @@ const updatedAppointment = () => ({
   status: AppointmentStatus.Declined,
   startTime: 50,
   clientId: null,
-  treatments: [],
+  treatments: Treatments.create([]),
 });
 
 describe('Test create().', () => {
@@ -33,7 +34,7 @@ describe('Test create().', () => {
     expect(appointment.date.toISOString()).toEqual('2020-06-04T22:00:00.000Z');
     expect(appointment.startTime).toEqual(40);
     expect(appointment.duration).toEqual(40);
-    expect(appointment.treatments.length).toEqual(0);
+    expect(appointment.treatments.list.length).toEqual(0);
     expect(appointment.status).toEqual('NEW');
   });
 });
@@ -76,16 +77,51 @@ describe('Test addTreatment().', () => {
       },
       new UniqueEntityID('test-treatment'),
     );
-    expect(appointment.treatments.length).toEqual(0);
-    const result = appointment.addTreatment(treatment.getValue().treatmentId);
+    expect(appointment.treatments.list.length).toEqual(0);
+    const result = appointment.addTreatment(treatment.getValue());
 
     expect(result.isSuccess).toEqual(true);
     expect(result.getValue()).toEqual('Treatment added.');
-    expect(appointment.treatments.length).toEqual(1);
+    expect(appointment.treatments.list.length).toEqual(1);
   });
 });
 
-// describe('Test removeTreatment().', () => {});
+describe('Test removeTreatment().', () => {
+  it('Should remove treatment', () => {
+    const appointment = Appointment.create(testAppointment()).getValue();
+    const treatment1 = Treatment.create(
+      {
+        accountId: testAppointment().accountId,
+        name: 'Test',
+        treatmentCardId: undefined,
+        duration: 500,
+        notes: '',
+        price: 12,
+      },
+      new UniqueEntityID('test-treatment1'),
+    );
+    const treatment2 = Treatment.create(
+      {
+        accountId: testAppointment().accountId,
+        name: 'Test',
+        treatmentCardId: undefined,
+        duration: 500,
+        notes: '',
+        price: 12,
+      },
+      new UniqueEntityID('test-treatment2'),
+    );
+    appointment.addTreatment(treatment1.getValue());
+    appointment.addTreatment(treatment2.getValue());
+    expect(appointment.treatments.list.length).toEqual(2);
+
+    const result = appointment.removeTreatment(treatment2.getValue());
+    expect(result.isSuccess).toEqual(true);
+    expect(result.getValue()).toEqual('Treatment has been removed.');
+    expect(appointment.treatments.list.length).toEqual(1);
+    expect(appointment.treatments.list[0].treatmentId.value).toEqual('test-treatment1');
+  });
+});
 
 describe('Test updateDetails().', () => {
   it('Should update appointment', async () => {
@@ -102,7 +138,7 @@ describe('Test updateDetails().', () => {
     expect(appointment.date.toISOString()).toEqual('2020-01-31T23:00:00.000Z');
     expect(appointment.startTime).toEqual(50);
     expect(appointment.duration).toEqual(50);
-    expect(appointment.treatments.length).toEqual(0);
+    expect(appointment.treatments.list.length).toEqual(0);
     expect(appointment.status).toEqual('DECLINED');
   });
 

@@ -7,6 +7,7 @@ import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { ClientId } from '../../../clients/domain/ClientId';
 import { Appointment } from '../../domain/Appointment';
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
+import { Treatments } from '../../domain/Treatments';
 import { IAppoinmentRepo } from '../../repo/AppoinmentRepo';
 import { CreateAppoinmentDTO } from './CreateAppoinmentDTO';
 
@@ -40,6 +41,8 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
 
     const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
+    const treatmentsList = Treatments.create(treatments || []);
+
     try {
       const newAppoinment = Appointment.create(
         {
@@ -48,7 +51,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
           date: date,
           duration: duration,
           startTime: startTime,
-          treatments: treatments,
+          treatments: treatmentsList,
           status: status || AppointmentStatus.New,
         },
         new UniqueEntityID(),

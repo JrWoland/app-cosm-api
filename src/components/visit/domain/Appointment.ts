@@ -5,7 +5,8 @@ import { AccountId } from '../../accounts/domain/AccountId';
 import { ClientId } from '../../clients/domain/ClientId';
 import { AppointmentId } from './AppointmentId';
 import { AppointmentStatus } from './AppointmentStatus';
-import { TreatmentId } from './TreatmentId';
+import { Treatment } from './Treatment';
+import { Treatments } from './Treatments';
 
 interface AppointmentProps {
   accountId: AccountId;
@@ -14,13 +15,13 @@ interface AppointmentProps {
   date: Date;
   startTime: number;
   status: AppointmentStatus;
-  treatments: TreatmentId[];
+  treatments: Treatments;
 }
 
 type Minutes = number;
 
 export class Appointment extends AggregateRoot<AppointmentProps> {
-  private constructor(props: AppointmentProps, id?: UniqueEntityID) {
+  private constructor(readonly props: AppointmentProps, id?: UniqueEntityID) {
     super(props, id);
   }
 
@@ -113,14 +114,15 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok<string>('Appoinment status changed successfully.');
   }
 
-  public addTreatment(treatment: TreatmentId): Result<string> {
-    this.props.treatments.push(treatment);
+  public addTreatment(treatment: Treatment): Result<string> {
+    this.props.treatments.list.push(treatment);
     return Result.ok<string>('Treatment added.');
   }
 
-  public removeTreatment(treatmentId: TreatmentId): Result<string> {
-    if (this.props.treatments.length === 0) return Result.fail<string>('No treatments.');
-    this.props.treatments = this.props.treatments.filter((t) => t.value !== treatmentId.value);
+  public removeTreatment(treatment: Treatment): Result<string> {
+    if (this.props.treatments.list.length === 0) return Result.fail<string>('No treatments.');
+    const res = this.props.treatments.list.filter((t) => t.treatmentId.value !== treatment.treatmentId.value);
+    this.props.treatments = Treatments.create(res);
     return Result.ok<string>('Treatment has been removed.');
   }
 
