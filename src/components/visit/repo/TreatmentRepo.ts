@@ -6,6 +6,7 @@ import { TreatmentMap } from './mappers/TreatmentMap';
 
 export interface ITreatmentRepo {
   findTreatmentById(treatmentId: TreatmentId): Promise<Treatment>;
+  findTreatmentByIds(treatmentIds: TreatmentId[]): Promise<Treatment[]>;
   exists(treatmentId: TreatmentId): Promise<boolean>;
   save(treatment: Treatment): Promise<void>;
 }
@@ -24,6 +25,21 @@ export class TreatmentRepo implements ITreatmentRepo {
       return new TreatmentMap().toDomain(treatment[0]);
     } catch {
       throw new Error('Can not find treatment by treatmentId.');
+    }
+  }
+
+  public async findTreatmentByIds(treatmentIds: TreatmentId[]): Promise<Treatment[]> {
+    const ids = treatmentIds.map((i) => i.value);
+    try {
+      const result = await this.model.find({
+        _id: { $in: ids },
+      });
+
+      const treatments = result.map((treatment) => new TreatmentMap().toDomain(treatment));
+
+      return treatments;
+    } catch (error) {
+      throw new Error('Can not find treatment by treatmentIds.');
     }
   }
 

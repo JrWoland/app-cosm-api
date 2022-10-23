@@ -7,5 +7,5 @@ export interface CreateAppoinmentDTO {
   startTime: number;
   duration: number;
   status: AppointmentStatus;
-  treatments: [];
+  treatments: string[];
 }

@@ -35,6 +35,10 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
       type: Date,
       required: true,
     },
+    services: {
+      type: Array,
+      required: true,
+    },
     start_time: {
       type: Number,
       required: true,

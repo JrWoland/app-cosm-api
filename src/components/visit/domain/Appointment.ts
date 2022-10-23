@@ -156,6 +156,12 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
       return Result.fail<Appointment>(validationResult.error);
     }
 
+    const isSomeTreatmentNotBelongsToAccount = props.treatments.list.some((id) => id.accountId.id.getValue() !== props.accountId.id.getValue());
+
+    if (isSomeTreatmentNotBelongsToAccount) {
+      return Result.fail<Appointment>('Treatment not found.');
+    }
+
     const appointment = new Appointment(
       {
         accountId: props.accountId,

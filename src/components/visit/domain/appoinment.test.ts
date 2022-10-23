@@ -37,6 +37,18 @@ describe('Test create().', () => {
     expect(appointment.treatments.list.length).toEqual(0);
     expect(appointment.status).toEqual('NEW');
   });
+  it('Should not create appointment with foreign accountId', async () => {
+    const treatment = Treatment.create({ accountId: AccountId.create().getValue(), name: 'Fake', duration: 0, notes: '', price: 0, treatmentCardId: undefined }, new UniqueEntityID());
+
+    const testApp = testAppointment();
+
+    testApp.treatments = Treatments.create([treatment.getValue()]);
+
+    const appointment = Appointment.create(testApp);
+
+    expect(appointment.isFailure).toEqual(true);
+    expect(appointment.error).toEqual('Treatment not found.');
+  });
 });
 
 describe('Test setAppointmentStatus().', () => {
