@@ -30,7 +30,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
     try {
       const appoinmentExists = await this.model.exists({ _id: appointmentId.value });
       return appoinmentExists;
-    } catch (error: any) {
+    } catch (error) {
       throw new Error('Can not check if appoinment exists.');
     }
   }

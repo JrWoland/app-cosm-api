@@ -7,14 +7,15 @@ import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 import { Entity } from '../../../core/domain/Entity';
 
-export type TreatmentDurationInMinutes = number;
+export type Minutes = number;
 export type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
   name: string;
   treatmentCardId?: TreatmentCardId;
   price?: Price;
-  duration?: TreatmentDurationInMinutes;
+  duration?: Minutes;
+  startTime?: Minutes;
   notes?: string;
 }
 
@@ -43,6 +44,10 @@ export class Treatment extends Entity<TreatmentProps> {
     return this.props.duration;
   }
 
+  public get startTime() {
+    return this.props.startTime;
+  }
+
   public get price() {
     return this.props.price;
   }
@@ -66,7 +71,7 @@ export class Treatment extends Entity<TreatmentProps> {
     return Result.ok('Treatment notes has been set.');
   }
 
-  private setDuration(duration: TreatmentDurationInMinutes): Result<string> {
+  private setDuration(duration: Minutes): Result<string> {
     if (duration < 0) {
       const error = Result.fail<string>(TREATMENT_ERRORS.DURATION_ERROR_MESSAGE);
       return error;
@@ -89,11 +94,11 @@ export class Treatment extends Entity<TreatmentProps> {
     return Result.ok('Treatment card has been set.');
   }
 
-  public updateDetails(treatment: Omit<TreatmentProps, 'treatmentId' | 'accountId'>): Result<string> {
+  public updateDetails(treatment: Partial<Omit<TreatmentProps, 'treatmentId' | 'accountId'>>): Result<string> {
     const results: Result<string>[] = [];
 
     if (has(treatment, 'name')) {
-      results.push(this.setName(treatment.name));
+      results.push(this.setName(treatment.name || ''));
     }
     if (has(treatment, 'notes')) {
       results.push(this.setNotes(treatment.notes || ''));
@@ -126,6 +131,9 @@ export class Treatment extends Entity<TreatmentProps> {
     }
     if ((props.price || 0) < 0) {
       return Result.fail<Treatment>(TREATMENT_ERRORS.PRICE_ERROR_MESSAGE);
+    }
+    if ((props.startTime || 0) < 0) {
+      return Result.fail<Treatment>(TREATMENT_ERRORS.START_TIME_ERROR_MESSAGE);
     }
 
     const treatment = new Treatment(

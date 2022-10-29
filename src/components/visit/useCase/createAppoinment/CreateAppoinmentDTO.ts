@@ -1,5 +1,11 @@
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
 
+export interface TreatmentDTO {
+  id: string;
+  duration: number;
+  startTime: number;
+  cardTemplate: unknown;
+}
 export interface CreateAppoinmentDTO {
   accountId: string;
   date: Date;
@@ -7,5 +13,5 @@ export interface CreateAppoinmentDTO {
   startTime: number;
   duration: number;
   status: AppointmentStatus;
-  treatments: string[];
+  treatments: TreatmentDTO[];
 }

@@ -6,9 +6,12 @@ import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { ClientId } from '../../../clients/domain/ClientId';
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
 import { Treatments } from '../../domain/Treatments';
+import { TreatmentMap } from './TreatmentMap';
 
 export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> {
   toPersistence(appointment: Appointment): AppointmentDocModel {
+    const trs = appointment.treatments.list.map((tr) => new TreatmentMap().toPersistence(tr));
+
     return {
       _id: appointment.appointmentId.value,
       account_id: appointment.accountId.id.getValue(),
@@ -17,14 +20,15 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
       duration: appointment.duration,
       start_time: appointment.startTime,
       status: appointment.status,
-      services: appointment.treatments.list,
+      services: trs,
     };
   }
 
   toDomain(raw: AppointmentDocModel): Appointment {
     const accountId = AccountId.create(new UniqueEntityID(raw.account_id));
     const clientId = ClientId.create(new UniqueEntityID(raw.client_id));
-    const treatments = Treatments.create(raw.services);
+    const treatments = raw.services.map((item) => new TreatmentMap().toDomain(item));
+
     const appointment = Appointment.create(
       {
         accountId: accountId.getValue(),
@@ -33,7 +37,7 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
         date: raw.date,
         duration: raw.duration,
         startTime: raw.start_time,
-        treatments: treatments,
+        treatments: Treatments.create(treatments),
       },
       new UniqueEntityID(raw._id),
     );

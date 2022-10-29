@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { AppointmentStatus } from '../../../components/visit/domain/AppointmentStatus';
+import { TreatmentDocModel } from './treatmentModel';
 
 export interface AppointmentDocModel {
   _id: string;
@@ -9,7 +10,7 @@ export interface AppointmentDocModel {
   start_time: number;
   duration: number;
   status: AppointmentStatus;
-  services: any[];
+  services: TreatmentDocModel[];
   created_at?: Date;
   updated_at?: Date;
 }
@@ -37,6 +38,7 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
     },
     services: {
       type: Array,
+      ref: 'Treatment',
       required: true,
     },
     start_time: {
