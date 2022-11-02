@@ -1,6 +1,7 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
+import { AccountId } from '../../../accounts/domain/AccountId';
 import { ClientId } from '../../../clients/domain/ClientId';
 import { AppointmentId } from '../../domain/AppointmentId';
 import { TreatmentId } from '../../domain/TreatmentId';
@@ -20,6 +21,9 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
   public async execute(request: UpdateAppointmentDTO): Promise<Response> {
     const { accountId, appointmentId, date, duration, startTime, treatments, clientId, status } = request;
 
+    const accId = AccountId.create(new UniqueEntityID(accountId)).getValue();
+    const appId = AppointmentId.create(new UniqueEntityID(appointmentId)).getValue();
+
     if (!accountId) {
       return Result.fail('Auth failed.');
     }
@@ -28,23 +32,20 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
       return Result.fail('Invalid appointment id.');
     }
 
-    const appId = AppointmentId.create(new UniqueEntityID(appointmentId)).getValue();
-
     try {
-      const appointment = await this.appoinmentRepo.findAppointmentByAppointmentId(appId);
-
-      if (appointment.accountId.id.getValue() !== accountId) {
-        return Result.fail('Appointment not found.');
-      }
+      const appointment = await this.appoinmentRepo.findAppointmentByAppointmentAndAccountId(appId, accId);
 
       const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
-      const treatmentsList = await this.treatmentRepo.findTreatmentByIds(treatments.map((i) => TreatmentId.create(new UniqueEntityID(i)).getValue()));
+      const treatmentsList = await this.treatmentRepo.findTreatmentsByIds(
+        treatments.map((i) => TreatmentId.create(new UniqueEntityID(i.id)).getValue()),
+        accId,
+      );
       const treatmentsToAssign = Treatments.create(treatmentsList);
 
       const updateResult = appointment.updateDetails({
-        date: date,
-        clientId: clientIdToAssign.getValue(),
+        date: new Date(date),
+        clientId: clientId ? clientIdToAssign.getValue() : null,
         duration: duration,
         startTime: startTime,
         status: status,

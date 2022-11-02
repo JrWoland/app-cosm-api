@@ -10,7 +10,7 @@ import { TreatmentMap } from './TreatmentMap';
 
 export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> {
   toPersistence(appointment: Appointment): AppointmentDocModel {
-    const trs = appointment.treatments.list.map((tr) => new TreatmentMap().toPersistence(tr));
+    const treatments = appointment.treatments.list.map((tr) => new TreatmentMap().toPersistence(tr));
 
     return {
       _id: appointment.appointmentId.value,
@@ -20,7 +20,7 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
       duration: appointment.duration,
       start_time: appointment.startTime,
       status: appointment.status,
-      services: trs,
+      services: treatments,
     };
   }
 

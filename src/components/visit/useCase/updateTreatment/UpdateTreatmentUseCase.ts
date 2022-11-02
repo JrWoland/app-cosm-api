@@ -1,6 +1,7 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
+import { AccountId } from '../../../accounts/domain/AccountId';
 import { Treatment } from '../../domain/Treatment';
 import { TreatmentId } from '../../domain/TreatmentId';
 import { ITreatmentRepo } from '../../repo/TreatmentRepo';
@@ -25,9 +26,11 @@ export class UpdateTreatmentUseCase implements UseCase<UpdateTreatmentDTO, Promi
       return Result.fail(UPDATE_TREATMENT_ERROR.MISSING_TREATMENT_ID);
     }
 
+    const accId = AccountId.create(new UniqueEntityID(accountId)).getValue();
+
     try {
       const id = TreatmentId.create(new UniqueEntityID(treatmentId)).getValue();
-      treatment = await this.treatmentRepo.findTreatmentById(id);
+      treatment = await this.treatmentRepo.findTreatmentById(id, accId);
 
       if (accountId !== treatment.accountId.id.getValue()) {
         return Result.fail(UPDATE_TREATMENT_ERROR.TREATMENT_NOT_FOUND);

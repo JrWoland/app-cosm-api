@@ -29,31 +29,31 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return AppointmentId.create(this._uniqueEntityId).getValue();
   }
 
-  public get accountId() {
+  public get accountId(): AccountId {
     return this.props.accountId;
   }
 
-  public get clientId() {
+  public get clientId(): ClientId | null | undefined {
     return this.props.clientId;
   }
 
-  public get date() {
+  public get date(): Date {
     return this.props.date;
   }
 
-  public get startTime() {
+  public get startTime(): number {
     return this.props.startTime;
   }
 
-  public get duration() {
+  public get duration(): number {
     return this.props.duration;
   }
 
-  public get status() {
+  public get status(): AppointmentStatus {
     return this.props.status;
   }
 
-  public get treatments() {
+  public get treatments(): Treatments {
     return this.props.treatments;
   }
 

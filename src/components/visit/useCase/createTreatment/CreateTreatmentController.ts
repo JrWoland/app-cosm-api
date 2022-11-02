@@ -19,9 +19,9 @@ export class CreateTreatmentController extends BaseController {
       if (result.isFailure) {
         this.unprocesable(result.error?.toString());
       } else {
-        this.res.status(200).send({
+        this.res.status(201).send({
           message: result.getValue().message,
-          treatnmentId: result.getValue().treatmentId,
+          treatmentId: result.getValue().treatmentId,
         });
       }
     } catch (error) {

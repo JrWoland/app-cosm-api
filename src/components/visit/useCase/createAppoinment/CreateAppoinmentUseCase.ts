@@ -20,21 +20,16 @@ type Response = Result<AppointmentResponseDTO>;
 export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Promise<Response>> {
   constructor(private appoinmentRepo: IAppoinmentRepo, private accountRepo: IAccountRepo, private treatmentRepo: ITreatmentRepo) {}
 
-  private async getAccount(accountId: AccountId): Promise<Result<Account>> {
+  private async getTreatments(treatments: TreatmentDTO[], id: AccountId): Promise<Result<Treatments>> {
     try {
-      const account = await this.accountRepo.findAccountByAccountId(accountId);
-      return Result.ok<Account>(account);
-    } catch (error) {
-      return Result.fail<Account>(error.message);
-    }
-  }
-
-  private async getTreatments(treatments: TreatmentDTO[]): Promise<Result<Treatments>> {
-    try {
-      const treatmentsList = await this.treatmentRepo.findTreatmentByIds(treatments.map(({ id }) => TreatmentId.create(new UniqueEntityID(id)).getValue()));
+      const treatmentsList = await this.treatmentRepo.findTreatmentsByIds(
+        treatments.map(({ id }) => TreatmentId.create(new UniqueEntityID(id)).getValue()),
+        id,
+      );
 
       treatments.forEach((tr) => {
         const toUpdateTr = treatmentsList.find((val) => val.treatmentId.value === tr.id);
+        if (!toUpdateTr) throw new Error('Could not find treatment with id: ' + tr.id);
         toUpdateTr?.updateDetails({
           duration: tr.duration,
           startTime: tr.startTime,
@@ -52,17 +47,10 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
     const { accountId, date, duration, startTime, treatments, clientId, status } = request;
 
     const accountIdToAssign = AccountId.create(new UniqueEntityID(accountId));
-
-    const account = await this.getAccount(accountIdToAssign.getValue());
-
-    if (account.isFailure) {
-      return Result.fail('Account does not exists.');
-    }
-
     const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
-    const treatmentsList = await this.getTreatments(treatments);
     try {
+      const treatmentsList = await this.getTreatments(treatments, accountIdToAssign.getValue());
       const newAppoinment = Appointment.create(
         {
           accountId: accountIdToAssign.getValue(),
@@ -84,7 +72,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
 
       return Result.ok({ message: 'Appointment created.', appointmentId: newAppoinment.getValue().appointmentId.value });
     } catch (error) {
-      return Result.fail(error.message);
+      return Result.fail('Appointment could not be created. ' + error.message);
     }
   }
 }

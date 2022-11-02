@@ -1,10 +1,10 @@
-import { Price, TreatmentDurationInMinutes } from '../../domain/Treatment';
+import { Price } from '../../domain/Treatment';
 
 export interface CreateTreatmentDTO {
   accountId: string;
   name: string;
   treatmentCardId?: string;
   price?: Price;
-  duration?: TreatmentDurationInMinutes;
+  duration?: number;
   notes?: string;
 }

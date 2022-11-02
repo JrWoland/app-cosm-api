@@ -2,6 +2,7 @@ import { ExpressServer } from '../../infra/server/server';
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { AppointmentModel } from '../../infra/db/models/appointmentModel';
+import { TreatmentModel } from '../../infra/db/models/treatmentModel';
 
 const app = new ExpressServer().create();
 
@@ -28,18 +29,6 @@ const testAppointment = {
   treatments: [],
 };
 
-it('Should create appointment /api/appointment/create', async () => {
-  const appointment = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
-  expect(appointment.status).toEqual(201);
-  expect(appointment.body.message).toEqual('Appointment created.');
-  expect(appointment.body.appointmentId).toBeTruthy();
-
-  const result = await AppointmentModel.exists({ _id: appointment.body.appointmentId });
-  expect(result).toEqual(true);
-
-  await AppointmentModel.deleteOne({ _id: appointment.body.appointmentId });
-});
-
 const getMockAppointment = () => ({
   appointmentId: null,
   clientId: null,
@@ -48,6 +37,50 @@ const getMockAppointment = () => ({
   duration: 0,
   treatments: [],
   status: 'RANDOM_VALUE',
+});
+
+describe('Test create appointment scenarios /api/appointment/create', () => {
+  it('Should create appointment /api/appointment/create', async () => {
+    const appointment = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(appointment.status).toEqual(201);
+    expect(appointment.body.message).toEqual('Appointment created.');
+    expect(appointment.body.appointmentId).toBeTruthy();
+
+    const result = await AppointmentModel.exists({ _id: appointment.body.appointmentId });
+    expect(result).toEqual(true);
+
+    await AppointmentModel.deleteOne({ _id: appointment.body.appointmentId });
+  });
+  it('Should not create appointment when some treatment does not belong to account', async () => {
+    const tr = {
+      name: 'Testing',
+      treatmentCardId: null,
+      startTime: '20',
+      duration: '120',
+    } as never;
+
+    const treatment = await request(app).post('/api/treatment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(tr);
+    expect(treatment.status).toEqual(201);
+    expect(treatment.body.message).toEqual('Treatment created.');
+
+    const result = await TreatmentModel.exists({ _id: treatment.body.treatmentId });
+    expect(result).toEqual(true);
+
+    const mockAppointment = getMockAppointment();
+    mockAppointment.status = 'NEW';
+    mockAppointment.treatments.push({
+      id: treatment.body.treatmentId,
+      startTime: '20',
+      duration: '120',
+    } as never);
+
+    const appointment = await request(app).post('/api/appointment/create').auth(testUser2.email, testUser2.password, { type: 'basic' }).send(mockAppointment);
+    expect(appointment.status).toEqual(422);
+    expect(appointment.body.message).toEqual(`Appointment could not be created. Could not find treatment with id: ${treatment.body.treatmentId}`);
+    expect(appointment.body.appointmentId).toBeFalsy();
+
+    await TreatmentModel.deleteOne({ _id: appointment.body.treatmentId });
+  });
 });
 
 describe('Test update appointment scenarios /api/appointment/update when:', () => {
@@ -86,7 +119,7 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
     const updatedAppointment = await request(app).patch('/api/appointment/update').auth(testUser2.email, testUser2.password, { type: 'basic' }).send(updated);
 
     expect(updatedAppointment.status).toEqual(422);
-    expect(updatedAppointment.body.message).toEqual('Appointment not found.');
+    expect(updatedAppointment.body.message).toEqual('Appointment could not be updated.');
   });
 });
 
