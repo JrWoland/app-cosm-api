@@ -1,8 +1,8 @@
-import { ExpressServer } from '../../infra/server/server';
+import { ExpressServer } from '../../../infra/server/server';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { AppointmentModel } from '../../infra/db/models/appointmentModel';
-import { TreatmentModel } from '../../infra/db/models/treatmentModel';
+import { AppointmentModel } from '../../../infra/db/models/appointmentModel';
+import { TreatmentModel } from '../../../infra/db/models/treatmentModel';
 
 const app = new ExpressServer().create();
 

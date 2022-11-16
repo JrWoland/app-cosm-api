@@ -1,9 +1,9 @@
-import { UniqueEntityID } from '../../../core/domain/UniqueId';
-import { AccountId } from '../../accounts/domain/AccountId';
-import { Appointment } from './Appointment';
-import { AppointmentStatus } from './AppointmentStatus';
-import { Treatment } from './Treatment';
-import { Treatments } from './Treatments';
+import { UniqueEntityID } from '../../../../core/domain/UniqueId';
+import { AccountId } from '../../../accounts/domain/AccountId';
+import { Appointment } from '../Appointment';
+import { AppointmentStatus } from '../AppointmentStatus';
+import { Treatment } from '../Treatment';
+import { Treatments } from '../Treatments';
 
 const testAppointment = () => ({
   accountId: AccountId.create().getValue(),

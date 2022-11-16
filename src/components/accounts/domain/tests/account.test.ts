@@ -1,5 +1,5 @@
-import { Account } from './Account';
-import { AccountPassword } from './AccountPassword';
+import { Account } from '../Account';
+import { AccountPassword } from '../AccountPassword';
 
 it('Should succesfully create account.', () => {
   const email = 'test@test.com';

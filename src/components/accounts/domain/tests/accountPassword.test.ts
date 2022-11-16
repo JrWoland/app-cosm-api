@@ -1,4 +1,4 @@
-import { AccountPassword } from './AccountPassword';
+import { AccountPassword } from '../AccountPassword';
 
 it('Should not be able to create password with less than 8 chars.', () => {
   const accPassword = AccountPassword.create({

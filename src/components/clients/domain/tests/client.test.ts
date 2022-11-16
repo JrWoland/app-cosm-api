@@ -1,7 +1,7 @@
-import { UniqueEntityID } from '../../../core/domain/UniqueId';
-import { AccountId } from '../../accounts/domain/AccountId';
-import { Client } from './Client';
-import { ClientStatus } from './ClientStatus';
+import { UniqueEntityID } from '../../../../core/domain/UniqueId';
+import { AccountId } from '../../../accounts/domain/AccountId';
+import { Client } from '../Client';
+import { ClientStatus } from '../ClientStatus';
 
 const accountId = AccountId.create().getValue();
 const date = new Date();
