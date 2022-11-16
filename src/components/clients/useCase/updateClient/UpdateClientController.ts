@@ -8,7 +8,7 @@ export class UpdateClientController extends BaseController {
     super();
   }
 
-  public async executeImpl(req: DecodedExpressReq): Promise<any> {
+  public async executeImpl(req: DecodedExpressReq): Promise<unknown> {
     const clientDto: UpdateClientDTO = this.req.body;
 
     clientDto.accountId = req.accountId;
@@ -22,7 +22,7 @@ export class UpdateClientController extends BaseController {
         message: result.getValue().message,
         clientId: result.getValue().clientId,
       });
-    } catch (error: any) {
+    } catch (error) {
       return this.fail(error.message);
     }
   }

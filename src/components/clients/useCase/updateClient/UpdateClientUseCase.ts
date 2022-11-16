@@ -37,16 +37,16 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
-    const resultlName = client.setName(name);
-    const resultSurname = client.setSurname(surname);
-    const resultPhone = client.setPhone(phone);
-    const resultBirthDate = client.setBirthDay(birthDate);
-    const resultEmail = client.setEmail(email);
+    const updateResult = client.updateDetails({
+      name,
+      surname,
+      phone,
+      email,
+      birthDay: birthDate ? new Date(birthDate) : undefined,
+    });
 
-    const bulkCheck = Result.bulkCheck([resultlName, resultSurname, resultPhone, resultBirthDate, resultEmail]);
-
-    if (bulkCheck.isFailure) {
-      return Result.fail(bulkCheck.error);
+    if (updateResult.isFailure) {
+      return Result.fail(updateResult.error);
     }
 
     await this.clientRepo.save(client);

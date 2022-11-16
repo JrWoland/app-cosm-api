@@ -21,7 +21,7 @@ export class ClientRepo implements IClientRepo {
         throw new Error('Client does not exists.');
       }
       return new ClientMap().toDomain(client[0]);
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(`Cant find client by id: ${error}`);
     }
   }
@@ -30,7 +30,7 @@ export class ClientRepo implements IClientRepo {
     try {
       const clientExists = await this.model.exists({ _id: clientId.value });
       return clientExists;
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(`Can not check if client exists: ${error}`);
     }
   }
@@ -50,10 +50,11 @@ export class ClientRepo implements IClientRepo {
       await this.model.findOneAndUpdate(
         {
           _id: client.clientId.value,
+          account_id: client.accountId.id.getValue(),
         },
         clientToSave,
       );
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(`Can not save client: ${error}`);
     }
   }

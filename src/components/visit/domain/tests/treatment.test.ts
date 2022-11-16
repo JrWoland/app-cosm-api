@@ -3,6 +3,7 @@ import { AccountId } from '../../../accounts/domain/AccountId';
 import { Treatment } from '../Treatment';
 
 const accountId = AccountId.create().getValue();
+const treatmentId = new UniqueEntityID('my-id');
 
 const mockTreatment = () => ({
   accountId: accountId,
@@ -16,7 +17,7 @@ const mockTreatment = () => ({
 describe('Test create()', () => {
   it('Should create Treatment.', () => {
     const data = mockTreatment();
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
 
     expect(treatment.accountId).toEqual(accountId);
     expect(treatment.name).toEqual('Lashes example');
@@ -28,7 +29,7 @@ describe('Test create()', () => {
   it('Should not create Treatment without accountId property.', () => {
     const data = mockTreatment();
     data.accountId = '' as unknown as AccountId; // force wrong AccountId
-    const treatmentResult = Treatment.create(data, new UniqueEntityID('my-id'));
+    const treatmentResult = Treatment.create(data, treatmentId);
 
     expect(treatmentResult.isFailure).toEqual(true);
     expect(treatmentResult.error).toEqual('Can not create new treatment without accountId property.');
@@ -36,7 +37,7 @@ describe('Test create()', () => {
   it('Should not create Treatment without name property.', () => {
     const data = mockTreatment();
     data.name = ''; // force wrong AccountId
-    const treatmentResult = Treatment.create(data, new UniqueEntityID('my-id'));
+    const treatmentResult = Treatment.create(data, treatmentId);
 
     expect(treatmentResult.isFailure).toEqual(true);
     expect(treatmentResult.error).toEqual('Can not create new treatment without name property.');
@@ -44,7 +45,7 @@ describe('Test create()', () => {
   it('Should not create Treatment without name property.', () => {
     const data = mockTreatment();
     data.duration = -1;
-    const treatmentResult = Treatment.create(data, new UniqueEntityID('my-id'));
+    const treatmentResult = Treatment.create(data, treatmentId);
 
     expect(treatmentResult.isFailure).toEqual(true);
     expect(treatmentResult.error).toEqual('Duration must be greater than 0.');
@@ -52,7 +53,7 @@ describe('Test create()', () => {
   it('Should not create Treatment without name property.', () => {
     const data = mockTreatment();
     data.price = -1;
-    const treatmentResult = Treatment.create(data, new UniqueEntityID('my-id'));
+    const treatmentResult = Treatment.create(data, treatmentId);
 
     expect(treatmentResult.isFailure).toEqual(true);
     expect(treatmentResult.error).toEqual('Price must be greater than 0.');
@@ -63,12 +64,12 @@ describe('Test treatment.updateDetails()', () => {
   it('Should update treatment details', () => {
     const data = mockTreatment();
 
+    const treatment = Treatment.create(data, treatmentId).getValue();
+
     data.name = 'Test';
     data.duration = 20;
     data.notes = 'notes';
     data.price = 100;
-
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
     const updatedTreatment = treatment.updateDetails(data);
 
     expect(updatedTreatment.isSuccess).toEqual(true);
@@ -87,7 +88,7 @@ describe('Test treatment.updateDetails()', () => {
   it('Should update treatment name only', () => {
     const data = mockTreatment();
 
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
 
     const updatedTreatment = treatment.updateDetails({ name: 'Test' });
 
@@ -104,7 +105,7 @@ describe('Test treatment.updateDetails()', () => {
   it('Should update treatment notes only', () => {
     const data = mockTreatment();
 
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
 
     const updatedTreatment = treatment.updateDetails({ name: 'Lashes', notes: 'new' });
 
@@ -121,7 +122,7 @@ describe('Test treatment.updateDetails()', () => {
   it('Should update treatment duration only', () => {
     const data = mockTreatment();
 
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
 
     const updatedTreatment = treatment.updateDetails({ name: 'Lashes', duration: 10 });
 
@@ -138,7 +139,7 @@ describe('Test treatment.updateDetails()', () => {
   it('Should update treatment price only', () => {
     const data = mockTreatment();
 
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
 
     const updatedTreatment = treatment.updateDetails({ name: 'Lashes', price: 100 });
 
@@ -154,7 +155,7 @@ describe('Test treatment.updateDetails()', () => {
   });
   it('Should throw error when name is not provided', () => {
     const data = mockTreatment();
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
     data.name = '';
     const updatedTreatment = treatment.updateDetails(data);
 
@@ -162,7 +163,7 @@ describe('Test treatment.updateDetails()', () => {
   });
   it('Should throw error when duration is less than 0', () => {
     const data = mockTreatment();
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
     data.duration = -1;
     const updatedTreatment = treatment.updateDetails(data);
 
@@ -170,7 +171,7 @@ describe('Test treatment.updateDetails()', () => {
   });
   it('Should throw error when price is less than 0', () => {
     const data = mockTreatment();
-    const treatment = Treatment.create(data, new UniqueEntityID('my-id')).getValue();
+    const treatment = Treatment.create(data, treatmentId).getValue();
     data.price = -1;
     const updatedTreatment = treatment.updateDetails(data);
 

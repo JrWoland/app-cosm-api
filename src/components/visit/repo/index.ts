@@ -6,4 +6,5 @@ import { TreatmentRepo } from './TreatmentRepo';
 
 const AppoinmentRepository = new AppoinmentRepo(AppointmentModel);
 const TreatmentRepository = new TreatmentRepo(TreatmentModel);
+
 export { AppoinmentRepository, TreatmentRepository };

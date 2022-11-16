@@ -6,10 +6,12 @@ import { ClientId } from './ClientId';
 import { ClientStatus } from './ClientStatus';
 import { mailRegex } from '../../../core/utils/mailRegex';
 import dayjs from 'dayjs';
+import { has } from 'lodash';
 
 const EMAIL_ERROR_MESSAGE = 'Email structure is invalid.';
 const NAME_ERROR_MESSAGE = 'Client need to have name.';
 const BIRTHDAY_ERROR_MESSAGE = 'Birth day format is not valid.';
+const STATUS_ERROR_MESSAGE = 'Invalid client status.';
 
 interface ClientProps {
   accountId: AccountId;
@@ -62,7 +64,7 @@ export class Client extends AggregateRoot<ClientProps> {
     return mailRegex.test(email);
   }
 
-  public setName(val: string): Result<string> {
+  private setName(val: string): Result<string> {
     const hasName = !!val;
     if (!hasName) {
       const error = Result.fail<string>(NAME_ERROR_MESSAGE);
@@ -72,21 +74,12 @@ export class Client extends AggregateRoot<ClientProps> {
     return Result.ok('Name has been changed.');
   }
 
-  public setClientStatus(status: ClientStatus): Result<string> {
-    if (![ClientStatus.Active, ClientStatus.Archived, ClientStatus.Banned].includes(status)) {
-      const error = Result.fail<string>('Invalid client status.');
-      return error;
-    }
-    this.props.status = status;
-    return Result.ok<string>('Client status changed successfully.');
-  }
-
-  public setSurname(val: string | undefined): Result<string> {
+  private setSurname(val: string | undefined): Result<string> {
     this.props.surname = val;
     return Result.ok('Surname has been changed.');
   }
 
-  public setBirthDay(val: Date | undefined): Result<string> {
+  private setBirthDay(val: Date | undefined): Result<string> {
     if (!dayjs(val).isValid()) {
       const error = Result.fail<string>(BIRTHDAY_ERROR_MESSAGE);
       return error;
@@ -95,22 +88,64 @@ export class Client extends AggregateRoot<ClientProps> {
     return Result.ok('Birth day has been changed.');
   }
 
-  public setPhone(val: string | undefined): Result<string> {
+  private setPhone(val: string | undefined): Result<string> {
     this.props.phone = val;
     return Result.ok('Phone number has been changed.');
   }
 
-  public setEmail(val: string | undefined): Result<string> {
+  private setEmail(val: string | undefined): Result<string> {
+    const EMAIL_CHANGED_MESSAGE = 'Email has been changed.';
     if (val === undefined || val === null || val === '') {
       this.props.email = undefined;
-      return Result.ok('Email has been changed.');
+      return Result.ok(EMAIL_CHANGED_MESSAGE);
     }
     if (!Client.isEmailValid(val)) {
       const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
       return error;
     }
     this.props.email = val;
-    return Result.ok('Email has been changed.');
+    return Result.ok(EMAIL_CHANGED_MESSAGE);
+  }
+
+  private static isStatusValid(status: ClientStatus): boolean {
+    return [ClientStatus.Active, ClientStatus.Archived, ClientStatus.Banned].includes(status);
+  }
+
+  public setClientStatus(status: ClientStatus): Result<string> {
+    if (!Client.isStatusValid(status)) {
+      const error = Result.fail<string>(STATUS_ERROR_MESSAGE);
+      return error;
+    }
+    this.props.status = status;
+    return Result.ok<string>('Client status changed successfully.');
+  }
+
+  public updateDetails(client: Omit<ClientProps, 'accountId' | 'status'>): Result<string> {
+    const results: Result<string>[] = [];
+
+    if (has(client, 'name')) {
+      results.push(this.setName(client.name));
+    }
+    if (has(client, 'surname')) {
+      results.push(this.setSurname(client.surname));
+    }
+    if (has(client, 'phone')) {
+      results.push(this.setPhone(client.phone));
+    }
+    if (has(client, 'birthDay')) {
+      results.push(this.setBirthDay(client.birthDay));
+    }
+    if (has(client, 'email')) {
+      results.push(this.setEmail(client.email));
+    }
+
+    const bulkResult = Result.bulkCheck<string>(results);
+
+    if (bulkResult.isFailure) {
+      return Result.fail(bulkResult.error);
+    }
+
+    return Result.ok(bulkResult.getValue());
   }
 
   public static create(props: ClientProps, id?: UniqueEntityID): Result<Client> {
@@ -124,6 +159,10 @@ export class Client extends AggregateRoot<ClientProps> {
 
     if (props.birthDay && !dayjs(props.birthDay).isValid()) {
       return Result.fail<Client>(BIRTHDAY_ERROR_MESSAGE);
+    }
+
+    if (props.status && !Client.isStatusValid(props.status)) {
+      return Result.fail<Client>(STATUS_ERROR_MESSAGE);
     }
 
     const client = new Client(

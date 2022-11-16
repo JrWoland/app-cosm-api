@@ -3,7 +3,7 @@ export interface UpdateClientDTO {
   clientId: string;
   name: string;
   surname?: string;
-  birthDate?: Date;
+  birthDate?: string;
   phone?: string;
   email?: string;
 }
