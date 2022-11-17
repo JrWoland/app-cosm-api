@@ -7,6 +7,7 @@ import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Client } from '../../domain/Client';
 import { ClientId } from '../../domain/ClientId';
 import { CLIENT_ERROR } from '../../domain/ClientErrors';
+import { AccountId } from '../../../accounts/domain/AccountId';
 
 interface UpdateClientResponseDTO {
   message: string;
@@ -27,8 +28,11 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       return Result.fail(CLIENT_ERROR.MISSING_CLIENT_ID);
     }
 
+    const clientIdResult = ClientId.create(new UniqueEntityID(clientId)).getValue();
+    const accountIdResult = AccountId.create(new UniqueEntityID(accountId)).getValue();
+
     try {
-      client = await this.clientRepo.findClientById(ClientId.create(new UniqueEntityID(clientId)).getValue());
+      client = await this.clientRepo.findClientById(clientIdResult, accountIdResult);
     } catch (error) {
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }

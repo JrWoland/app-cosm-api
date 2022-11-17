@@ -26,7 +26,7 @@ export class CreateClientUseCase implements UseCase<CreateClientDTO, Promise<Res
 
     try {
       account = await this.accountRepo.findAccountByAccountId(AccountId.create(new UniqueEntityID(accountId)).getValue());
-    } catch (error: any) {
+    } catch (error) {
       return Result.fail(error.message);
     }
 
@@ -51,7 +51,7 @@ export class CreateClientUseCase implements UseCase<CreateClientDTO, Promise<Res
       await this.clientRepo.save(newClient.getValue());
 
       return Result.ok({ message: 'Client created.', clientId: newClient.getValue().clientId.value });
-    } catch (error: any) {
+    } catch (error) {
       return Result.fail(error.message);
     }
   }
