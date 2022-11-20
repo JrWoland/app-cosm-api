@@ -5,7 +5,16 @@ import { Client } from '../domain/Client';
 import { ClientId } from '../domain/ClientId';
 import { ClientMap } from './mappers/ClientMap';
 
+interface ClientFilters {
+  page: number;
+  limit: number;
+  name?: string;
+  surname?: string;
+  status?: string;
+}
 export interface IClientRepo {
+  count(accountId: AccountId, filters: ClientFilters): Promise<number>;
+  findAllClients(accountId: AccountId, filters: ClientFilters): Promise<{ count: number; clients: Client[] }>;
   findClientById(clientId: ClientId, accountId: AccountId): Promise<Client>;
   exist(client: Client): Promise<boolean>;
   save(client: Client): Promise<void>;
@@ -13,6 +22,30 @@ export interface IClientRepo {
 
 export class ClientRepo implements IClientRepo {
   constructor(private model: Model<ClientDocModel>) {}
+
+  private buildQuery(accountId: AccountId, filters: ClientFilters) {
+    return {
+      account_id: accountId.id.getValue(),
+      name: {
+        $regex: new RegExp(filters.name || '', 'i'),
+      },
+      surname: {
+        $regex: new RegExp(filters.surname || '', 'i'),
+      },
+      status: {
+        $regex: filters.status ? new RegExp(filters.status || '', 'i') : '',
+      },
+    };
+  }
+
+  public async count(accountId: AccountId, filters: ClientFilters): Promise<number> {
+    try {
+      const numberOfClients = await this.model.count(this.buildQuery(accountId, filters));
+      return numberOfClients;
+    } catch (error) {
+      throw new Error(`Could not count clients: ${error}`);
+    }
+  }
 
   public async findClientById(clientId: ClientId, accountId: AccountId): Promise<Client> {
     try {
@@ -27,6 +60,22 @@ export class ClientRepo implements IClientRepo {
       return new ClientMap().toDomain(client[0]);
     } catch (error) {
       throw new Error(`Cant find client by id: ${error}`);
+    }
+  }
+
+  public async findAllClients(accountId: AccountId, filters: ClientFilters): Promise<{ count: number; clients: Client[] }> {
+    try {
+      const result = await this.model
+        .find(this.buildQuery(accountId, filters))
+        .limit(filters.limit * 1)
+        .skip((filters.page - 1) * filters.limit);
+
+      const count = await this.count(accountId, filters);
+      const clientsList = result.map((client) => new ClientMap().toDomain(client));
+
+      return { clients: clientsList, count };
+    } catch (error) {
+      throw new Error(`Can not find clients: ${error}`);
     }
   }
 

@@ -3,6 +3,6 @@ import { GetClientByClientIdController } from './GetClientByClientIdController';
 import { GetClientByClientIdUseCase } from './GetClientByClientIdUseCase';
 
 const getClientByClientIdUseCase = new GetClientByClientIdUseCase(ClientRepository);
-const getClientByClientId = new GetClientByClientIdController(getClientByClientIdUseCase);
+const getClientByClientIdController = new GetClientByClientIdController(getClientByClientIdUseCase);
 
-export { getClientByClientId };
+export { getClientByClientIdController };

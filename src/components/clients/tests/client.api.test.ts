@@ -21,10 +21,11 @@ interface ClientReq {
   status?: string;
   email?: string;
 }
-
+const names = ['Alice', 'Lucy', 'Ginger', 'Ann', 'Pony', 'Eli', 'Panam', 'Vi', 'Fast', 'Inna', 'Tina'];
+const surnames = ['Blue', 'Green', 'Red', 'Orange', 'Potato', 'Tomato', 'Cyan', 'Yellow', 'Pink', 'Grey'];
 const mockClient = (): ClientReq => ({
-  name: 'Prosto',
-  surname: 'Prosto surname',
+  name: names[Math.floor(Math.random() * names.length)],
+  surname: surnames[Math.floor(Math.random() * surnames.length)],
   phone: '123123123',
   email: 'good@email.com',
 });
@@ -32,33 +33,35 @@ const mockClient = (): ClientReq => ({
 const testUser = { email: 'test@test.com', password: 'testtest' };
 const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 
-it('Should create client /api/client/create', async () => {
-  const testClient = mockClient();
-  const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
-  expect(client.body.message).toEqual('Client created.');
-  expect(client.body.clientId).toBeTruthy();
-  expect(client.status).toEqual(201);
+describe('Test create client scenarios /api/client/create', () => {
+  it('Should create client /api/client/create', async () => {
+    const testClient = mockClient();
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    expect(client.body.message).toEqual('Client created.');
+    expect(client.body.clientId).toBeTruthy();
+    expect(client.status).toEqual(201);
 
-  const result = await ClientModel.exists({ _id: client.body.clientId });
-  expect(result).toEqual(true);
+    const result = await ClientModel.exists({ _id: client.body.clientId });
+    expect(result).toEqual(true);
 
-  await ClientModel.deleteOne({ _id: client.body.clientId });
-});
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
 
-it('Should not create client without name /api/client/create', async () => {
-  const testClientNoName = mockClient();
-  testClientNoName.name = '';
-  const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientNoName);
-  expect(client.body.message).toEqual('Client need to have name.');
-  expect(client.status).toEqual(422);
-});
+  it('Should not create client without name /api/client/create', async () => {
+    const testClientNoName = mockClient();
+    testClientNoName.name = '';
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientNoName);
+    expect(client.body.message).toEqual('Client need to have name.');
+    expect(client.status).toEqual(422);
+  });
 
-it('Should not create client with wrong email structure /api/client/create', async () => {
-  const testClientWrongEmail = mockClient();
-  testClientWrongEmail.email = 'wrong#email.com';
-  const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientWrongEmail);
-  expect(client.body.message).toEqual('Email structure is invalid.');
-  expect(client.status).toEqual(422);
+  it('Should not create client with wrong email structure /api/client/create', async () => {
+    const testClientWrongEmail = mockClient();
+    testClientWrongEmail.email = 'wrong#email.com';
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientWrongEmail);
+    expect(client.body.message).toEqual('Email structure is invalid.');
+    expect(client.status).toEqual(422);
+  });
 });
 
 describe('Test update client scenarios /api/client/update', () => {
