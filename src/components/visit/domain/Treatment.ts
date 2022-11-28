@@ -2,17 +2,19 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { TreatmentId } from './TreatmentId';
-import { TreatmentCardId } from '../../treatmentCard/domain/TreatmentCardId';
+import { TreatmentCardId } from './TreatmentCard/TreatmentCardId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 import { Entity } from '../../../core/domain/Entity';
+import { TreatmentCard } from './TreatmentCard/TreatmentCard';
 
 export type Minutes = number;
 export type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
   name: string;
-  treatmentCardId?: TreatmentCardId;
+  assingedCardId?: TreatmentCardId;
+  filledTreatmentCard?: TreatmentCard;
   price?: Price;
   duration?: Minutes;
   startTime?: Minutes;
@@ -52,8 +54,8 @@ export class Treatment extends Entity<TreatmentProps> {
     return this.props.price;
   }
 
-  public get treatmentCardId() {
-    return this.props.treatmentCardId;
+  public get assingedCardId() {
+    return this.props.assingedCardId;
   }
 
   private setName(name: string): Result<string> {
@@ -90,7 +92,15 @@ export class Treatment extends Entity<TreatmentProps> {
   }
 
   public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
-    this.props.treatmentCardId = cardId;
+    this.props.assingedCardId = cardId;
+    return Result.ok('Treatment card has been set.');
+  }
+
+  public setFilledTreatmentCard(card: TreatmentCard): Result<string> {
+    if (!card.isTemplateFilled) {
+      return Result.fail('Treatment card must be filled in.');
+    }
+    this.props.filledTreatmentCard = card;
     return Result.ok('Treatment card has been set.');
   }
 
@@ -143,7 +153,7 @@ export class Treatment extends Entity<TreatmentProps> {
         notes: props.notes,
         duration: props.duration,
         price: props.price,
-        treatmentCardId: props.treatmentCardId,
+        assingedCardId: props.assingedCardId,
       },
       id,
     );

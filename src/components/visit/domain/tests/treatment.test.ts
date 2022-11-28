@@ -11,7 +11,7 @@ const mockTreatment = () => ({
   duration: 60,
   notes: '',
   price: 50,
-  treatmentCardId: undefined,
+  assingedCardId: undefined,
 });
 
 describe('Test create()', () => {
@@ -24,7 +24,7 @@ describe('Test create()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should not create Treatment without accountId property.', () => {
     const data = mockTreatment();
@@ -83,7 +83,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(20);
     expect(treatment.notes).toEqual('notes');
     expect(treatment.price).toEqual(100);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment name only', () => {
     const data = mockTreatment();
@@ -100,7 +100,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment notes only', () => {
     const data = mockTreatment();
@@ -117,7 +117,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('new');
     expect(treatment.price).toEqual(50);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment duration only', () => {
     const data = mockTreatment();
@@ -134,7 +134,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(10);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment price only', () => {
     const data = mockTreatment();
@@ -151,7 +151,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(100);
-    expect(treatment.treatmentCardId).toEqual(undefined);
+    expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should throw error when name is not provided', () => {
     const data = mockTreatment();

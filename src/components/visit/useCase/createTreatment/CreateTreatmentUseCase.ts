@@ -5,7 +5,7 @@ import { Account } from '../../../accounts/domain/Account';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Treatment } from '../../domain/Treatment';
-import { TreatmentCardId } from '../../../treatmentCard/domain/TreatmentCardId';
+import { TreatmentCardId } from '../../domain/TreatmentCard/TreatmentCardId';
 import { ITreatmentRepo } from '../../../visit/repo/TreatmentRepo';
 import { CreateTreatmentDTO } from './CreateTreatmentDTO';
 
@@ -40,7 +40,7 @@ export class CreateTreatmentUseCase implements UseCase<CreateTreatmentDTO, Promi
           duration: duration,
           notes: notes,
           price: price,
-          treatmentCardId: cardId,
+          assingedCardId: cardId,
         },
         new UniqueEntityID(),
       );

@@ -14,7 +14,7 @@ export class TreatmentMap implements Mapper<Treatment, TreatmentDocModel> {
       name: treatment.name,
       notes: treatment.notes,
       price: { value: treatment.price },
-      treatment_card_id: treatment.treatmentCardId?.value,
+      treatment_card_id: treatment.assingedCardId?.value,
     };
   }
 
@@ -29,7 +29,7 @@ export class TreatmentMap implements Mapper<Treatment, TreatmentDocModel> {
         duration: raw.duration,
         notes: raw.notes,
         price: raw.price?.value,
-        treatmentCardId: raw.treatment_card_id ? treatmentId.getValue() : undefined,
+        assingedCardId: raw.treatment_card_id ? treatmentId.getValue() : undefined,
       },
       new UniqueEntityID(raw._id),
     );
