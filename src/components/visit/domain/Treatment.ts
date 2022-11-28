@@ -14,7 +14,6 @@ export interface TreatmentProps {
   accountId: AccountId;
   name: string;
   assingedCardId?: TreatmentCardId;
-  filledTreatmentCard?: TreatmentCard;
   price?: Price;
   duration?: Minutes;
   startTime?: Minutes;
@@ -93,14 +92,6 @@ export class Treatment extends Entity<TreatmentProps> {
 
   public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
     this.props.assingedCardId = cardId;
-    return Result.ok('Treatment card has been set.');
-  }
-
-  public setFilledTreatmentCard(card: TreatmentCard): Result<string> {
-    if (!card.isTemplateFilled) {
-      return Result.fail('Treatment card must be filled in.');
-    }
-    this.props.filledTreatmentCard = card;
     return Result.ok('Treatment card has been set.');
   }
 
