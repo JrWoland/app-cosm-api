@@ -38,7 +38,7 @@ describe('Test create().', () => {
     expect(appointment.status).toEqual('NEW');
   });
   it('Should not create appointment with foreign accountId', async () => {
-    const treatment = Treatment.create({ accountId: AccountId.create().getValue(), name: 'Fake', duration: 0, notes: '', price: 0, treatmentCardId: undefined }, new UniqueEntityID());
+    const treatment = Treatment.create({ accountId: AccountId.create().getValue(), name: 'Fake', duration: 0, notes: '', price: 0, assingedCardId: undefined }, new UniqueEntityID());
 
     const testApp = testAppointment();
 
@@ -82,7 +82,7 @@ describe('Test addTreatment().', () => {
       {
         accountId: testAppointment().accountId,
         name: 'Test',
-        treatmentCardId: undefined,
+        assingedCardId: undefined,
         duration: 500,
         notes: '',
         price: 12,
@@ -105,7 +105,7 @@ describe('Test removeTreatment().', () => {
       {
         accountId: testAppointment().accountId,
         name: 'Test',
-        treatmentCardId: undefined,
+        assingedCardId: undefined,
         duration: 500,
         notes: '',
         price: 12,
@@ -116,7 +116,7 @@ describe('Test removeTreatment().', () => {
       {
         accountId: testAppointment().accountId,
         name: 'Test',
-        treatmentCardId: undefined,
+        assingedCardId: undefined,
         duration: 500,
         notes: '',
         price: 12,

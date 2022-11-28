@@ -2,10 +2,10 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { TreatmentId } from './TreatmentId';
-import { TreatmentCardId } from './TreatmentCard/TreatmentCardId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 import { Entity } from '../../../core/domain/Entity';
+import { TreatmentCardId } from '../../treatmentCard/domain/TreatmentCardId';
 
 export type Minutes = number;
 export type Price = number;

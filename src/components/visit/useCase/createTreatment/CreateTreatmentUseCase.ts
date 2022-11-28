@@ -5,9 +5,9 @@ import { Account } from '../../../accounts/domain/Account';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Treatment } from '../../domain/Treatment';
-import { TreatmentCardId } from '../../domain/TreatmentCard/TreatmentCardId';
 import { ITreatmentRepo } from '../../../visit/repo/TreatmentRepo';
 import { CreateTreatmentDTO } from './CreateTreatmentDTO';
+import { TreatmentCardId } from '../../../treatmentCard/domain/TreatmentCardId';
 
 interface TreatmentResponseDTO {
   message: string;
