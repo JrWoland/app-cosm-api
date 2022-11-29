@@ -2,7 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Entity } from '../../../core/domain/Entity';
 import { Result } from '../../../core/logic/Result';
 
-export class TreatmentCardId extends Entity<null> {
+export class CardId extends Entity<null> {
   get value(): string {
     return this._uniqueEntityId.getValue();
   }
@@ -11,7 +11,7 @@ export class TreatmentCardId extends Entity<null> {
     super(null, id);
   }
 
-  public static create(id?: UniqueEntityID): Result<TreatmentCardId> {
-    return Result.ok<TreatmentCardId>(new TreatmentCardId(id));
+  public static create(id?: UniqueEntityID): Result<CardId> {
+    return Result.ok<CardId>(new CardId(id));
   }
 }

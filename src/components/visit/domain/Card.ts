@@ -1,15 +1,16 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueId';
-import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { Result } from '../../../core/logic/Result';
-import { TreatmentCardId } from './TreatmentCardId';
-import { ICardTemplate } from './defaultCardTemplates/TreatmentCardTemplate';
+import { CardId } from './CardId';
+import { ICardField } from './defaultCardTemplates/TreatmentCardTemplate';
 import { has } from 'lodash';
 import { AccountId } from '../../accounts/domain/AccountId';
+import { Entity } from '../../../core/domain/Entity';
 
-interface TreatmentCardProps {
+interface CardProps {
   accountId: AccountId;
   name: string;
-  template?: ICardTemplate[];
+  isTemplateFilled: boolean;
+  template: ICardField[];
 }
 
 const TREATMENT_CARD_ERRORS = {
@@ -19,17 +20,21 @@ const TREATMENT_CARD_ERRORS = {
   TEMPLATE_ERROR_MESSAGE: 'Invalid template.',
 };
 
-export class TreatmentCard extends AggregateRoot<TreatmentCardProps> {
-  private constructor(props: TreatmentCardProps, id?: UniqueEntityID) {
+export class Card extends Entity<CardProps> {
+  private constructor(props: CardProps, id?: UniqueEntityID) {
     super(props, id);
   }
 
-  public get treatmentCardId(): TreatmentCardId {
-    return TreatmentCardId.create(this._uniqueEntityId).getValue();
+  public get treatmentCardId(): CardId {
+    return CardId.create(this._uniqueEntityId).getValue();
   }
 
   public get template() {
     return this.props.template;
+  }
+
+  public get isTemplateFilled() {
+    return this.props.isTemplateFilled;
   }
 
   public get name() {
@@ -46,22 +51,22 @@ export class TreatmentCard extends AggregateRoot<TreatmentCardProps> {
     return Result.ok('Treatment card name has been set.');
   }
 
-  private setTemplate(template: ICardTemplate[]): Result<string> {
-    if (template && !TreatmentCard.isTemplateValid(template)) {
-      return Result.fail<string>(TREATMENT_CARD_ERRORS.TEMPLATE_ERROR_MESSAGE);
-    }
-    this.props.template = template;
-    return Result.ok<string>('Template has been set.');
-  }
-
-  private static isTemplateValid(template: ICardTemplate[]): boolean {
+  private static isTemplateValid(template: ICardField[]): boolean {
     const result = template.every((item) => {
       has(item, 'identifier') && has(item, 'name') && has(item, 'value') && has(item, 'options');
     });
     return result;
   }
 
-  public updateDetails(card: Omit<TreatmentCardProps, 'accountId' | 'template' | 'treatmentCardId'>): Result<string> {
+  private changeTemplate(template: ICardField[]): Result<string> {
+    if (template && !Card.isTemplateValid(template)) {
+      return Result.fail<string>(TREATMENT_CARD_ERRORS.TEMPLATE_ERROR_MESSAGE);
+    }
+    this.props.template = template;
+    return Result.ok<string>('Template has been set.');
+  }
+
+  public updateDetails(card: Omit<CardProps, 'accountId' | 'template' | 'treatmentCardId'>): Result<string> {
     const results: Result<string>[] = [];
 
     if (has(card, 'name')) {
@@ -77,26 +82,27 @@ export class TreatmentCard extends AggregateRoot<TreatmentCardProps> {
     return Result.ok(bulkResult.getValue());
   }
 
-  public static create(props: TreatmentCardProps, id?: UniqueEntityID): Result<TreatmentCard> {
-    if (props.template && !TreatmentCard.isTemplateValid(props.template)) {
-      return Result.fail<TreatmentCard>('Invalid template.');
+  public static create(props: CardProps, id?: UniqueEntityID): Result<Card> {
+    if (props.template && !Card.isTemplateValid(props.template)) {
+      return Result.fail<Card>('Invalid template.');
     }
     if (!props.name) {
-      return Result.fail<TreatmentCard>('Can not create client treatment card without name.');
+      return Result.fail<Card>('Can not create client treatment card without name.');
     }
     if (!props.accountId) {
-      return Result.fail<TreatmentCard>('Can not create client treatment card without accountId.');
+      return Result.fail<Card>('Can not create client treatment card without accountId.');
     }
 
-    const treatmentCard = new TreatmentCard(
+    const treatmentCard = new Card(
       {
         accountId: props.accountId,
         name: props.name,
         template: props.template,
+        isTemplateFilled: props.isTemplateFilled,
       },
       id,
     );
 
-    return Result.ok<TreatmentCard>(treatmentCard);
+    return Result.ok<Card>(treatmentCard);
   }
 }

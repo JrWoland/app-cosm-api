@@ -5,18 +5,20 @@ import { TreatmentId } from './TreatmentId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 import { Entity } from '../../../core/domain/Entity';
-import { TreatmentCardId } from './TreatmentCardId';
+import { CardId } from './CardId';
+import { Card } from './Card';
 
 export type Minutes = number;
 export type Price = number;
 export interface TreatmentProps {
   accountId: AccountId;
   name: string;
-  assingedCardId?: TreatmentCardId;
+  assingedCardId?: CardId;
   price?: Price;
   duration?: Minutes;
   startTime?: Minutes;
   notes?: string;
+  filledCard?: Card;
 }
 
 export class Treatment extends Entity<TreatmentProps> {
@@ -89,9 +91,17 @@ export class Treatment extends Entity<TreatmentProps> {
     return Result.ok('Treatment price has been set.');
   }
 
-  public setTreatmentCardId(cardId: TreatmentCardId): Result<string> {
+  public setTreatmentCardId(cardId: CardId): Result<string> {
     this.props.assingedCardId = cardId;
     return Result.ok('Treatment card has been set.');
+  }
+
+  public addFilledCard(card: Card) {
+    if (!card.isTemplateFilled) {
+      return Result.fail('Card need to be filled in.');
+    }
+    this.props.filledCard = card;
+    return Result.fail('Card succesfully added.');
   }
 
   public updateDetails(treatment: Partial<Omit<TreatmentProps, 'treatmentId' | 'accountId'>>): Result<string> {

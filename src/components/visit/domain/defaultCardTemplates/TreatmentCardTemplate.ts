@@ -1,8 +1,8 @@
-export interface ICardTemplate {
+export interface ICardField {
   identifier: string;
   name: string;
-  value: string[];
-  options: string[] | number[];
+  selectedOptions: string[] | number[];
+  availableOptions: string[] | number[];
   description?: string;
   custom?: unknown;
 }

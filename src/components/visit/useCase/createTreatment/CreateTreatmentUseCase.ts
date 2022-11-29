@@ -7,7 +7,7 @@ import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { Treatment } from '../../domain/Treatment';
 import { ITreatmentRepo } from '../../../visit/repo/TreatmentRepo';
 import { CreateTreatmentDTO } from './CreateTreatmentDTO';
-import { TreatmentCardId } from '../../domain/TreatmentCardId';
+import { CardId } from '../../domain/CardId';
 
 interface TreatmentResponseDTO {
   message: string;
@@ -30,7 +30,7 @@ export class CreateTreatmentUseCase implements UseCase<CreateTreatmentDTO, Promi
       return Result.fail(error.message);
     }
 
-    const cardId = treatmentCardId ? TreatmentCardId.create(new UniqueEntityID(treatmentCardId)).getValue() : undefined;
+    const cardId = treatmentCardId ? CardId.create(new UniqueEntityID(treatmentCardId)).getValue() : undefined;
 
     try {
       const newTreatment = Treatment.create(
