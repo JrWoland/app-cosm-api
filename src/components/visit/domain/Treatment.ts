@@ -5,7 +5,7 @@ import { TreatmentId } from './TreatmentId';
 import { TREATMENT_ERRORS } from './TreatmentErrors';
 import { has } from 'lodash';
 import { Entity } from '../../../core/domain/Entity';
-import { TreatmentCardId } from '../../treatmentCard/domain/TreatmentCardId';
+import { TreatmentCardId } from './TreatmentCardId';
 
 export type Minutes = number;
 export type Price = number;

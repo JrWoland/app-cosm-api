@@ -1,4 +1,4 @@
-export interface TreatmentCardTemplate {
+export interface ICardTemplate {
   identifier: string;
   name: string;
   value: string[];

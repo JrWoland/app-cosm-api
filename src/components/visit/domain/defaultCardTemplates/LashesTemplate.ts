@@ -1,6 +1,6 @@
-import { TreatmentCardTemplate } from '../TreatmentCardTemplate';
+import { ICardTemplate } from './TreatmentCardTemplate';
 
-const defaultTemplate: TreatmentCardTemplate[] = [
+const defaultTemplate: ICardTemplate[] = [
   {
     name: 'Cel wizyty',
     value: [],
