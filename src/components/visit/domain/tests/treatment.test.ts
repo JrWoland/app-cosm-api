@@ -1,5 +1,6 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { AccountId } from '../../../accounts/domain/AccountId';
+import { Card } from '../Card';
 import { Treatment } from '../Treatment';
 
 const accountId = AccountId.create().getValue();
@@ -57,6 +58,39 @@ describe('Test create()', () => {
 
     expect(treatmentResult.isFailure).toEqual(true);
     expect(treatmentResult.error).toEqual('Price must be greater than 0.');
+  });
+});
+
+describe('Test addFilledCard()', () => {
+  it('Should add card to the Treatment', () => {
+    const card = Card.create({
+      accountId: AccountId.create().getValue(),
+      isTemplateFilled: true,
+      name: 'Card treatment',
+      template: [],
+    });
+    const data = mockTreatment();
+    const treatment = Treatment.create(data, treatmentId).getValue();
+
+    const result = treatment.addFilledCard(card.getValue());
+
+    expect(result.isSuccess).toEqual(true);
+    expect(result.getValue()).toEqual('Card succesfully added.');
+  });
+  it('Should not be able to card to the Treatment when it is not filled in', () => {
+    const card = Card.create({
+      accountId: AccountId.create().getValue(),
+      isTemplateFilled: false,
+      name: 'Card treatment',
+      template: [],
+    });
+    const data = mockTreatment();
+    const treatment = Treatment.create(data, treatmentId).getValue();
+
+    const result = treatment.addFilledCard(card.getValue());
+
+    expect(result.isFailure).toEqual(true);
+    expect(result.error).toEqual('Card need to be filled in.');
   });
 });
 

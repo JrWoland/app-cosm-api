@@ -58,6 +58,10 @@ export class Treatment extends Entity<TreatmentProps> {
     return this.props.assingedCardId;
   }
 
+  public get filledCard() {
+    return this.props.filledCard;
+  }
+
   private setName(name: string): Result<string> {
     const hasName = !!name;
     if (!hasName) {
@@ -96,12 +100,12 @@ export class Treatment extends Entity<TreatmentProps> {
     return Result.ok('Treatment card has been set.');
   }
 
-  public addFilledCard(card: Card) {
+  public addFilledCard(card: Card): Result<string> {
     if (!card.isTemplateFilled) {
       return Result.fail('Card need to be filled in.');
     }
     this.props.filledCard = card;
-    return Result.fail('Card succesfully added.');
+    return Result.ok('Card succesfully added.');
   }
 
   public updateDetails(treatment: Partial<Omit<TreatmentProps, 'treatmentId' | 'accountId'>>): Result<string> {
