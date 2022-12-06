@@ -10,6 +10,7 @@ const mockTreatment = () => ({
   accountId: accountId,
   name: 'Lashes example',
   duration: 60,
+  startTime: 1080,
   notes: '',
   price: 50,
   assingedCardId: undefined,
@@ -102,6 +103,7 @@ describe('Test treatment.updateDetails()', () => {
 
     data.name = 'Test';
     data.duration = 20;
+    data.startTime = 2000;
     data.notes = 'notes';
     data.price = 100;
     const updatedTreatment = treatment.updateDetails(data);
@@ -111,6 +113,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(updatedTreatment.getValue()).toContain('Treatment notes has been set.');
     expect(updatedTreatment.getValue()).toContain('Treatment duration has been set.');
     expect(updatedTreatment.getValue()).toContain('Treatment price has been set.');
+    expect(updatedTreatment.getValue()).toContain('Treatment start time has been set.');
 
     expect(treatment.accountId).toEqual(accountId);
     expect(treatment.name).toEqual('Test');
@@ -202,6 +205,14 @@ describe('Test treatment.updateDetails()', () => {
     const updatedTreatment = treatment.updateDetails(data);
 
     expect(updatedTreatment.error).toEqual('Duration must be greater than 0.');
+  });
+  it('Should throw error when start time is less than 0', () => {
+    const data = mockTreatment();
+    const treatment = Treatment.create(data, treatmentId).getValue();
+    data.startTime = -1;
+    const updatedTreatment = treatment.updateDetails(data);
+
+    expect(updatedTreatment.error).toEqual('Start time must be greater than 0.');
   });
   it('Should throw error when price is less than 0', () => {
     const data = mockTreatment();

@@ -1,16 +1,17 @@
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
 import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
-import { Account } from '../../../accounts/domain/Account';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
 import { ClientId } from '../../../clients/domain/ClientId';
 import { Appointment } from '../../domain/Appointment';
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
+import { Treatment } from '../../domain/Treatment';
 import { TreatmentId } from '../../domain/TreatmentId';
 import { Treatments } from '../../domain/Treatments';
 import { IAppoinmentRepo } from '../../repo/AppoinmentRepo';
 import { ITreatmentRepo } from '../../repo/TreatmentRepo';
+import { TreatmentService } from '../../services/TreatmentService';
 import { CreateAppoinmentDTO, TreatmentDTO } from './CreateAppoinmentDTO';
 interface AppointmentResponseDTO {
   message: string;
@@ -18,29 +19,14 @@ interface AppointmentResponseDTO {
 }
 type Response = Result<AppointmentResponseDTO>;
 export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Promise<Response>> {
-  constructor(private appoinmentRepo: IAppoinmentRepo, private accountRepo: IAccountRepo, private treatmentRepo: ITreatmentRepo) {}
+  constructor(private appoinmentRepo: IAppoinmentRepo, private accountRepo: IAccountRepo, private treatmentRepo: ITreatmentRepo, private treatmentService: TreatmentService) {}
 
-  private async getTreatments(treatments: TreatmentDTO[], id: AccountId): Promise<Result<Treatments>> {
-    try {
-      const treatmentsList = await this.treatmentRepo.findTreatmentsByIds(
-        treatments.map(({ id }) => TreatmentId.create(new UniqueEntityID(id)).getValue()),
-        id,
-      );
-
-      treatments.forEach((tr) => {
-        const toUpdateTr = treatmentsList.find((val) => val.treatmentId.value === tr.id);
-        if (!toUpdateTr) throw new Error('Could not find treatment with id: ' + tr.id);
-        toUpdateTr?.updateDetails({
-          duration: tr.duration,
-          startTime: tr.startTime,
-        });
-      });
-
-      const treatmentsToAssign = Treatments.create(treatmentsList);
-      return Result.ok<Treatments>(treatmentsToAssign);
-    } catch (error) {
-      return Result.fail<Treatments>(error.message);
-    }
+  private async fetchTreatments(treatments: TreatmentDTO[], accountId: AccountId): Promise<Result<Treatment[]>> {
+    const treatmentsList = await this.treatmentRepo.findTreatmentsByIds(
+      treatments.map(({ id }) => TreatmentId.create(new UniqueEntityID(id)).getValue()),
+      accountId,
+    );
+    return Result.ok<Treatment[]>(treatmentsList);
   }
 
   public async execute(request: CreateAppoinmentDTO): Promise<Response> {
@@ -50,7 +36,10 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
     const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
     try {
-      const treatmentsList = await this.getTreatments(treatments, accountIdToAssign.getValue());
+      const fetchedTreatmens = await this.fetchTreatments(treatments, accountIdToAssign.getValue());
+      const updatedTreatmentsToSave = this.treatmentService.matchTreatments(fetchedTreatmens.getValue(), treatments);
+      const treatmentsList = Treatments.create(updatedTreatmentsToSave);
+
       const newAppoinment = Appointment.create(
         {
           accountId: accountIdToAssign.getValue(),
@@ -59,7 +48,7 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
           duration: duration,
           startTime: startTime,
           status: status || AppointmentStatus.New,
-          treatments: treatmentsList.getValue(),
+          treatments: treatmentsList,
         },
         new UniqueEntityID(),
       );

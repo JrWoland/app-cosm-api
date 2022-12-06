@@ -52,9 +52,7 @@ export class Card extends Entity<CardProps> {
   }
 
   private static isTemplateValid(template: ICardField[]): boolean {
-    const result = template.every((item) => {
-      has(item, 'identifier') && has(item, 'name') && has(item, 'value') && has(item, 'options');
-    });
+    const result = template.every((item) => has(item, 'identifier') && has(item, 'name') && has(item, 'selectedOptions') && has(item, 'availableOptions'));
     return result;
   }
 

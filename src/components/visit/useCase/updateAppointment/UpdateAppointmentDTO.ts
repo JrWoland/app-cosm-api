@@ -1,12 +1,25 @@
 import { AppointmentStatus } from '../../domain/AppointmentStatus';
 
-interface TreatmentDTO {
+interface CardTemplate {
+  name: string;
+  identifier: string;
+  selectedOptions: string[] | number[];
+  availableOptions: string[] | number[];
+  description: string;
+}
+interface CardDTO {
+  id: string;
+  name: string;
+  startTime: number;
+  duration: number;
+  template: CardTemplate[];
+}
+export interface TreatmentDTO {
   id: string;
   duration: number;
   startTime: number;
-  cardTemplate: unknown;
+  card: CardDTO;
 }
-
 export interface UpdateAppointmentDTO {
   accountId: string;
   appointmentId: string;

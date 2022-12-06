@@ -86,6 +86,15 @@ export class Treatment extends Entity<TreatmentProps> {
     return Result.ok('Treatment duration has been set.');
   }
 
+  private setStartTime(startTime: Minutes): Result<string> {
+    if (startTime < 0) {
+      const error = Result.fail<string>(TREATMENT_ERRORS.START_TIME_ERROR_MESSAGE);
+      return error;
+    }
+    this.props.startTime = startTime;
+    return Result.ok('Treatment start time has been set.');
+  }
+
   private setPrice(price: Price): Result<string> {
     if (price < 0) {
       const error = Result.fail<string>(TREATMENT_ERRORS.PRICE_ERROR_MESSAGE);
@@ -122,6 +131,9 @@ export class Treatment extends Entity<TreatmentProps> {
     }
     if (has(treatment, 'price')) {
       results.push(this.setPrice(treatment.price || 0));
+    }
+    if (has(treatment, 'startTime')) {
+      results.push(this.setStartTime(treatment.startTime || 0));
     }
 
     const bulkResult = Result.bulkCheck<string>(results);

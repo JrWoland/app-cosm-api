@@ -8,6 +8,7 @@ import { TreatmentId } from '../../domain/TreatmentId';
 import { Treatments } from '../../domain/Treatments';
 import { IAppoinmentRepo } from '../../repo/AppoinmentRepo';
 import { ITreatmentRepo } from '../../repo/TreatmentRepo';
+import { TreatmentService } from '../../services/TreatmentService';
 import { UpdateAppointmentDTO } from './UpdateAppointmentDTO';
 interface AppointmentResponseDTO {
   message: string;
@@ -16,7 +17,7 @@ interface AppointmentResponseDTO {
 type Response = Result<AppointmentResponseDTO>;
 
 export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, Promise<Response>> {
-  constructor(private appoinmentRepo: IAppoinmentRepo, private treatmentRepo: ITreatmentRepo) {}
+  constructor(private appoinmentRepo: IAppoinmentRepo, private treatmentRepo: ITreatmentRepo, private treatmentService: TreatmentService) {}
 
   public async execute(request: UpdateAppointmentDTO): Promise<Response> {
     const { accountId, appointmentId, date, duration, startTime, treatments, clientId, status } = request;
@@ -37,11 +38,9 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
 
       const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
-      const treatmentsList = await this.treatmentRepo.findTreatmentsByIds(
-        treatments.map((i) => TreatmentId.create(new UniqueEntityID(i.id)).getValue()),
-        accId,
-      );
-      const treatmentsToAssign = Treatments.create(treatmentsList);
+      const matchedTreatments = this.treatmentService.matchTreatments(appointment.treatments.list, treatments);
+
+      const treatmentsToAssign = Treatments.create(matchedTreatments);
 
       const updateResult = appointment.updateDetails({
         date: new Date(date),

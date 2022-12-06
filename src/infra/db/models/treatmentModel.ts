@@ -6,6 +6,7 @@ export interface TreatmentDocModel {
   name: string;
   notes?: string;
   duration?: number;
+  start_time?: number;
   price?: { value?: number; currency?: string };
   treatment_card_id?: string;
   created_at?: Date;
@@ -32,6 +33,10 @@ const treatmentScheema = new mongoose.Schema<TreatmentDocModel>(
       required: false,
     },
     duration: {
+      type: Number, //minutes
+      required: false,
+    },
+    start_time: {
       type: Number, //minutes
       required: false,
     },
