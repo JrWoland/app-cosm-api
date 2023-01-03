@@ -8,7 +8,7 @@ export class CreateAppoinmentController extends BaseController {
     super();
   }
 
-  public async executeImpl(req: DecodedExpressReq): Promise<any> {
+  public async executeImpl(req: DecodedExpressReq) {
     const newAppoinmentDTO: CreateAppoinmentDTO = this.req.body;
 
     newAppoinmentDTO.accountId = req.accountId;
@@ -24,7 +24,7 @@ export class CreateAppoinmentController extends BaseController {
       } else {
         this.unprocesable(result.error?.toString());
       }
-    } catch (error: any) {
+    } catch (error) {
       return this.fail(error.message);
     }
   }

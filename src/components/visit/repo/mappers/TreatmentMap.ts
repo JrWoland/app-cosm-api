@@ -21,7 +21,7 @@ export class TreatmentMap implements Mapper<Treatment, TreatmentDocModel> {
 
   public toDomain(raw: TreatmentDocModel): Treatment {
     const accountId = AccountId.create(new UniqueEntityID(raw.account_id));
-    const treatmentId = TreatmentId.create(new UniqueEntityID(raw._id));
+    const treatmentId = TreatmentId.create(new UniqueEntityID(raw.treatment_card_id));
 
     const treatment = Treatment.create(
       {

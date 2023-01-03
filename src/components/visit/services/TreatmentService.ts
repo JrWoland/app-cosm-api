@@ -20,10 +20,11 @@ export class TreatmentService {
 
       if (card?.isFailure) throw new Error('Could not create card for treatment: ' + card.error);
 
+      if (card?.isSuccess) matchTreatment.addFilledCard(card.getValue());
+
       matchTreatment.updateDetails({
         duration: treatmentFromRequest.duration,
         startTime: treatmentFromRequest.startTime,
-        filledCard: card?.isSuccess ? card.getValue() : undefined,
       });
 
       return matchTreatment;
