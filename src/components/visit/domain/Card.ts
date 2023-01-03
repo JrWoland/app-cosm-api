@@ -82,7 +82,7 @@ export class Card extends Entity<CardProps> {
 
   public static create(props: CardProps, id?: UniqueEntityID): Result<Card> {
     if (props.template && !Card.isTemplateValid(props.template)) {
-      return Result.fail<Card>('Invalid template.');
+      return Result.fail<Card>(TREATMENT_CARD_ERRORS.TEMPLATE_ERROR_MESSAGE);
     }
     if (!props.name) {
       return Result.fail<Card>('Can not create client treatment card without name.');
