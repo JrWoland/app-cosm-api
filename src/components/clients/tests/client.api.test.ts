@@ -200,3 +200,6 @@ describe('Endpoint /api/client/:clientId', () => {
     await ClientModel.deleteOne({ _id: client.body.clientId });
   });
 });
+
+// describe('Endpoint /api/client/all', () => {})
+// describe('Endpoint /api/client/update/status', () => {})
