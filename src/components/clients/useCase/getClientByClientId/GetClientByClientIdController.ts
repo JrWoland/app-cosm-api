@@ -17,7 +17,7 @@ export class GetClientByClientIdController extends BaseController {
     try {
       const result = await this.useCase.execute(clientDto);
 
-      if (result.isFailure) return this.unprocesable(result.error?.toString());
+      if (result.isFailure) return this.notFound(result.error?.toString());
 
       return this.ok(this.res, result.getValue());
     } catch (error) {

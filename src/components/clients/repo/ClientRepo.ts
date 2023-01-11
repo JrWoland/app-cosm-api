@@ -59,7 +59,7 @@ export class ClientRepo implements IClientRepo {
       }
       return new ClientMap().toDomain(client[0]);
     } catch (error) {
-      throw new Error(`Cant find client by id: ${error}`);
+      throw new Error(`Cant find client by id: ${error.message}`);
     }
   }
 

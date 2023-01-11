@@ -33,7 +33,7 @@ const mockClient = (): ClientReq => ({
 const testUser = { email: 'test@test.com', password: 'testtest' };
 const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 
-describe('Test create client scenarios /api/client/create', () => {
+describe('Endpoint /api/client/create', () => {
   it('Should create client /api/client/create', async () => {
     const testClient = mockClient();
     const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
@@ -64,7 +64,7 @@ describe('Test create client scenarios /api/client/create', () => {
   });
 });
 
-describe('Test update client scenarios /api/client/update', () => {
+describe('Endpoint /api/client/update', () => {
   it('Should update client', async () => {
     const testClient = mockClient();
     const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
@@ -165,5 +165,38 @@ describe('Test update client scenarios /api/client/update', () => {
 
     expect(updatedClient.body.message).toEqual('Client not found.');
     expect(updatedClient.status).toEqual(422);
+  });
+});
+
+describe('Endpoint /api/client/:clientId', () => {
+  it('Should GET client by clientId ', async () => {
+    const testClient = mockClient();
+
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const clientGET = await request(app).get(`/api/client/${client.body.clientId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    expect(clientGET.body.id).toEqual(client.body.clientId);
+    expect(clientGET.body.name).toEqual(testClient.name);
+    expect(clientGET.body.surname).toEqual(testClient.surname);
+    expect(clientGET.body.birthDate).toEqual(null);
+    expect(clientGET.body.phone).toEqual(testClient.phone);
+    expect(clientGET.body.email).toEqual(testClient.email);
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
+  it('Should not be able to GET client by clientId from other account', async () => {
+    const testClient = mockClient();
+
+    // auth account2
+    const client = await request(app).post('/api/client/create').auth(testUser2.email, testUser2.password, { type: 'basic' }).send(testClient);
+
+    // auth account1
+    const clientGET = await request(app).get(`/api/client/${client.body.clientId}`).auth(testUser.email, testUser.password, { type: 'basic' });
+
+    expect(clientGET.body.message).toEqual('Cant find client by id: Client does not exists.');
+    expect(clientGET.status).toEqual(404);
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
   });
 });
