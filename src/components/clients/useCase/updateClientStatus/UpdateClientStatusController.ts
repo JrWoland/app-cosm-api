@@ -18,12 +18,10 @@ export class UpdateClientStatusController extends BaseController {
 
       if (result.isFailure) return this.unprocesable(result.error?.toString());
 
-      return this.res.status(200).send({
-        message: result.getValue().message,
-        clientId: result.getValue().clientId,
-        newStatus: result.getValue().newStatus,
-      });
-    } catch (error: any) {
+      const { message, clientId, newStatus, oldStatus } = result.getValue();
+
+      return this.res.status(200).send({ message, clientId, newStatus, oldStatus });
+    } catch (error) {
       return this.fail(error.message);
     }
   }

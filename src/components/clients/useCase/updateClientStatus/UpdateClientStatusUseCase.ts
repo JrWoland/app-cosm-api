@@ -12,6 +12,7 @@ import { AccountId } from '../../../accounts/domain/AccountId';
 interface UpdateClientStatusResponseDTO {
   message: string;
   clientId: string;
+  oldStatus: string;
   newStatus: string;
 }
 
@@ -22,7 +23,7 @@ export class UpdateClientStatusUseCase implements UseCase<UpdateClientStatusDTO,
 
   public async execute(request: UpdateClientStatusDTO): Promise<Response> {
     let client: Client;
-
+    let oldStatus: string;
     const { status, clientId, accountId } = request;
 
     if (!clientId) {
@@ -34,6 +35,7 @@ export class UpdateClientStatusUseCase implements UseCase<UpdateClientStatusDTO,
 
     try {
       client = await this.clientRepo.findClientById(clientIdResult, accountIdResult);
+      oldStatus = client.status;
     } catch (error) {
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
@@ -50,6 +52,6 @@ export class UpdateClientStatusUseCase implements UseCase<UpdateClientStatusDTO,
 
     await this.clientRepo.save(client);
 
-    return Result.ok({ message: 'Client status updated.', clientId: clientId, newStatus: status });
+    return Result.ok({ message: 'Client status updated.', clientId: clientId, newStatus: status, oldStatus });
   }
 }
