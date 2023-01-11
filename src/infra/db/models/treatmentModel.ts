@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { CardDocModel } from './cardModel';
 
 export interface TreatmentDocModel {
   _id: string;
@@ -9,6 +10,7 @@ export interface TreatmentDocModel {
   start_time?: number;
   price?: { value?: number; currency?: string };
   treatment_card_id?: string;
+  filled_card?: CardDocModel;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -50,8 +52,12 @@ const treatmentScheema = new mongoose.Schema<TreatmentDocModel>(
         required: false,
       },
     },
-    treatmentCardId: {
+    treatment_card_id: {
       type: String,
+      required: false,
+    },
+    filled_card: {
+      type: Object,
       required: false,
     },
   },

@@ -1,3 +1,4 @@
+import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Card } from '../domain/Card';
 import { Treatment } from '../domain/Treatment';
 import { TreatmentDTO } from '../useCase/createAppoinment/CreateAppoinmentDTO';
@@ -10,13 +11,16 @@ export class TreatmentService {
       if (!matchTreatment) throw new Error('Could not find treatment with id: ' + treatmentFromRequest.id);
 
       const card = treatmentFromRequest.card
-        ? Card.create({
-            accountId: matchTreatment.accountId,
-            isTemplateFilled: true,
-            name: treatmentFromRequest.card.name,
-            template: treatmentFromRequest.card.template,
-          })
-        : undefined;
+        ? Card.create(
+            {
+              accountId: matchTreatment.accountId,
+              isTemplateFilled: true,
+              name: treatmentFromRequest.card.name,
+              template: treatmentFromRequest.card.template,
+            },
+            new UniqueEntityID(treatmentFromRequest.card.id),
+          )
+        : null;
 
       if (card?.isFailure) throw new Error('Could not create card for treatment: ' + card.error);
 

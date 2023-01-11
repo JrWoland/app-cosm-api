@@ -29,6 +29,10 @@ export class Card extends Entity<CardProps> {
     return CardId.create(this._uniqueEntityId).getValue();
   }
 
+  public get accountId(): AccountId {
+    return this.props.accountId;
+  }
+
   public get template() {
     return this.props.template;
   }
