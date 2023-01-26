@@ -1,5 +1,6 @@
 import * as express from 'express';
 
+type PaginationProps = { count: number; limit: number; page: number };
 export abstract class BaseController {
   protected req!: express.Request;
 
@@ -68,5 +69,13 @@ export abstract class BaseController {
     return this.res.status(500).json({
       message: error.toString(),
     });
+  }
+
+  public pagination({ count, limit, page }: PaginationProps): { totalPages: number; currentPage: number; count: number } {
+    return {
+      totalPages: Math.ceil(count / Number(limit)),
+      currentPage: Number(page),
+      count,
+    };
   }
 }

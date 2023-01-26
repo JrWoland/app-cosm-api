@@ -1,18 +1,65 @@
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { AppointmentDocModel } from '../../../infra/db/models/appointmentModel';
 import { AppointmentId } from '../domain/AppointmentId';
 import { Appointment } from '../domain/Appointment';
 import { AppointmentMap } from './mappers/AppoinmentMap';
 import { AccountId } from '../../accounts/domain/AccountId';
+import { startOfDay, endOfDay } from 'date-fns';
+interface AppointmetsFilter {
+  page: number;
+  limit: number;
+  satus: string;
+  dateFrom: string;
+  dateTo: string;
+  clientId: string;
+  beautyServiceId: string;
+}
 
+interface AppointmentsList {
+  count: number;
+  appointments: Appointment[];
+}
 export interface IAppoinmentRepo {
   findAppointmentByAppointmentAndAccountId(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment>;
+  findAllAppoinmentsList(accountId: AccountId, filters: AppointmetsFilter): Promise<AppointmentsList>;
   exists(appointment: Appointment): Promise<boolean>;
   save(appointment: Appointment): Promise<void>;
 }
 
 export class AppoinmentRepo implements IAppoinmentRepo {
   constructor(private model: Model<AppointmentDocModel>) {}
+
+  private dateQuery(filters: AppointmetsFilter) {
+    const dateQuery = {};
+    if (filters.dateFrom) Object.assign(dateQuery, { $gte: startOfDay(new Date(filters.dateFrom)) });
+    if (filters.dateTo) Object.assign(dateQuery, { $lte: endOfDay(new Date(filters.dateTo)) });
+    return dateQuery;
+  }
+
+  private buildQuery(accountId: AccountId, filters: AppointmetsFilter): FilterQuery<AppointmentDocModel> {
+    const mongooseQuery: FilterQuery<AppointmentDocModel> = {
+      account_id: accountId.id.getValue(),
+    };
+
+    if (filters.clientId) mongooseQuery.client_id = filters.clientId;
+
+    if (filters.beautyServiceId) mongooseQuery['services._id'] = { $or: [filters.beautyServiceId] };
+
+    if (filters.dateFrom || filters.dateTo) mongooseQuery.date = this.dateQuery(filters);
+
+    if (filters.satus) mongooseQuery.status = { $regex: new RegExp(filters.satus || '', 'i') };
+
+    return mongooseQuery;
+  }
+
+  public async count(accountId: AccountId, filters: AppointmetsFilter): Promise<number> {
+    try {
+      const numberOfappointments = await this.model.count(this.buildQuery(accountId, filters));
+      return numberOfappointments;
+    } catch (error) {
+      throw new Error(`Could not count appointments: ${error}`);
+    }
+  }
 
   public async findAppointmentByAppointmentAndAccountId(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment> {
     try {
@@ -24,6 +71,22 @@ export class AppoinmentRepo implements IAppoinmentRepo {
       return new AppointmentMap().toDomain(appoinment);
     } catch (error) {
       throw new Error('Can not find appoinment by appoinmentId.');
+    }
+  }
+
+  public async findAllAppoinmentsList(accountId: AccountId, filters: AppointmetsFilter): Promise<AppointmentsList> {
+    try {
+      const result = await this.model
+        .find(this.buildQuery(accountId, filters))
+        .limit(filters.limit * 1)
+        .skip((filters.page - 1) * filters.limit);
+
+      const count = await this.count(accountId, filters);
+      const appointmentsList = result.map((appointment) => new AppointmentMap().toDomain(appointment));
+
+      return { count, appointments: appointmentsList };
+    } catch (error) {
+      throw new Error(`Can not find appointments: ${error}`);
     }
   }
 
