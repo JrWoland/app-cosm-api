@@ -3,11 +3,17 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { AppointmentModel } from '../../../infra/db/models/appointmentModel';
 import { TreatmentModel } from '../../../infra/db/models/treatmentModel';
+import { initConnection } from '../../../infra/db/mongo';
 
 const app = new ExpressServer().create();
 
+// beforeEach((done) => {
+//   mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
+// });
+
 beforeEach((done) => {
-  mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
+  initConnection();
+  done();
 });
 
 afterEach((done) => {
@@ -39,8 +45,8 @@ const getMockAppointment = () => ({
   status: 'RANDOM_VALUE',
 });
 
-describe('Test create appointment scenarios /api/appointment/create', () => {
-  it('Should create appointment /api/appointment/create', async () => {
+describe('/api/appointment/create', () => {
+  it('Should create appointment', async () => {
     const appointment = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
     expect(appointment.status).toEqual(201);
     expect(appointment.body.message).toEqual('Appointment created.');
@@ -83,7 +89,7 @@ describe('Test create appointment scenarios /api/appointment/create', () => {
   });
 });
 
-describe('Test update appointment scenarios /api/appointment/update when:', () => {
+describe('/api/appointment/update', () => {
   it('Should not update the appointment when duration or startTime is 0 or less', async () => {
     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
     const updated = getMockAppointment();
@@ -96,6 +102,8 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
     expect(updatedAppointment.body.message).toContain('Duration must be greater than 0.');
     expect(updatedAppointment.body.message).toContain('Start time must be greater than 0.');
     expect(updatedAppointment.body.message).toContain('Status is not valid: RANDOM_VALUE.');
+
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
   });
 
   it('Should not update the appointment when appointmentId is null.', async () => {
@@ -123,6 +131,60 @@ describe('Test update appointment scenarios /api/appointment/update when:', () =
   });
 });
 
+describe('/api/appointment/list', () => {
+  it('Should return list of appointments.', async () => {
+    const { body, status } = await request(app).get('/api/appointment/list?&page=1&limit=1').auth(testUser.email, testUser.password, { type: 'basic' }).send();
+
+    expect(status).toEqual(200);
+    expect(body.count).toBeGreaterThan(1);
+    expect(body.totalPages).toBeGreaterThan(1);
+    expect(body.currentPage).toEqual(1);
+    expect(body.appointments).toBeInstanceOf(Array);
+  });
+
+  it('Should return list of appointments with particular type of treatment.', async () => {
+    const tr = {
+      name: 'Testing list',
+      treatmentCardId: null,
+      startTime: '20',
+      duration: '120',
+    } as never;
+
+    // Create treatment type
+    const treatment = await request(app).post('/api/treatment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(tr);
+    expect(treatment.status).toEqual(201);
+    expect(treatment.body.message).toEqual('Treatment created.');
+    expect(treatment.body.treatmentId).toBeTruthy();
+
+    // create appointment with treatment
+    const appointment = getMockAppointment();
+    appointment.startTime = 600;
+    appointment.duration = 120;
+    appointment.status = 'NEW';
+    appointment.treatments.push({ id: treatment.body.treatmentId, startTime: 500, duration: 60 } as never);
+    const appointmentResponse = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(appointment);
+
+    expect(appointmentResponse.body.message).toEqual('Appointment created.');
+
+    const { body } = await request(app).get(`/api/appointment/list?&page=1&limit=1&beautyServiceId=${treatment.body.treatmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+
+    expect(body.appointments[0]).toHaveProperty('id');
+    expect(body.appointments[0]).toHaveProperty('clientId');
+    expect(body.appointments[0]).toHaveProperty('date');
+    expect(body.appointments[0]).toHaveProperty('status');
+    expect(body.appointments[0]).toHaveProperty('duration');
+    expect(body.appointments[0]).toHaveProperty('startTime');
+    expect(body.appointments[0]).toHaveProperty('treatments');
+
+    expect(body.appointments[0].treatments[0].id).toEqual(treatment.body.treatmentId);
+    expect(body.appointments[0].treatments[0].name).toEqual('Testing list');
+    expect(body.appointments[0].treatments[0].startTime).toEqual(500);
+    expect(body.appointments[0].treatments[0].duration).toEqual(60);
+
+    await AppointmentModel.deleteOne({ _id: appointmentResponse.body.appointmentId });
+    await TreatmentModel.deleteOne({ _id: treatment.body.treatmentId });
+  });
+});
 // describe('Test delete appointment.', () => {
 //   it('Should be able to delete the appointment.', async () => {
 //     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);

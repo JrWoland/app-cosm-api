@@ -43,7 +43,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
 
     if (filters.clientId) mongooseQuery.client_id = filters.clientId;
 
-    if (filters.beautyServiceId) mongooseQuery['services._id'] = { $or: [filters.beautyServiceId] };
+    if (filters.beautyServiceId) mongooseQuery['services._id'] = { $in: [filters.beautyServiceId] };
 
     if (filters.dateFrom || filters.dateTo) mongooseQuery.date = this.dateQuery(filters);
 
