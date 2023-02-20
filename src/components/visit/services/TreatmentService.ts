@@ -29,6 +29,7 @@ export class TreatmentService {
       matchTreatment.updateDetails({
         duration: treatmentFromRequest.duration,
         startTime: treatmentFromRequest.startTime,
+        price: treatmentFromRequest.price || matchTreatment.price,
       });
 
       return matchTreatment;

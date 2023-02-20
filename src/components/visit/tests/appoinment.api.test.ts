@@ -3,26 +3,20 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { AppointmentModel } from '../../../infra/db/models/appointmentModel';
 import { TreatmentModel } from '../../../infra/db/models/treatmentModel';
-import { initConnection } from '../../../infra/db/mongo';
 
 const app = new ExpressServer().create();
 
-// beforeEach((done) => {
-//   mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
-// });
-
 beforeEach((done) => {
-  initConnection();
-  done();
+  mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
 });
 
 afterEach((done) => {
   mongoose.connection.close(() => done());
 });
 
-const getCookie = (cookie: string) => {
-  return Object.fromEntries(cookie.split(';').map((i: string) => i.trim().split('=')));
-};
+// const getCookie = (cookie: string) => {
+//   return Object.fromEntries(cookie.split(';').map((i: string) => i.trim().split('=')));
+// };
 
 const testUser = { email: 'test@test.com', password: 'testtest' };
 const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
@@ -85,7 +79,7 @@ describe('/api/appointment/create', () => {
     expect(appointment.body.message).toEqual(`Appointment could not be created. Could not find treatment with id: ${treatment.body.treatmentId}`);
     expect(appointment.body.appointmentId).toBeFalsy();
 
-    await TreatmentModel.deleteOne({ _id: appointment.body.treatmentId });
+    await TreatmentModel.deleteOne({ _id: treatment.body.treatmentId });
   });
 });
 
@@ -107,7 +101,7 @@ describe('/api/appointment/update', () => {
   });
 
   it('Should not update the appointment when appointmentId is null.', async () => {
-    await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
     const updated = getMockAppointment();
     updated.appointmentId = null;
     updated.duration = 500;
@@ -116,6 +110,8 @@ describe('/api/appointment/update', () => {
 
     expect(updatedAppointment.status).toEqual(422);
     expect(updatedAppointment.body.message).toEqual('Invalid appointment id.');
+
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
   });
 
   it('Should not be able to access appointment from another account.', async () => {
@@ -128,18 +124,27 @@ describe('/api/appointment/update', () => {
 
     expect(updatedAppointment.status).toEqual(422);
     expect(updatedAppointment.body.message).toEqual('Appointment could not be updated.');
+
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
   });
 });
 
 describe('/api/appointment/list', () => {
   it('Should return list of appointments.', async () => {
-    const { body, status } = await request(app).get('/api/appointment/list?&page=1&limit=1').auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const appointment1 = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const appointment2 = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+
+    const { body, status } = await request(app).get('/api/appointment/list?&page=1&limit=2').auth(testUser.email, testUser.password, { type: 'basic' }).send();
 
     expect(status).toEqual(200);
     expect(body.count).toBeGreaterThan(1);
     expect(body.totalPages).toBeGreaterThan(1);
     expect(body.currentPage).toEqual(1);
+    expect(body.appointments.length).toEqual(2);
     expect(body.appointments).toBeInstanceOf(Array);
+
+    await AppointmentModel.deleteOne({ _id: appointment1.body.appointmentId });
+    await AppointmentModel.deleteOne({ _id: appointment2.body.appointmentId });
   });
 
   it('Should return list of appointments with particular type of treatment.', async () => {
@@ -161,7 +166,7 @@ describe('/api/appointment/list', () => {
     appointment.startTime = 600;
     appointment.duration = 120;
     appointment.status = 'NEW';
-    appointment.treatments.push({ id: treatment.body.treatmentId, startTime: 500, duration: 60 } as never);
+    appointment.treatments.push({ id: treatment.body.treatmentId, startTime: 123, duration: 15 } as never);
     const appointmentResponse = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(appointment);
 
     expect(appointmentResponse.body.message).toEqual('Appointment created.');
@@ -178,8 +183,8 @@ describe('/api/appointment/list', () => {
 
     expect(body.appointments[0].treatments[0].id).toEqual(treatment.body.treatmentId);
     expect(body.appointments[0].treatments[0].name).toEqual('Testing list');
-    expect(body.appointments[0].treatments[0].startTime).toEqual(500);
-    expect(body.appointments[0].treatments[0].duration).toEqual(60);
+    expect(body.appointments[0].treatments[0].startTime).toEqual(123);
+    expect(body.appointments[0].treatments[0].duration).toEqual(15);
 
     await AppointmentModel.deleteOne({ _id: appointmentResponse.body.appointmentId });
     await TreatmentModel.deleteOne({ _id: treatment.body.treatmentId });

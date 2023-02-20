@@ -26,6 +26,7 @@ describe('Test create()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
+    expect(treatment.startTime).toEqual(1080);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should not create Treatment without accountId property.', () => {
@@ -120,6 +121,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(20);
     expect(treatment.notes).toEqual('notes');
     expect(treatment.price).toEqual(100);
+    expect(treatment.startTime).toEqual(2000);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment name only', () => {
@@ -137,6 +139,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
+    expect(treatment.startTime).toEqual(1080);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment notes only', () => {
@@ -154,6 +157,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('new');
     expect(treatment.price).toEqual(50);
+    expect(treatment.startTime).toEqual(1080);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment duration only', () => {
@@ -171,6 +175,7 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(10);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(50);
+    expect(treatment.startTime).toEqual(1080);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should update treatment price only', () => {
@@ -188,6 +193,25 @@ describe('Test treatment.updateDetails()', () => {
     expect(treatment.duration).toEqual(60);
     expect(treatment.notes).toEqual('');
     expect(treatment.price).toEqual(100);
+    expect(treatment.startTime).toEqual(1080);
+    expect(treatment.assingedCardId).toEqual(undefined);
+  });
+  it('Should update startTime only', () => {
+    const data = mockTreatment();
+
+    const treatment = Treatment.create(data, treatmentId).getValue();
+
+    const updatedTreatment = treatment.updateDetails({ name: 'Lashes', startTime: 3000 });
+
+    expect(updatedTreatment.isSuccess).toEqual(true);
+    expect(updatedTreatment.getValue()).toContain('Treatment start time has been set.');
+
+    expect(treatment.accountId).toEqual(accountId);
+    expect(treatment.name).toEqual('Lashes');
+    expect(treatment.duration).toEqual(60);
+    expect(treatment.notes).toEqual('');
+    expect(treatment.price).toEqual(50);
+    expect(treatment.startTime).toEqual(3000);
     expect(treatment.assingedCardId).toEqual(undefined);
   });
   it('Should throw error when name is not provided', () => {

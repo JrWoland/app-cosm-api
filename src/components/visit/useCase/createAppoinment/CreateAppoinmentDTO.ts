@@ -10,14 +10,13 @@ interface CardTemplate {
 interface CardDTO {
   id: string;
   name: string;
-  startTime: number;
-  duration: number;
   template: CardTemplate[];
 }
 export interface TreatmentDTO {
   id: string;
   duration: number;
   startTime: number;
+  price: number;
   card?: CardDTO;
 }
 export interface CreateAppoinmentDTO {
