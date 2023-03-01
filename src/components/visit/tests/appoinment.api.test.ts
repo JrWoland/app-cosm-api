@@ -3,6 +3,14 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { AppointmentModel } from '../../../infra/db/models/appointmentModel';
 import { TreatmentModel } from '../../../infra/db/models/treatmentModel';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { ClientModel } from '../../../infra/db/models/clientModel';
+dayjs.extend(isBetween);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 const app = new ExpressServer().create();
 
@@ -23,7 +31,7 @@ const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 
 const testAppointment = {
   clientId: null,
-  date: Date.now(),
+  date: new Date('2019-01-01').toISOString(),
   startTime: 500,
   duration: 800,
   treatments: [],
@@ -32,7 +40,7 @@ const testAppointment = {
 const getMockAppointment = () => ({
   appointmentId: null,
   clientId: null,
-  date: Date.now(),
+  date: new Date('2019-01-01').toISOString(),
   startTime: 0,
   duration: 0,
   treatments: [],
@@ -189,9 +197,84 @@ describe('/api/appointment/list', () => {
     await AppointmentModel.deleteOne({ _id: appointmentResponse.body.appointmentId });
     await TreatmentModel.deleteOne({ _id: treatment.body.treatmentId });
   });
+
+  it('Should return appointments within particular date range', async () => {
+    const appo1 = getMockAppointment();
+    const appo2 = getMockAppointment();
+
+    appo1.status = 'NEW';
+    appo1.startTime = 1;
+    appo1.duration = 1;
+    appo1.date = new Date('2020-01-01').toISOString();
+
+    appo2.status = 'NEW';
+    appo2.startTime = 1;
+    appo2.duration = 1;
+    appo2.date = new Date('2022-01-01').toISOString();
+
+    const appointment1 = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(appo1);
+    const appointment2 = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(appo2);
+
+    const result2 = await request(app).get(`/api/appointment/list?dateTo=2020-01-01`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(result2.body.appointments.every((item: { date: string }) => dayjs(item.date).isSameOrBefore('2020-01-01', 'day'))).toEqual(true);
+
+    const result4 = await request(app).get(`/api/appointment/list?dateFrom=2020-01-02`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(result4.body.appointments.every((item: { date: string }) => dayjs(item.date).isSameOrAfter('2020-01-02', 'day'))).toEqual(true);
+
+    const result1 = await request(app).get(`/api/appointment/list?dateFrom=2020-01-01&dateTo=2020-01-02`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(result1.body.appointments.every((item: { date: string }) => dayjs(item.date).isBetween('2020-01-01', '2020-01-02', 'day', '[]'))).toEqual(true);
+
+    const result3 = await request(app).get(`/api/appointment/list?dateFrom=2020-01-02&dateTo=2022-01-01`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(result3.body.appointments.every((item: { date: string }) => dayjs(item.date).isBetween('2020-01-02', '2022-01-01', 'day', '[]'))).toEqual(true);
+
+    const result5 = await request(app).get(`/api/appointment/list?dateFrom=2020-01-02&dateTo=2022-01-02`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    expect(result5.body.appointments.every((item: { date: string }) => dayjs(item.date).isBetween('2020-01-01', '2022-01-02', 'day', '[]'))).toEqual(true);
+
+    await AppointmentModel.deleteOne({ _id: appointment1.body.appointmentId });
+    await AppointmentModel.deleteOne({ _id: appointment2.body.appointmentId });
+  });
+  it('Should return appointments for particualar clientId', async () => {
+    const client = { name: 'Client1Name', surname: 'Client1Surname' };
+    const clientResult = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(client);
+
+    // create appointment with clientId
+    const appointment = getMockAppointment();
+    appointment.clientId = clientResult.body.clientId;
+    appointment.startTime = 600;
+    appointment.duration = 120;
+    appointment.status = 'NEW';
+    const appointmentResponse = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(appointment);
+
+    const { body } = await request(app).get(`/api/appointment/list?&page=1&limit=1&clientId=${clientResult.body.clientId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+
+    expect(body.appointments.every((item: { clientId: string }) => item.clientId === clientResult.body.clientId)).toEqual(true);
+
+    await ClientModel.deleteOne({ _id: clientResult.body.clientId });
+    await AppointmentModel.deleteOne({ _id: appointmentResponse.body.appointmentId });
+  });
 });
+// describe('/api/appointment/:id', () => {
+//   it('Should get appointment by id', async () => {
+//     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+
+//     const { body } = await request(app).get(`/api/appointment/${result.body.appointmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+
+//     expect(body.appointmentId).toEqual(result.body.appointmentId);
+//     expect(body.clientId).toEqual(null);
+//     expect(body.date).toEqual(1);
+//     expect(body.startTime).toEqual(500);
+//     expect(body.duration).toEqual(800);
+//     expect(body.treatments).toBeInstanceOf(Array);
+//     expect(body.treatments.length).toEqual(0);
+//     expect(body.status).toEqual('NEW');
+
+//     await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
+//   });
+//   // it('Should not get appointment from another account', async () => {});
+//   // it('Should return 404 when appointment not found', async () => {});
+// });
 // describe('Test delete appointment.', () => {
-//   it('Should be able to delete the appointment.', async () => {
+//   it('Shou ld be able to delete the appointment.', async () => {
 //     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 //     const resultDeleted = await request(app).delete('/api/appointment/delete').auth(testUser.email, testUser.password, { type: 'basic' }).send({ appointmentId: result.body.appointmentId });
 

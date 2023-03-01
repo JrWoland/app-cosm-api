@@ -80,6 +80,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
         .find(this.buildQuery(accountId, filters))
         .limit(filters.limit * 1)
         .skip((filters.page - 1) * filters.limit);
+      // .sort({ date: 'asc' });
 
       const count = await this.count(accountId, filters);
       const appointmentsList = result.map((appointment) => new AppointmentMap().toDomain(appointment));
