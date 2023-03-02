@@ -63,14 +63,14 @@ export class AppoinmentRepo implements IAppoinmentRepo {
 
   public async findAppointmentByAppointmentAndAccountId(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment> {
     try {
-      const appoinment = await this.model.findOne({ _id: appointmentId.value.toString(), account_id: accountId.id.getValue() });
+      const appointment = await this.model.findOne({ _id: appointmentId.value.toString(), account_id: accountId.id.getValue() });
 
-      if (!appoinment) {
+      if (!appointment) {
         throw new Error(`Appointment with id ${appointmentId.value.toString()} does not exists.`);
       }
-      return new AppointmentMap().toDomain(appoinment);
+      return new AppointmentMap().toDomain(appointment);
     } catch (error) {
-      throw new Error('Can not find appoinment by appoinmentId.');
+      throw new Error('Can not find  appointment by  appointmentId.');
     }
   }
 

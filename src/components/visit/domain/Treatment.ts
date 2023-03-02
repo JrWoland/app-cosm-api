@@ -171,6 +171,7 @@ export class Treatment extends Entity<TreatmentProps> {
         price: props.price,
         assingedCardId: props.assingedCardId,
         startTime: props.startTime,
+        filledCard: props.filledCard,
       },
       id,
     );
