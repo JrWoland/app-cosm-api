@@ -19,9 +19,15 @@ interface AppointmentsList {
   count: number;
   appointments: Appointment[];
 }
+
+interface DeleteResult {
+  id: string;
+  count: number;
+}
 export interface IAppoinmentRepo {
   findAppointmentByAppointmentAndAccountId(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment>;
   findAllAppoinmentsList(accountId: AccountId, filters: AppointmetsFilter): Promise<AppointmentsList>;
+  deleteOne(appointmentId: AppointmentId, accountId: AccountId): Promise<DeleteResult>;
   exists(appointment: Appointment): Promise<boolean>;
   save(appointment: Appointment): Promise<void>;
 }
@@ -71,6 +77,15 @@ export class AppoinmentRepo implements IAppoinmentRepo {
       return new AppointmentMap().toDomain(appointment);
     } catch (error) {
       throw new Error('Can not find appointment by appointmentId. ' + error.message);
+    }
+  }
+
+  public async deleteOne(appointmentId: AppointmentId, accountId: AccountId): Promise<DeleteResult> {
+    try {
+      const appointment = await this.model.deleteOne({ _id: appointmentId.value.toString(), account_id: accountId.id.getValue() });
+      return { count: appointment.deletedCount || 0, id: appointmentId.value };
+    } catch (error) {
+      throw new Error('Can not delete appointment by appointmentId. ' + error.message);
     }
   }
 

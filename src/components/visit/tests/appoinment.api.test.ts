@@ -283,12 +283,33 @@ describe('/api/appointment/:id', () => {
   });
 });
 
-// describe('Test delete appointment.', () => {
-//   it('Shou ld be able to delete the appointment.', async () => {
-//     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
-//     const resultDeleted = await request(app).delete('/api/appointment/delete').auth(testUser.email, testUser.password, { type: 'basic' }).send({ appointmentId: result.body.appointmentId });
+describe('Test delete appointment.', () => {
+  it('Should be able to delete the appointment.', async () => {
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const resultDeleted = await request(app).delete(`/api/appointment/${result.body.appointmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
 
-//     expect(resultDeleted.status).toEqual(200);
-//     expect(resultDeleted.status).toEqual('Appointment has been deleted.');
-//   });
-// });
+    expect(resultDeleted.status).toEqual(200);
+    expect(resultDeleted.body.id).toEqual(result.body.appointmentId);
+    expect(resultDeleted.body.count).toEqual(1);
+    expect(resultDeleted.body.message).toEqual(`Successfully deleted appointment with id=${result.body.appointmentId}.`);
+
+    // database check
+    const dbResult = await AppointmentModel.exists({ _id: result.body.appointmentId });
+
+    expect(dbResult).toEqual(false);
+  });
+  it('Should not be able to delete the appointment from another account.', async () => {
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+    const resultDeleted = await request(app).delete(`/api/appointment/${result.body.appointmentId}`).auth(testUser2.email, testUser2.password, { type: 'basic' }).send();
+
+    expect(resultDeleted.status).toEqual(404);
+    expect(resultDeleted.body.message).toEqual(`Not found appointment with id=${result.body.appointmentId}.`);
+
+    // database check
+    const dbResult = await AppointmentModel.exists({ _id: result.body.appointmentId });
+    expect(dbResult).toEqual(true);
+
+    // clear db
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
+  });
+});
