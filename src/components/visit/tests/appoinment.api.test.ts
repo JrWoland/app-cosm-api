@@ -253,26 +253,36 @@ describe('/api/appointment/list', () => {
     await AppointmentModel.deleteOne({ _id: appointmentResponse.body.appointmentId });
   });
 });
-// describe('/api/appointment/:id', () => {
-//   it('Should get appointment by id', async () => {
-//     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 
-//     const { body } = await request(app).get(`/api/appointment/${result.body.appointmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+describe('/api/appointment/:id', () => {
+  it('Should get appointment by id', async () => {
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 
-//     expect(body.appointmentId).toEqual(result.body.appointmentId);
-//     expect(body.clientId).toEqual(null);
-//     expect(body.date).toEqual(1);
-//     expect(body.startTime).toEqual(500);
-//     expect(body.duration).toEqual(800);
-//     expect(body.treatments).toBeInstanceOf(Array);
-//     expect(body.treatments.length).toEqual(0);
-//     expect(body.status).toEqual('NEW');
+    const { body } = await request(app).get(`/api/appointment/${result.body.appointmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 
-//     await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
-//   });
-//   // it('Should not get appointment from another account', async () => {});
-//   // it('Should return 404 when appointment not found', async () => {});
-// });
+    expect(body.id).toEqual(result.body.appointmentId);
+    expect(body.clientId).toEqual(null);
+    expect(body.date).toEqual(new Date('2019-01-01').toISOString());
+    expect(body.startTime).toEqual(500);
+    expect(body.duration).toEqual(800);
+    expect(body.treatments).toBeInstanceOf(Array);
+    expect(body.treatments.length).toEqual(0);
+    expect(body.status).toEqual('NEW');
+
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
+  });
+  it('Should not get appointment from another account', async () => {
+    const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
+
+    const { body, status } = await request(app).get(`/api/appointment/${result.body.appointmentId}`).auth(testUser2.email, testUser2.password, { type: 'basic' }).send(testAppointment);
+
+    expect(status).toEqual(500);
+    expect(body.message).toEqual(`Can not find appointment by appointmentId. Appointment with id=${result.body.appointmentId} does not exists.`);
+
+    await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
+  });
+});
+
 // describe('Test delete appointment.', () => {
 //   it('Shou ld be able to delete the appointment.', async () => {
 //     const result = await request(app).post('/api/appointment/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);

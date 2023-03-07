@@ -7,9 +7,9 @@ import { getAppointmentByIdController } from './useCase/getAppointmentById';
 
 const appoinmentRouter = express.Router();
 
-appoinmentRouter.get('/:appointmentId', AuthMiddleware.ensureAuthenticated, (req, res, next) => getAppointmentByIdController.execute(req, res, next));
-
 appoinmentRouter.get('/list', AuthMiddleware.ensureAuthenticated, (req, res, next) => getAppointmentsListController.execute(req, res, next));
+
+appoinmentRouter.get('/:appointmentId', AuthMiddleware.ensureAuthenticated, (req, res, next) => getAppointmentByIdController.execute(req, res, next));
 
 appoinmentRouter.post('/create', AuthMiddleware.ensureAuthenticated, (req, res, next) => createAppoinmentController.execute(req, res, next));
 

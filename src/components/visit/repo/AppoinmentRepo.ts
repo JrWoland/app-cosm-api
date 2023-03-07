@@ -66,11 +66,11 @@ export class AppoinmentRepo implements IAppoinmentRepo {
       const appointment = await this.model.findOne({ _id: appointmentId.value.toString(), account_id: accountId.id.getValue() });
 
       if (!appointment) {
-        throw new Error(`Appointment with id ${appointmentId.value.toString()} does not exists.`);
+        throw new Error(`Appointment with id=${appointmentId.value.toString()} does not exists.`);
       }
       return new AppointmentMap().toDomain(appointment);
     } catch (error) {
-      throw new Error('Can not find  appointment by  appointmentId.');
+      throw new Error('Can not find appointment by appointmentId. ' + error.message);
     }
   }
 
