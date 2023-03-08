@@ -6,7 +6,6 @@ import { ClientId } from './ClientId';
 import { ClientStatus } from './ClientStatus';
 import { mailRegex } from '../../../core/utils/mailRegex';
 import dayjs from 'dayjs';
-import { has } from 'lodash';
 
 const EMAIL_ERROR_MESSAGE = 'Email structure is invalid.';
 const NAME_ERROR_MESSAGE = 'Client need to have name.';
@@ -24,39 +23,39 @@ interface ClientProps {
 }
 
 export class Client extends AggregateRoot<ClientProps> {
-  private constructor(props: ClientProps, id?: UniqueEntityID) {
+  private constructor(readonly props: ClientProps, id?: UniqueEntityID) {
     super(props, id);
   }
 
-  get clientId(): ClientId {
+  public get clientId(): ClientId {
     return ClientId.create(this._uniqueEntityId).getValue();
   }
 
-  get accountId(): AccountId {
+  public get accountId(): AccountId {
     return this.props.accountId;
   }
 
-  get name() {
+  public get name() {
     return this.props.name;
   }
 
-  get surname() {
+  public get surname() {
     return this.props.surname;
   }
 
-  get birthDay() {
+  public get birthDay() {
     return this.props.birthDay;
   }
 
-  get phone() {
+  public get phone() {
     return this.props.phone;
   }
 
-  get email() {
+  public get email() {
     return this.props.email;
   }
 
-  get status() {
+  public get status() {
     return this.props.status;
   }
 
@@ -123,19 +122,19 @@ export class Client extends AggregateRoot<ClientProps> {
   public updateDetails(client: Omit<ClientProps, 'accountId' | 'status'>): Result<string> {
     const results: Result<string>[] = [];
 
-    if (has(client, 'name')) {
+    if (client.name !== undefined) {
       results.push(this.setName(client.name));
     }
-    if (has(client, 'surname')) {
+    if (client.surname !== undefined) {
       results.push(this.setSurname(client.surname));
     }
-    if (has(client, 'phone')) {
+    if (client.phone !== undefined) {
       results.push(this.setPhone(client.phone));
     }
-    if (has(client, 'birthDay')) {
+    if (client.birthDay !== undefined) {
       results.push(this.setBirthDay(client.birthDay));
     }
-    if (has(client, 'email')) {
+    if (client.email !== undefined) {
       results.push(this.setEmail(client.email));
     }
 
