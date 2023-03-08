@@ -81,6 +81,8 @@ describe('Endpoint /api/client/update', () => {
     expect(updatedClient.body.message).toEqual('Client updated.');
     expect(updatedClient.status).toEqual(200);
     expect(updatedClient.body.clientId).toEqual(createdClient.body.clientId);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should update client status', async () => {
@@ -98,6 +100,8 @@ describe('Endpoint /api/client/update', () => {
     expect(updatedClient.body.clientId).toEqual(createdClient.body.clientId);
     expect(updatedClient.body.newStatus).toEqual('BANNED');
     expect(updatedClient.status).toEqual(200);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should not update client status', async () => {
@@ -113,6 +117,8 @@ describe('Endpoint /api/client/update', () => {
 
     expect(updatedClient.body.message).toEqual('Invalid client status.');
     expect(updatedClient.status).toEqual(422);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should not be able to update client from another account', async () => {
@@ -128,11 +134,14 @@ describe('Endpoint /api/client/update', () => {
 
     expect(updatedClient.body.message).toEqual('Client not found.');
     expect(updatedClient.status).toEqual(422);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should not be able to update client without clientId property', async () => {
     const testClient = mockClient();
-    await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const createdClient = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
 
     delete testClient['clientId'];
 
@@ -140,6 +149,8 @@ describe('Endpoint /api/client/update', () => {
 
     expect(updatedClient.body.message).toEqual('Missing property: clientId.');
     expect(updatedClient.status).toEqual(422);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should not be able to update client with wrong email structure /api/client/update', async () => {
@@ -152,12 +163,12 @@ describe('Endpoint /api/client/update', () => {
     const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
     expect(updatedClient.body.message).toEqual('Email structure is invalid.');
     expect(updatedClient.status).toEqual(422);
+
+    await ClientModel.deleteOne({ _id: createdClient.body.clientId });
   });
 
   it('Should not be able to update client with not existing clientId /api/client/update', async () => {
     const testClient = mockClient();
-
-    await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
 
     testClient.clientId = 'some-random-id';
 
