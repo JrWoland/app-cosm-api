@@ -180,7 +180,7 @@ describe('Endpoint /api/client/update', () => {
 });
 
 describe('Endpoint /api/client/:clientId', () => {
-  it('Should GET client by clientId ', async () => {
+  it('Should GET client by clientId', async () => {
     const testClient = mockClient();
 
     const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
@@ -212,5 +212,130 @@ describe('Endpoint /api/client/:clientId', () => {
   });
 });
 
-// describe('Endpoint /api/client/all', () => {})
-// describe('Endpoint /api/client/update/status', () => {})
+describe('Endpoint /api/client/all', () => {
+  it('Should return clients list', async () => {
+    const testClient = mockClient();
+
+    const client1 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+    const client2 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const { body, status } = await request(app).get('/api/client/all?page=1&limit=2').auth(testUser.email, testUser.password, { type: 'basic' }).send();
+
+    expect(status).toEqual(200);
+    expect(body.count).toBeGreaterThan(1);
+    expect(body.totalPages).toBeGreaterThanOrEqual(1);
+    expect(body.currentPage).toEqual(1);
+    expect(body.clients.length).toEqual(2);
+    expect(body.clients).toBeInstanceOf(Array);
+
+    await ClientModel.deleteOne({ _id: client1.body.clientId });
+    await ClientModel.deleteOne({ _id: client2.body.clientId });
+  });
+
+  it('Should return filtered clients list', async () => {
+    const testClient1 = mockClient();
+    const testClient2 = mockClient();
+    const testClient3 = mockClient();
+
+    testClient1.name = 'TestScenario';
+    testClient2.surname = 'TestScenario';
+    testClient3.status = 'BANNED';
+
+    const client1 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient1);
+    const client2 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient2);
+    const client3 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient3);
+
+    const result1 = await request(app).get(`/api/client/all?page=1&limit=2&name=sceniario`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result2 = await request(app).get(`/api/client/all?page=1&limit=2&surname=sceniario`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result3 = await request(app).get(`/api/client/all?page=1&limit=2&status=banned`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+
+    expect(result1.body.clients.every((client: { name: string }) => client.name.toLowerCase().includes(testClient1.name.toLowerCase()))).toEqual(true);
+    expect(result2.body.clients.every((client: { surname: string }) => client.surname.toLowerCase().includes('TestScenario'.toLowerCase()))).toEqual(true);
+    expect(result3.body.clients.every((client: { status: string }) => client.status === 'BANNED')).toEqual(true);
+
+    await ClientModel.deleteOne({ _id: client1.body.clientId });
+    await ClientModel.deleteOne({ _id: client2.body.clientId });
+    await ClientModel.deleteOne({ _id: client3.body.clientId });
+  });
+});
+describe('Endpoint /api/client/update/status', () => {
+  it('Should change client status', async () => {
+    const testClient = mockClient();
+
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const { body, status } = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send({
+      clientId: client.body.clientId,
+      status: 'BANNED',
+    });
+
+    expect(status).toEqual(200);
+    expect(body.message).toEqual('Client status updated.');
+    expect(body.clientId).toEqual(client.body.clientId);
+    expect(body.newStatus).toEqual('BANNED');
+    expect(body.oldStatus).toEqual('ACTIVE');
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
+
+  it('Should change client status', async () => {
+    const testClient = mockClient();
+
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const { body, status } = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send({
+      clientId: client.body.clientId,
+      status: 'BANNED',
+    });
+
+    expect(status).toEqual(200);
+    expect(body.message).toEqual('Client status updated.');
+    expect(body.clientId).toEqual(client.body.clientId);
+    expect(body.newStatus).toEqual('BANNED');
+    expect(body.oldStatus).toEqual('ACTIVE');
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
+
+  it('Should not change client status when client does not exists', async () => {
+    const { body, status } = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send({
+      clientId: 'asd',
+      status: 'AVTICE',
+    });
+
+    expect(status).toEqual(422);
+    expect(body.message).toEqual('Client not found.');
+  });
+
+  it('Should not change client status from other account', async () => {
+    const testClient = mockClient();
+
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const { body, status } = await request(app).patch('/api/client/update/status').auth(testUser2.email, testUser2.password, { type: 'basic' }).send({
+      clientId: client.body.clientId,
+      status: 'BANNED',
+    });
+
+    expect(status).toEqual(422);
+    expect(body.message).toEqual('Client not found.');
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
+
+  it('Should not change client status to FAKESTATUS', async () => {
+    const testClient = mockClient();
+
+    const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
+    const { body, status } = await request(app).patch('/api/client/update/status').auth(testUser.email, testUser.password, { type: 'basic' }).send({
+      clientId: client.body.clientId,
+      status: 'FAKESTATUS',
+    });
+
+    expect(status).toEqual(422);
+    expect(body.message).toEqual('Invalid client status.');
+
+    await ClientModel.deleteOne({ _id: client.body.clientId });
+  });
+});
