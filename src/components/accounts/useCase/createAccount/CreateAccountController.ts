@@ -22,7 +22,7 @@ export class CreateAccountController extends BaseController {
         this.unprocesable(result.error);
       }
     } catch (error: any) {
-      return this.fail(error.message);
+      return this.unprocesable(error.message);
     }
   }
 }

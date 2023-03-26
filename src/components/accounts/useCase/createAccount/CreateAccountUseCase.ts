@@ -18,7 +18,7 @@ export class CreateAccountUseCase implements UseCase<CreateAccountDTO, Promise<R
 
     const accountExists = await this.accountRepo.exists(email);
     if (accountExists) {
-      return Result.fail('Account already exists');
+      return Result.fail('Account already exists.');
     }
 
     const account = result.getValue();
