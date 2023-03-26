@@ -10,8 +10,6 @@ accountRouter.post('/login', (req, res, next) => loginAccountController.execute(
 
 // accountRouter.delete('/', checkAuth, AccountsController.deleteAccount);
 
-// accountRouter.post('/login', AccountsController.login);
-
 // accountRouter.post('/logout', AccountsController.logout);
 
 // accountRouter.patch('/reset-password', AccountsController.resetPassword);

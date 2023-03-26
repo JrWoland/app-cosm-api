@@ -26,18 +26,6 @@ export class AccountRepo implements IAccountRepo {
     }
   }
 
-  public async findAccountByEmail(email: string): Promise<Account> {
-    try {
-      const account = await this.model.find({ email: email }).exec();
-      if (account.length === 0) {
-        throw new Error('Account does not exists.');
-      }
-      return new AccountMap().toDomain(account[0]);
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
-  }
-
   public async findAccountByAccountId(accountId: AccountId): Promise<Account> {
     try {
       const account = await this.model.find({ _id: accountId.id.getValue() }).exec();
