@@ -9,7 +9,7 @@ const app = new ExpressServer().create();
 app.use(cookieParser());
 
 beforeEach((done) => {
-  mongoose.connect('mongodb://localhost:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
+  mongoose.connect('mongodb://127.0.0.1:27017/cosm-local', { useNewUrlParser: true, useUnifiedTopology: true }, () => done());
 });
 
 afterEach((done) => {
