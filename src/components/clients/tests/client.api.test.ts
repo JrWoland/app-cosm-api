@@ -237,20 +237,24 @@ describe('Endpoint /api/client/all', () => {
     const testClient2 = mockClient();
     const testClient3 = mockClient();
 
-    testClient1.name = 'TestScenario';
-    testClient2.surname = 'TestScenario';
+    testClient1.name = 'FirstName123';
+    testClient2.surname = 'SecondName456';
     testClient3.status = 'BANNED';
 
     const client1 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient1);
     const client2 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient2);
     const client3 = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient3);
 
-    const result1 = await request(app).get(`/api/client/all?page=1&limit=2&name=sceniario`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
-    const result2 = await request(app).get(`/api/client/all?page=1&limit=2&surname=sceniario`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result1 = await request(app).get(`/api/client/all?page=1&limit=2&client=firstname123`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result4 = await request(app).get(`/api/client/all?page=1&limit=2&client=123`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result2 = await request(app).get(`/api/client/all?page=1&limit=2&client=secondname456`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
+    const result5 = await request(app).get(`/api/client/all?page=1&limit=2&client=456`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
     const result3 = await request(app).get(`/api/client/all?page=1&limit=2&status=banned`).auth(testUser.email, testUser.password, { type: 'basic' }).send();
 
     expect(result1.body.clients.every((client: { name: string }) => client.name.toLowerCase().includes(testClient1.name.toLowerCase()))).toEqual(true);
-    expect(result2.body.clients.every((client: { surname: string }) => client.surname.toLowerCase().includes('TestScenario'.toLowerCase()))).toEqual(true);
+    expect(result4.body.clients.every((client: { name: string }) => client.name.toLowerCase().includes('123'))).toEqual(true);
+    expect(result2.body.clients.every((client: { surname: string }) => client.surname.toLowerCase().includes('SecondName456'.toLowerCase()))).toEqual(true);
+    expect(result5.body.clients.every((client: { surname: string }) => client.surname.toLowerCase().includes('456'))).toEqual(true);
     expect(result3.body.clients.every((client: { status: string }) => client.status === 'BANNED')).toEqual(true);
 
     await ClientModel.deleteOne({ _id: client1.body.clientId });

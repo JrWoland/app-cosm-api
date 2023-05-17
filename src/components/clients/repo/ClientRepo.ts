@@ -8,8 +8,7 @@ import { ClientMap } from './mappers/ClientMap';
 interface ClientFilters {
   page: number;
   limit: number;
-  name?: string;
-  surname?: string;
+  client?: string;
   status?: string;
 }
 export interface IClientRepo {
@@ -26,12 +25,7 @@ export class ClientRepo implements IClientRepo {
   private buildQuery(accountId: AccountId, filters: ClientFilters) {
     return {
       account_id: accountId.id.getValue(),
-      name: {
-        $regex: new RegExp(filters.name || '', 'i'),
-      },
-      surname: {
-        $regex: new RegExp(filters.surname || '', 'i'),
-      },
+      $or: [{ name: new RegExp(filters.client || '', 'i') }, { surname: new RegExp(filters.client || '', 'i') }],
       status: {
         $regex: filters.status ? new RegExp(filters.status || '', 'i') : '',
       },
@@ -68,7 +62,8 @@ export class ClientRepo implements IClientRepo {
       const result = await this.model
         .find(this.buildQuery(accountId, filters))
         .limit(filters.limit * 1)
-        .skip((filters.page - 1) * filters.limit);
+        .skip((filters.page - 1) * filters.limit)
+        .sort({ surname: 'asc' });
 
       const count = await this.count(accountId, filters);
       const clientsList = result.map((client) => new ClientMap().toDomain(client));

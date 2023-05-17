@@ -26,13 +26,12 @@ export class GetClientByClientsListController extends BaseController {
     try {
       const accId = AccountId.create(new UniqueEntityID(req.accountId));
 
-      const { page = 1, limit = 10, status, name = '', surname = '' } = req.query;
+      const { page = 1, limit = 10, status, client } = req.query;
 
       const queryFilters = {
         page: Number(page || 1),
         limit: Number(limit || 10),
-        name: String(name || ''),
-        surname: String(surname || ''),
+        client: String(client || ''),
         status: String(status || '').toUpperCase(),
       };
 
