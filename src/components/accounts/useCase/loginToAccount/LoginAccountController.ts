@@ -14,7 +14,7 @@ export class LoginAccountController extends BaseController {
     return this.res
       .cookie('access_token', dto.token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'lax',
         signed: true,
         maxAge: 1000 * 60 * 60 * 24,

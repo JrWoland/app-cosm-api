@@ -4,7 +4,7 @@ import express, { Request, Response, NextFunction } from 'express';
 const app = express();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import serverHeaders from './settings/serverHeaders';
+import { serverHeaders } from './settings/serverHeaders';
 import MORGAN_SETTING_STRING from './settings/morganSettings';
 import APP_SETTINGS from '../../localSettings';
 

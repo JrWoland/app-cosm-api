@@ -1,6 +1,7 @@
 import express from 'express';
 import { createAccountController } from './useCase/createAccount';
 import { loginAccountController } from './useCase/loginToAccount';
+import { logoutAccountController } from './useCase/logoutAccount';
 
 const accountRouter = express.Router();
 
@@ -8,9 +9,9 @@ accountRouter.post('/register', (req, res, next) => createAccountController.exec
 
 accountRouter.post('/login', (req, res, next) => loginAccountController.execute(req, res, next));
 
-// accountRouter.delete('/', checkAuth, AccountsController.deleteAccount);
+accountRouter.post('/logout', (req, res, next) => logoutAccountController.execute(req, res, next));
 
-// accountRouter.post('/logout', AccountsController.logout);
+// accountRouter.delete('/', checkAuth, AccountsController.deleteAccount);
 
 // accountRouter.patch('/reset-password', AccountsController.resetPassword);
 
