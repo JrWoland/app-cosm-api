@@ -11,10 +11,10 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
       account_id: client.accountId.id.getValue(),
       name: client.name,
       status: client.status,
-      surname: client.surname,
-      birth_day: client.birthDay,
-      email: client.email,
-      phone: client.phone,
+      surname: client.surname || null,
+      birth_day: client.birthDay || null,
+      email: client.email || null,
+      phone: client.phone || null,
     };
   }
 
@@ -25,7 +25,7 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
       {
         accountId: accountId.getValue(),
         name: raw.name,
-        surname: raw.surname,
+        surname: raw.surname || null,
         status: raw.status,
         birthDay: raw.birth_day,
         email: raw.email,

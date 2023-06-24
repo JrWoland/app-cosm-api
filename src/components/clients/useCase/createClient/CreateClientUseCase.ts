@@ -35,11 +35,11 @@ export class CreateClientUseCase implements UseCase<CreateClientDTO, Promise<Res
         {
           accountId: account.accountId,
           name: name,
-          surname: surname,
           status: ClientStatus.Active,
-          birthDay: birthDate,
-          email: email,
-          phone: phone,
+          surname: surname || null,
+          birthDay: birthDate || null,
+          email: email || null,
+          phone: phone || null,
         },
         new UniqueEntityID(),
       );

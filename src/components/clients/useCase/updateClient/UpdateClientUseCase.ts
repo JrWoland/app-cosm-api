@@ -46,7 +46,7 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       surname,
       phone,
       email,
-      birthDay: birthDate ? new Date(birthDate) : undefined,
+      birthDay: birthDate ? new Date(birthDate) : null,
     });
 
     if (updateResult.isFailure) {

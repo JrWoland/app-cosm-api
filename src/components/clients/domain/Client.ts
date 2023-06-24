@@ -16,10 +16,10 @@ interface ClientProps {
   accountId: AccountId;
   name: string;
   status: ClientStatus;
-  surname?: string;
-  birthDay?: Date;
-  phone?: string;
-  email?: string;
+  surname: string | null;
+  birthDay: Date | null;
+  phone: string | null;
+  email: string | null;
 }
 
 export class Client extends AggregateRoot<ClientProps> {
@@ -73,12 +73,17 @@ export class Client extends AggregateRoot<ClientProps> {
     return Result.ok('Name has been changed.');
   }
 
-  private setSurname(val: string | undefined): Result<string> {
+  private setSurname(val: string | null): Result<string> {
     this.props.surname = val;
     return Result.ok('Surname has been changed.');
   }
 
-  private setBirthDay(val: Date | undefined): Result<string> {
+  private setBirthDay(val: Date | null): Result<string> {
+    if (val === null) {
+      this.props.birthDay = val;
+      return Result.ok('Birth day has been changed.');
+    }
+
     if (!dayjs(val).isValid()) {
       const error = Result.fail<string>(BIRTHDAY_ERROR_MESSAGE);
       return error;
@@ -87,22 +92,21 @@ export class Client extends AggregateRoot<ClientProps> {
     return Result.ok('Birth day has been changed.');
   }
 
-  private setPhone(val: string | undefined): Result<string> {
+  private setPhone(val: string | null): Result<string> {
     this.props.phone = val;
     return Result.ok('Phone number has been changed.');
   }
 
-  private setEmail(val: string | undefined): Result<string> {
+  private setEmail(val: string | null): Result<string> {
     const EMAIL_CHANGED_MESSAGE = 'Email has been changed.';
-    if (val === undefined || val === null || val === '') {
-      this.props.email = undefined;
-      return Result.ok(EMAIL_CHANGED_MESSAGE);
+    if (val) {
+      if (!Client.isEmailValid(val)) {
+        const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
+        return error;
+      }
+      this.props.email = val;
     }
-    if (!Client.isEmailValid(val)) {
-      const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
-      return error;
-    }
-    this.props.email = val;
+
     return Result.ok(EMAIL_CHANGED_MESSAGE);
   }
 
@@ -157,6 +161,7 @@ export class Client extends AggregateRoot<ClientProps> {
     }
 
     if (props.birthDay && !dayjs(props.birthDay).isValid()) {
+      console.log(props, '@@@@@@@@@@@@@@@@@@@@@@');
       return Result.fail<Client>(BIRTHDAY_ERROR_MESSAGE);
     }
 

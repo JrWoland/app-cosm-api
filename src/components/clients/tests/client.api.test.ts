@@ -16,6 +16,7 @@ afterEach((done) => {
 interface ClientReq {
   clientId?: string;
   name: string;
+  birthDay: string | null;
   surname?: string;
   phone?: string;
   status?: string;
@@ -28,6 +29,7 @@ const mockClient = (): ClientReq => ({
   surname: surnames[Math.floor(Math.random() * surnames.length)],
   phone: '123123123',
   email: 'good@email.com',
+  birthDay: null,
 });
 
 const testUser = { email: 'test@test.com', password: 'testtest' };

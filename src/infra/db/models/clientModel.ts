@@ -7,10 +7,10 @@ export interface ClientDocModel {
   account_id: string;
   name: string;
   status: ClientStatus;
-  surname?: string;
-  birth_day?: Date;
-  phone?: string;
-  email?: string;
+  surname: string | null;
+  birth_day: Date | null;
+  phone: string | null;
+  email: string | null;
 }
 
 const clientScheema = new mongoose.Schema<ClientDocModel>(
@@ -35,16 +35,20 @@ const clientScheema = new mongoose.Schema<ClientDocModel>(
     },
     surname: {
       type: String,
+      required: false,
     },
     birth_day: {
       type: Date,
+      required: false,
     },
     phone: {
       type: String,
+      required: false,
     },
     email: {
       type: String,
       match: mailRegex,
+      required: false,
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
