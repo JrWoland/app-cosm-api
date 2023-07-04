@@ -136,7 +136,7 @@ export class Treatment extends Entity<TreatmentProps> {
       results.push(this.setStartTime(treatment.startTime || 0));
     }
 
-    const bulkResult = Result.bulkCheck<string>(results);
+    const bulkResult = Result.bulkCheck(results);
 
     if (bulkResult.isFailure) {
       return Result.fail(bulkResult.error);

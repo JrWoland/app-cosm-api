@@ -37,16 +37,12 @@ export class UpdateClientUseCase implements UseCase<UpdateClientDTO, Promise<Res
       return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
     }
 
-    if (accountId !== client.accountId.id.getValue()) {
-      return Result.fail(CLIENT_ERROR.CLIENT_NOT_FOUND);
-    }
-
     const updateResult = client.updateDetails({
       name,
       surname,
       phone,
       email,
-      birthDay: birthDate ? new Date(birthDate) : null,
+      birthDay: birthDate,
     });
 
     if (updateResult.isFailure) {

@@ -9,12 +9,12 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
     return {
       _id: client.clientId.value,
       account_id: client.accountId.id.getValue(),
-      name: client.name,
+      name: client.name.value,
       status: client.status,
-      surname: client.surname || null,
-      birth_day: client.birthDay || null,
-      email: client.email || null,
-      phone: client.phone || null,
+      surname: client.surname.value || null,
+      birth_day: client.birthDay.value || null,
+      email: client.email.value || null,
+      phone: client.phone.value || null,
     };
   }
 
@@ -23,11 +23,11 @@ export class ClientMap implements Mapper<Client, ClientDocModel> {
 
     const client = Client.create(
       {
-        accountId: accountId.getValue(),
+        accountId: accountId.getValue().id.getValue(),
         name: raw.name,
         surname: raw.surname || null,
         status: raw.status,
-        birthDay: raw.birth_day,
+        birthDay: raw.birth_day?.toString(),
         email: raw.email,
         phone: raw.phone,
       },

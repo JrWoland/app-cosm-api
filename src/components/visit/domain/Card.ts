@@ -75,7 +75,7 @@ export class Card extends Entity<CardProps> {
       results.push(this.setName(card.name));
     }
 
-    const bulkResult = Result.bulkCheck<string>(results);
+    const bulkResult = Result.bulkCheck(results);
 
     if (bulkResult.isFailure) {
       return Result.fail(bulkResult.error);

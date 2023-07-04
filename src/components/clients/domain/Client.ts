@@ -4,22 +4,32 @@ import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { ClientId } from './ClientId';
 import { ClientStatus } from './ClientStatus';
-import { mailRegex } from '../../../core/utils/mailRegex';
-import dayjs from 'dayjs';
+import { ClientBirthDay } from './ClientBirthDay';
+import { ClientPhoneNumber } from './ClientPhoneNumber';
+import { ClientEmail } from './ClientEmail';
+import { ClientName } from './ClientName';
+import { ClientSurname } from './ClientSurname';
 
-const EMAIL_ERROR_MESSAGE = 'Email structure is invalid.';
-const NAME_ERROR_MESSAGE = 'Client need to have name.';
-const BIRTHDAY_ERROR_MESSAGE = 'Birth day format is not valid.';
 const STATUS_ERROR_MESSAGE = 'Invalid client status.';
 
 interface ClientProps {
   accountId: AccountId;
-  name: string;
+  name: ClientName;
   status: ClientStatus;
-  surname: string | null;
-  birthDay: Date | null;
-  phone: string | null;
-  email: string | null;
+  surname: ClientSurname;
+  birthDay: ClientBirthDay;
+  phone: ClientPhoneNumber;
+  email: ClientEmail;
+}
+
+interface IClientProps {
+  accountId: string;
+  name: string;
+  status: string;
+  surname?: string | null;
+  birthDay?: string | null;
+  phone?: string | null;
+  email?: string | null;
 }
 
 export class Client extends AggregateRoot<ClientProps> {
@@ -59,59 +69,8 @@ export class Client extends AggregateRoot<ClientProps> {
     return this.props.status;
   }
 
-  private static isEmailValid(email: string): boolean {
-    return mailRegex.test(email);
-  }
-
-  private setName(val: string): Result<string> {
-    const hasName = !!val;
-    if (!hasName) {
-      const error = Result.fail<string>(NAME_ERROR_MESSAGE);
-      return error;
-    }
-    this.props.name = val;
-    return Result.ok('Name has been changed.');
-  }
-
-  private setSurname(val: string | null): Result<string> {
-    this.props.surname = val;
-    return Result.ok('Surname has been changed.');
-  }
-
-  private setBirthDay(val: Date | null): Result<string> {
-    if (val === null) {
-      this.props.birthDay = val;
-      return Result.ok('Birth day has been changed.');
-    }
-
-    if (!dayjs(val).isValid()) {
-      const error = Result.fail<string>(BIRTHDAY_ERROR_MESSAGE);
-      return error;
-    }
-    this.props.birthDay = val;
-    return Result.ok('Birth day has been changed.');
-  }
-
-  private setPhone(val: string | null): Result<string> {
-    this.props.phone = val;
-    return Result.ok('Phone number has been changed.');
-  }
-
-  private setEmail(val: string | null): Result<string> {
-    const EMAIL_CHANGED_MESSAGE = 'Email has been changed.';
-    if (val) {
-      if (!Client.isEmailValid(val)) {
-        const error = Result.fail<string>(EMAIL_ERROR_MESSAGE);
-        return error;
-      }
-      this.props.email = val;
-    }
-
-    return Result.ok(EMAIL_CHANGED_MESSAGE);
-  }
-
-  private static isStatusValid(status: ClientStatus): boolean {
-    return [ClientStatus.Active, ClientStatus.Archived, ClientStatus.Banned].includes(status);
+  private static isStatusValid(status: string): boolean {
+    return [ClientStatus.Active.toString(), ClientStatus.Archived.toString(), ClientStatus.Banned.toString()].includes(status);
   }
 
   public setClientStatus(status: ClientStatus): Result<string> {
@@ -123,65 +82,69 @@ export class Client extends AggregateRoot<ClientProps> {
     return Result.ok<string>('Client status changed successfully.');
   }
 
-  public updateDetails(client: Omit<ClientProps, 'accountId' | 'status'>): Result<string> {
-    const results: Result<string>[] = [];
+  public updateDetails(client: Omit<IClientProps, 'accountId' | 'status'>): Result<string> {
+    const nameOrError = ClientName.create(client.name);
+    const surnameOrError = ClientSurname.create(client.surname || null);
+    const birthDayOrError = ClientBirthDay.create(client.birthDay || null);
+    const emailOrError = ClientEmail.create(client.email || null);
+    const phoneOrError = ClientPhoneNumber.create(client.phone || null);
 
-    if (client.name !== undefined) {
-      results.push(this.setName(client.name));
-    }
-    if (client.surname !== undefined) {
-      results.push(this.setSurname(client.surname));
-    }
-    if (client.phone !== undefined) {
-      results.push(this.setPhone(client.phone));
-    }
-    if (client.birthDay !== undefined) {
-      results.push(this.setBirthDay(client.birthDay));
-    }
-    if (client.email !== undefined) {
-      results.push(this.setEmail(client.email));
-    }
-
-    const bulkResult = Result.bulkCheck<string>(results);
+    const bulkResult = Result.bulkCheck([nameOrError, surnameOrError, birthDayOrError, emailOrError, phoneOrError]);
 
     if (bulkResult.isFailure) {
-      return Result.fail(bulkResult.error);
+      return Result.fail<string>(`Could not update Client. Error: ${bulkResult.error}`);
     }
 
-    return Result.ok(bulkResult.getValue());
+    if (client.name !== undefined) {
+      this.props.name = nameOrError.getValue();
+    }
+    if (client.surname !== undefined) {
+      this.props.surname = surnameOrError.getValue();
+    }
+    if (client.phone !== undefined) {
+      this.props.phone = phoneOrError.getValue();
+    }
+    if (client.birthDay !== undefined) {
+      this.props.birthDay = birthDayOrError.getValue();
+    }
+    if (client.email !== undefined) {
+      this.props.email = emailOrError.getValue();
+    }
+
+    return Result.ok<string>(bulkResult.getValue());
   }
 
-  public static create(props: ClientProps, id?: UniqueEntityID): Result<Client> {
-    if (!props.name) {
-      return Result.fail<Client>(NAME_ERROR_MESSAGE);
+  public static create(props: IClientProps, id?: UniqueEntityID): Result<Client> {
+    const accountIdOrError = AccountId.create(new UniqueEntityID(props.accountId));
+    const nameOrError = ClientName.create(props.name);
+    const surnameOrError = ClientSurname.create(props.surname || null);
+    const birthDayOrError = ClientBirthDay.create(props.birthDay || null);
+    const emailOrError = ClientEmail.create(props.email || null);
+    const phoneOrError = ClientPhoneNumber.create(props.phone || null);
+    const status = props.status;
+
+    const bulkResult = Result.bulkCheck([accountIdOrError, nameOrError, surnameOrError, birthDayOrError, emailOrError, phoneOrError]);
+
+    if (bulkResult.isFailure) {
+      return Result.fail<Client>(`Could not create Client. Error: ${bulkResult.error}`);
     }
 
-    if (props.email && !Client.isEmailValid(props.email)) {
-      return Result.fail<Client>(EMAIL_ERROR_MESSAGE);
-    }
-
-    if (props.birthDay && !dayjs(props.birthDay).isValid()) {
-      console.log(props, '@@@@@@@@@@@@@@@@@@@@@@');
-      return Result.fail<Client>(BIRTHDAY_ERROR_MESSAGE);
-    }
-
-    if (props.status && !Client.isStatusValid(props.status)) {
+    if (!Client.isStatusValid(status)) {
       return Result.fail<Client>(STATUS_ERROR_MESSAGE);
     }
 
     const client = new Client(
       {
-        accountId: props.accountId,
-        name: props.name,
-        status: props.status,
-        surname: props.surname,
-        birthDay: props.birthDay,
-        email: props.email,
-        phone: props.phone,
+        accountId: accountIdOrError.getValue(),
+        name: nameOrError.getValue(),
+        status: this.isStatusValid(status) ? (status as ClientStatus) : ClientStatus.Active,
+        surname: surnameOrError.getValue(),
+        birthDay: birthDayOrError.getValue(),
+        email: emailOrError.getValue(),
+        phone: phoneOrError.getValue(),
       },
       id,
     );
-
     return Result.ok<Client>(client);
   }
 }

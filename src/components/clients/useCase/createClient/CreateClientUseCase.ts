@@ -33,13 +33,13 @@ export class CreateClientUseCase implements UseCase<CreateClientDTO, Promise<Res
     try {
       const newClient = Client.create(
         {
-          accountId: account.accountId,
+          accountId: account.accountId.id.getValue(),
           name: name,
           status: ClientStatus.Active,
-          surname: surname || null,
-          birthDay: birthDate || null,
-          email: email || null,
-          phone: phone || null,
+          surname: surname,
+          birthDay: birthDate,
+          email: email,
+          phone: phone,
         },
         new UniqueEntityID(),
       );

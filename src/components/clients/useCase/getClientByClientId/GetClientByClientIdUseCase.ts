@@ -9,10 +9,10 @@ import { GetClientDTO } from './GetClientByClientIdDTO';
 export interface ResponseClientDTO {
   id: string;
   name: string;
-  surname: string;
-  birthDate: Date;
-  phone: string;
-  email: string;
+  surname: string | null;
+  birthDate: Date | null;
+  phone: string | null;
+  email: string | null;
   status: string;
 }
 
@@ -36,11 +36,11 @@ export class GetClientByClientIdUseCase implements UseCase<GetClientDTO, Promise
 
       const result: ResponseClientDTO = {
         id: client.clientId.value,
-        name: client.name,
-        surname: client.surname || '',
-        birthDate: new Date(client.birthDay || ''),
-        phone: client.phone || '',
-        email: client.email || '',
+        name: client.name.value,
+        surname: client.surname.value || null,
+        birthDate: new Date(client.birthDay.value || ''),
+        phone: client.phone.value || null,
+        email: client.email.value || null,
         status: client.status,
       };
 

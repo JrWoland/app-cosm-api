@@ -38,7 +38,7 @@ export class Result<T> {
     return new Result<U>(false, error, error);
   }
 
-  public static bulkCheck<U>(results: Result<U>[]) {
+  public static bulkCheck(results: Result<any>[]) {
     const errors = results.some((i) => i.isFailure);
 
     if (!errors) {

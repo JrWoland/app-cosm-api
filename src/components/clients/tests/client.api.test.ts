@@ -27,7 +27,7 @@ const surnames = ['Blue', 'Green', 'Red', 'Orange', 'Potato', 'Tomato', 'Cyan', 
 const mockClient = (): ClientReq => ({
   name: names[Math.floor(Math.random() * names.length)],
   surname: surnames[Math.floor(Math.random() * surnames.length)],
-  phone: '123123123',
+  phone: '+48111111111',
   email: 'good@email.com',
   birthDay: null,
 });
@@ -38,7 +38,9 @@ const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 describe('Endpoint /api/client/create', () => {
   it('Should create client /api/client/create', async () => {
     const testClient = mockClient();
+
     const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
+
     expect(client.body.message).toEqual('Client created.');
     expect(client.body.clientId).toBeTruthy();
     expect(client.status).toEqual(201);
@@ -53,7 +55,7 @@ describe('Endpoint /api/client/create', () => {
     const testClientNoName = mockClient();
     testClientNoName.name = '';
     const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientNoName);
-    expect(client.body.message).toEqual('Client need to have name.');
+    expect(client.body.message).toContain(`Client need to have name but received: `);
     expect(client.status).toEqual(422);
   });
 
@@ -61,7 +63,7 @@ describe('Endpoint /api/client/create', () => {
     const testClientWrongEmail = mockClient();
     testClientWrongEmail.email = 'wrong#email.com';
     const client = await request(app).post('/api/client/create').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClientWrongEmail);
-    expect(client.body.message).toEqual('Email structure is invalid.');
+    expect(client.body.message).toContain('Email structure is invalid: wrong#email.com');
     expect(client.status).toEqual(422);
   });
 });
@@ -163,7 +165,7 @@ describe('Endpoint /api/client/update', () => {
     testClient.email = 'wrong#email.com';
 
     const updatedClient = await request(app).patch('/api/client/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(testClient);
-    expect(updatedClient.body.message).toEqual('Email structure is invalid.');
+    expect(updatedClient.body.message).toContain('Email structure is invalid: wrong#email.com');
     expect(updatedClient.status).toEqual(422);
 
     await ClientModel.deleteOne({ _id: createdClient.body.clientId });
