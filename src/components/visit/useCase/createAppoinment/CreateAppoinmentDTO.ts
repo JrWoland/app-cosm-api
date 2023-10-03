@@ -1,5 +1,3 @@
-import { AppointmentStatus } from '../../domain/AppointmentStatus';
-
 interface CardTemplate {
   name: string;
   identifier: string;
@@ -21,10 +19,10 @@ export interface TreatmentDTO {
 }
 export interface CreateAppoinmentDTO {
   accountId: string;
-  date: Date;
-  clientId?: string | null | undefined;
+  date: string;
+  clientId: string;
   startTime: number;
   duration: number;
-  status: AppointmentStatus;
+  status: string;
   treatments: TreatmentDTO[];
 }

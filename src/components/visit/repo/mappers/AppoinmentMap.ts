@@ -1,10 +1,7 @@
 import { Mapper } from '../../../../core/infra/Mapper';
 import { AppointmentDocModel } from '../../../../infra/db/models/appointmentModel';
 import { Appointment } from '../../domain/Appointment';
-import { AccountId } from '../../../accounts/domain/AccountId';
 import { UniqueEntityID } from '../../../../core/domain/UniqueId';
-import { ClientId } from '../../../clients/domain/ClientId';
-import { AppointmentStatus } from '../../domain/AppointmentStatus';
 import { Treatments } from '../../domain/Treatments';
 import { TreatmentMap } from './TreatmentMap';
 
@@ -15,26 +12,24 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentDocModel> 
     return {
       _id: appointment.appointmentId.value,
       account_id: appointment.accountId.id.getValue(),
-      client_id: appointment.clientId?.clientId.getValue(),
+      client_id: appointment.clientId?.value,
       date: appointment.date,
-      duration: appointment.duration,
-      start_time: appointment.startTime,
-      status: appointment.status,
+      duration: appointment.duration.value,
+      start_time: appointment.startTime.value,
+      status: appointment.status.value,
       services: treatments,
     };
   }
 
   toDomain(raw: AppointmentDocModel): Appointment {
-    const accountId = AccountId.create(new UniqueEntityID(raw.account_id));
-    const clientId = ClientId.create(new UniqueEntityID(raw.client_id));
     const treatments = raw.services.map((item) => new TreatmentMap().toDomain(item));
 
     const appointment = Appointment.create(
       {
-        accountId: accountId.getValue(),
-        clientId: raw.client_id ? clientId.getValue() : null,
-        status: raw.status as AppointmentStatus,
-        date: raw.date,
+        accountId: raw.account_id,
+        clientId: raw.client_id,
+        status: raw.status,
+        date: raw.date.toISOString(),
         duration: raw.duration,
         startTime: raw.start_time,
         treatments: Treatments.create(treatments),

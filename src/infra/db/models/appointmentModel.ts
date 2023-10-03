@@ -5,11 +5,11 @@ import { TreatmentDocModel } from './treatmentModel';
 export interface AppointmentDocModel {
   _id: string;
   account_id: string;
-  client_id?: string;
+  client_id: string;
   date: Date;
   start_time: number;
   duration: number;
-  status: AppointmentStatus;
+  status: string;
   services: TreatmentDocModel[];
   created_at?: Date;
   updated_at?: Date;
@@ -29,7 +29,7 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
     },
     client_id: {
       type: String,
-      required: false,
+      required: true,
       ref: 'Client',
     },
     date: {
@@ -50,12 +50,12 @@ const appointmentSheema = new mongoose.Schema<AppointmentDocModel>(
     duration: {
       type: Number,
       required: true,
-      min: 0,
+      min: 1,
     }, // minutes
     status: {
       type: String,
       required: true,
-      values: [AppointmentStatus.New, AppointmentStatus.ClientNotAppeard, AppointmentStatus.Declined, AppointmentStatus.Finished],
+      values: AppointmentStatus.allowedStatuses,
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },

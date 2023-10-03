@@ -30,7 +30,7 @@ const testUser = { email: 'test@test.com', password: 'testtest' };
 const testUser2 = { email: 'test2@test2.com', password: 'testtest2' };
 
 const testAppointment = {
-  clientId: null,
+  clientId: '123',
   date: new Date('2019-01-01').toISOString(),
   startTime: 500,
   duration: 800,
@@ -41,8 +41,8 @@ const getMockAppointment = () => ({
   appointmentId: null,
   clientId: null,
   date: new Date('2019-01-01').toISOString(),
-  startTime: 0,
-  duration: 0,
+  startTime: 900,
+  duration: 60,
   treatments: [],
   status: 'RANDOM_VALUE',
 });
@@ -97,13 +97,13 @@ describe('/api/appointment/update', () => {
     const updated = getMockAppointment();
     updated.appointmentId = result.body.appointmentId;
     updated.duration = 0;
+    updated.startTime = 0;
 
     const updatedAppointment = await request(app).patch('/api/appointment/update').auth(testUser.email, testUser.password, { type: 'basic' }).send(updated);
 
     expect(updatedAppointment.status).toEqual(422);
     expect(updatedAppointment.body.message).toContain('Duration must be greater than 0.');
     expect(updatedAppointment.body.message).toContain('Start time must be greater than 0.');
-    expect(updatedAppointment.body.message).toContain('Status is not valid: RANDOM_VALUE.');
 
     await AppointmentModel.deleteOne({ _id: result.body.appointmentId });
   });
@@ -261,7 +261,7 @@ describe('/api/appointment/:id', () => {
     const { body } = await request(app).get(`/api/appointment/${result.body.appointmentId}`).auth(testUser.email, testUser.password, { type: 'basic' }).send(testAppointment);
 
     expect(body.id).toEqual(result.body.appointmentId);
-    expect(body.clientId).toEqual(null);
+    expect(body.clientId).toEqual('123');
     expect(body.date).toEqual(new Date('2019-01-01').toISOString());
     expect(body.startTime).toEqual(500);
     expect(body.duration).toEqual(800);

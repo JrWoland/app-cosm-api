@@ -22,7 +22,7 @@ export interface TreatmentDTO {
 export interface UpdateAppointmentDTO {
   accountId: string;
   appointmentId: string;
-  clientId?: string | null | undefined;
+  clientId: string;
   date: string;
   startTime: number;
   duration: number;

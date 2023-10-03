@@ -29,11 +29,10 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
   }
 
   public async execute(request: UpdateAppointmentDTO): Promise<Response> {
-    const { accountId, appointmentId, date, duration, startTime, treatments, clientId, status } = request;
+    const { accountId, appointmentId, date, duration, startTime, treatments, clientId } = request;
 
     const accId = AccountId.create(new UniqueEntityID(accountId)).getValue();
     const appId = AppointmentId.create(new UniqueEntityID(appointmentId)).getValue();
-    const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
     if (!accountId) {
       return Result.fail('Auth failed.');
@@ -44,20 +43,17 @@ export class UpdateAppointmentUseCase implements UseCase<UpdateAppointmentDTO, P
     }
 
     try {
-      const appointment = await this.appoinmentRepo.findAppointmentByAppointmentAndAccountId(appId, accId);
-
-      const fetchedTreatmens = await this.fetchTreatments(treatments, accId);
+      const [appointment, fetchedTreatmens] = await Promise.all([this.appoinmentRepo.findAppointmentByAppointmentAndAccountId(appId, accId), this.fetchTreatments(treatments, accId)]);
 
       const matchedTreatments = this.treatmentService.matchTreatments(fetchedTreatmens.getValue(), treatments);
 
       const treatmentsToAssign = Treatments.create(matchedTreatments);
 
       const updateResult = appointment.updateDetails({
-        date: new Date(date),
-        clientId: clientId ? clientIdToAssign.getValue() : null,
+        date: date,
+        clientId: clientId,
         duration: duration,
         startTime: startTime,
-        status: status,
         treatments: treatmentsToAssign,
       });
 

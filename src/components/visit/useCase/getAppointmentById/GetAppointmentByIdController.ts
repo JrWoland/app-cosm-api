@@ -46,9 +46,9 @@ export class GetAppointmentByIdController extends BaseController {
         id: appointment.appointmentId.value,
         clientId: appointment.clientId?.value || null,
         date: appointment.date,
-        status: appointment.status,
-        duration: appointment.duration,
-        startTime: appointment.startTime,
+        status: appointment.status.value,
+        duration: appointment.duration.value,
+        startTime: appointment.startTime.value,
         treatments: this.treatmentsToDto(appointment.treatments),
       };
 

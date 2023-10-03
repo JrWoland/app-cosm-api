@@ -13,8 +13,8 @@ interface TreatmentDTO {
 
 interface ResponseAppointmentDTO {
   id: string;
-  clientId: string | null;
-  date: Date;
+  clientId: string;
+  date: string;
   status: string;
   duration: number;
   startTime: number;
@@ -38,7 +38,7 @@ export class GetAppointmentsListController extends BaseController {
       const queryFilters = {
         page: Number(page || 1),
         limit: Number(limit || 10),
-        satus: String(status || '').toUpperCase(),
+        status: String(status || '').toUpperCase(),
         dateFrom: String(dateFrom || ''),
         dateTo: String(dateTo || ''),
         clientId: String(clientId || ''),
@@ -48,11 +48,11 @@ export class GetAppointmentsListController extends BaseController {
 
       const appoinmentsList: ResponseAppointmentDTO[] = appointments.map((appointment) => ({
         id: appointment.appointmentId.value,
-        clientId: appointment.clientId?.value || null,
-        date: appointment.date,
-        status: appointment.status,
-        duration: appointment.duration,
-        startTime: appointment.startTime,
+        clientId: appointment.clientId.value,
+        date: appointment.date.toISOString(),
+        status: appointment.status.value,
+        duration: appointment.duration.value,
+        startTime: appointment.startTime.value,
         treatments: appointment.treatments.list.map((treatment) => ({
           id: treatment.treatmentId.value,
           name: treatment.name,

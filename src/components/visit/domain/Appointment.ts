@@ -3,22 +3,32 @@ import { UniqueEntityID } from '../../../core/domain/UniqueId';
 import { Result } from '../../../core/logic/Result';
 import { AccountId } from '../../accounts/domain/AccountId';
 import { ClientId } from '../../clients/domain/ClientId';
+import { AppointmentDate } from './AppointmentDate';
+import { AppointmentDuration } from './AppointmentDuration';
 import { AppointmentId } from './AppointmentId';
+import { AppointmentStartTime } from './AppointmentStartTime';
 import { AppointmentStatus } from './AppointmentStatus';
 import { Treatment } from './Treatment';
 import { Treatments } from './Treatments';
 
 interface AppointmentProps {
   accountId: AccountId;
-  clientId?: ClientId | null;
-  duration: number;
-  date: Date;
-  startTime: number;
+  clientId: ClientId;
+  duration: AppointmentDuration;
+  date: AppointmentDate;
+  startTime: AppointmentStartTime;
   status: AppointmentStatus;
   treatments: Treatments;
 }
-
-type Minutes = number;
+interface IAppointmentProps {
+  accountId: string;
+  clientId: string;
+  duration: number;
+  date: string;
+  startTime: number;
+  status: string;
+  treatments: Treatments;
+}
 
 export class Appointment extends AggregateRoot<AppointmentProps> {
   private constructor(readonly props: AppointmentProps, id?: UniqueEntityID) {
@@ -33,19 +43,19 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return this.props.accountId;
   }
 
-  public get clientId(): ClientId | null | undefined {
+  public get clientId(): ClientId {
     return this.props.clientId;
   }
 
   public get date(): Date {
-    return this.props.date;
+    return this.props.date.value;
   }
 
-  public get startTime(): number {
+  public get startTime(): AppointmentStartTime {
     return this.props.startTime;
   }
 
-  public get duration(): number {
+  public get duration(): AppointmentDuration {
     return this.props.duration;
   }
 
@@ -57,60 +67,19 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return this.props.treatments;
   }
 
-  private static isAppoinmentStatusValid(status: AppointmentStatus): boolean {
-    return [AppointmentStatus.ClientNotAppeard, AppointmentStatus.Declined, AppointmentStatus.Finished, AppointmentStatus.New].includes(status);
-  }
-
-  private static validator(props: Omit<AppointmentProps, 'accountId'>): Result<Appointment | boolean> {
-    const validation: string[] = [];
-    props.duration > 0 ? true : validation.push('Duration must be greater than 0.');
-    props.startTime > 0 ? true : validation.push('Start time must be greater than 0.');
-    props.date ? true : validation.push('Appoinment date must be provided.');
-    this.isAppoinmentStatusValid(props.status) ? true : validation.push(`Status is not valid: ${props.status}.`);
-    if (validation.length) {
-      return Result.fail<Appointment>(validation.join(' '));
-    }
-    return Result.ok(true);
-  }
-
-  private setAppointmentDate(date: Date) {
-    if (!(date instanceof Date)) {
-      const error = Result.fail<string>('Date must be instance of Date.');
-      return error;
-    }
-    this.props.date = date;
-    return Result.ok<string>('Appointment date changed successfully');
-  }
-
-  private setAppointmentDuration(duration: Minutes): Result<string> {
-    if (duration < 0) {
-      const error = Result.fail<string>('Duration must be greater than 0.');
-      return error;
-    }
-    this.props.duration = duration;
-    return Result.ok<string>('Duration changed successfully');
-  }
-
-  private setAppointmentStartTime(startTime: Minutes): Result<string> {
-    if (startTime < 0) {
-      const error = Result.fail<string>('Start time must be greater than 0.');
-      return error;
-    }
-    this.props.startTime = startTime;
-    return Result.ok<string>('Appointment staring time changed successfully.');
-  }
-
-  private setAppointmentClientId(clientId?: ClientId | null | undefined): Result<string> {
-    this.props.clientId = clientId;
-    return Result.ok<string>('Client id has been changed.');
-  }
-
-  public setAppointmentStatus(status: AppointmentStatus): Result<string> {
-    if (!Appointment.isAppoinmentStatusValid(status)) {
+  public setAppointmentStatus(status: string): Result<string> {
+    if (!AppointmentStatus.isStatusValid(status)) {
       const error = Result.fail<string>('Invalid appointment status.');
       return error;
     }
-    this.props.status = status;
+
+    const newStatus = AppointmentStatus.create(status);
+
+    if (newStatus.isFailure) {
+      return Result.fail<string>('Invalid appointment status.');
+    }
+
+    this.props.status = newStatus.getValue();
     return Result.ok<string>('Appoinment status changed successfully.');
   }
 
@@ -126,37 +95,53 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
     return Result.ok<string>('Treatment has been removed.');
   }
 
-  public updateDetails(data: Omit<AppointmentProps, 'accountId'>): Result<Appointment | string> {
-    const validationResult = Appointment.validator(data);
+  public updateDetails(appointment: Omit<IAppointmentProps, 'accountId' | 'status'>): Result<Appointment | string> {
+    const clientId = ClientId.create(new UniqueEntityID(appointment.clientId));
+    const appointmentDuration = AppointmentDuration.create(appointment.duration);
+    const appointmentDate = AppointmentDate.create(appointment.date);
+    const appointmentStartTime = AppointmentStartTime.create(appointment.startTime);
+    this.props.treatments = appointment.treatments;
 
-    if (validationResult.isFailure) {
-      return Result.fail<Appointment>(validationResult.error);
-    }
-
-    const resultDuration = this.setAppointmentDuration(data.duration);
-    const resultStartDate = this.setAppointmentStartTime(data.startTime);
-    const resultDate = this.setAppointmentDate(data.date);
-    const resultClientId = this.setAppointmentClientId(data.clientId);
-    const resultStatus = this.setAppointmentStatus(data.status);
-    this.props.treatments = data.treatments;
-
-    const bulkValidation = Result.bulkCheck([resultDuration, resultStartDate, resultDate, resultClientId, resultStatus]);
+    const bulkValidation = Result.bulkCheck([clientId, appointmentDuration, appointmentDate, appointmentStartTime]);
 
     if (bulkValidation.isFailure) {
       return Result.fail(bulkValidation.error);
     }
 
+    if (appointment.clientId !== undefined) {
+      this.props.clientId = clientId.getValue();
+    }
+
+    if (appointment.date !== undefined) {
+      this.props.date = appointmentDate.getValue();
+    }
+
+    if (appointment.duration !== undefined) {
+      this.props.duration = appointmentDuration.getValue();
+    }
+
+    if (appointment.startTime !== undefined) {
+      this.props.startTime = appointmentStartTime.getValue();
+    }
+
     return Result.ok<string>('Appointment updated successfully.');
   }
 
-  public static create(props: AppointmentProps, id?: UniqueEntityID): Result<Appointment> {
-    const validationResult = this.validator(props);
+  public static create(props: IAppointmentProps, id?: UniqueEntityID): Result<Appointment> {
+    const accountId = AccountId.create(new UniqueEntityID(props.accountId));
+    const clientId = ClientId.create(new UniqueEntityID(props.clientId));
+    const appointmentDuration = AppointmentDuration.create(props.duration);
+    const appointmentDate = AppointmentDate.create(props.date);
+    const appointmentStartTime = AppointmentStartTime.create(props.startTime);
+    const appointmentStatus = AppointmentStatus.create(props.status);
 
-    if (validationResult.isFailure) {
-      return Result.fail<Appointment>(validationResult.error);
+    const isSomeTreatmentNotBelongsToAccount = props.treatments.list.some((id) => id.accountId.id.getValue() !== props.accountId);
+
+    const bulkValidation = Result.bulkCheck([accountId, clientId, appointmentDuration, appointmentDate, appointmentStartTime]);
+
+    if (bulkValidation.isFailure) {
+      return Result.fail(bulkValidation.error);
     }
-
-    const isSomeTreatmentNotBelongsToAccount = props.treatments.list.some((id) => id.accountId.id.getValue() !== props.accountId.id.getValue());
 
     if (isSomeTreatmentNotBelongsToAccount) {
       return Result.fail<Appointment>('Treatment not found.');
@@ -164,12 +149,12 @@ export class Appointment extends AggregateRoot<AppointmentProps> {
 
     const appointment = new Appointment(
       {
-        accountId: props.accountId,
-        clientId: props.clientId,
-        date: props.date,
-        duration: props.duration,
-        startTime: props.startTime,
-        status: props.status,
+        accountId: accountId.getValue(),
+        clientId: clientId.getValue(),
+        date: appointmentDate.getValue(),
+        duration: appointmentDuration.getValue(),
+        startTime: appointmentStartTime.getValue(),
+        status: appointmentStatus.getValue(),
         treatments: props.treatments,
       },
       id,

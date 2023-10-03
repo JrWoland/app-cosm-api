@@ -8,7 +8,7 @@ import { startOfDay, endOfDay } from 'date-fns';
 interface AppointmetsFilter {
   page: number;
   limit: number;
-  satus: string;
+  status: string;
   dateFrom: string;
   dateTo: string;
   clientId: string;
@@ -53,7 +53,7 @@ export class AppoinmentRepo implements IAppoinmentRepo {
 
     if (filters.dateFrom || filters.dateTo) mongooseQuery.date = this.dateQuery(filters);
 
-    if (filters.satus) mongooseQuery.status = { $regex: new RegExp(filters.satus || '', 'i') };
+    if (filters.status !== undefined) mongooseQuery.status = { $regex: new RegExp(filters.status || '', 'i') };
 
     return mongooseQuery;
   }

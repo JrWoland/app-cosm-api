@@ -24,7 +24,7 @@ export class UpdateAppointmentController extends BaseController {
         message: updated.getValue().message,
         appointmentId: updated.getValue().appointmentId,
       });
-    } catch (error: any) {
+    } catch (error) {
       return this.fail(error.message);
     }
   }

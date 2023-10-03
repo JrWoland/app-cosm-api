@@ -3,9 +3,7 @@ import { UseCase } from '../../../../core/domain/UseCase';
 import { Result } from '../../../../core/logic/Result';
 import { AccountId } from '../../../accounts/domain/AccountId';
 import { IAccountRepo } from '../../../accounts/repo/AccountRepo';
-import { ClientId } from '../../../clients/domain/ClientId';
 import { Appointment } from '../../domain/Appointment';
-import { AppointmentStatus } from '../../domain/AppointmentStatus';
 import { Treatment } from '../../domain/Treatment';
 import { TreatmentId } from '../../domain/TreatmentId';
 import { Treatments } from '../../domain/Treatments';
@@ -33,7 +31,6 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
     const { accountId, date, duration, startTime, treatments, clientId, status } = request;
 
     const accountIdToAssign = AccountId.create(new UniqueEntityID(accountId));
-    const clientIdToAssign = ClientId.create(new UniqueEntityID(clientId));
 
     try {
       const fetchedTreatmens = await this.fetchTreatments(treatments, accountIdToAssign.getValue());
@@ -42,12 +39,12 @@ export class CreateAppoinmentUseCase implements UseCase<CreateAppoinmentDTO, Pro
 
       const newAppoinment = Appointment.create(
         {
-          accountId: accountIdToAssign.getValue(),
-          clientId: clientId ? clientIdToAssign.getValue() : null,
+          accountId: accountId,
+          clientId: clientId,
           date: date,
           duration: duration,
           startTime: startTime,
-          status: status || AppointmentStatus.New,
+          status: status || 'NEW',
           treatments: treatmentsList,
         },
         new UniqueEntityID(),
