@@ -177,6 +177,15 @@ describe('Test updateDetails().', () => {
     const result = appointment.updateDetails(updated);
 
     expect(result.isFailure).toEqual(true);
-    expect(result.error).toEqual('Appointment date is not valid: fake format');
+    expect(result.error).toEqual('Appointment date is not valid: fake format. Valid format YYYY-MM-DD.');
+  });
+  it('Set wrong appointment date format YYYY-DD-MM.', async () => {
+    const appointment = Appointment.create(testAppointment(), new UniqueEntityID('test-id')).getValue();
+    const updated = updatedAppointment();
+    updated.date = '2012-15-15';
+    const result = appointment.updateDetails(updated);
+
+    expect(result.isFailure).toEqual(true);
+    expect(result.error).toEqual('Appointment date is not valid: 2012-15-15. Valid format YYYY-MM-DD.');
   });
 });

@@ -15,8 +15,9 @@ export class AppointmentDate extends ValueObject<AppointmentDateProps> {
   }
 
   public static create(date: AppointmentDateProps): Result<AppointmentDate> {
-    if (date === null || date === '' || !dayjs(date).isValid()) {
-      return Result.fail<AppointmentDate>(`Appointment date is not valid: ${date}`);
+    const isInvalidDate = date === null || date === '' || !dayjs(new Date(date)).isValid();
+    if (isInvalidDate) {
+      return Result.fail<AppointmentDate>(`Appointment date is not valid: ${date}. Valid format YYYY-MM-DD.`);
     }
 
     return Result.ok<AppointmentDate>(new AppointmentDate(date));

@@ -19,8 +19,8 @@ export class ClientBirthDay extends ValueObject<ClientBirthDayProps> {
   public static create(birth: ClientBirthDayProps): Result<ClientBirthDay> {
     if (birth === null || birth === '') return Result.ok<ClientBirthDay>(new ClientBirthDay(null));
 
-    if (!dayjs(birth).isValid()) {
-      return Result.fail<ClientBirthDay>(`${BIRTHDAY_ERROR_MESSAGE}: ${birth}`);
+    if (!dayjs(new Date(birth)).isValid()) {
+      return Result.fail<ClientBirthDay>(`${BIRTHDAY_ERROR_MESSAGE}: ${birth}. Valid format YYYY-MM-DD.`);
     }
     return Result.ok<ClientBirthDay>(new ClientBirthDay(birth));
   }

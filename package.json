@@ -7,6 +7,7 @@
     "test": "jest --testTimeout=5000",
     "test:api": "jest --testTimeout=5000 .api.test.ts",
     "test:domain": "jest --testTimeout=5000 /domain/",
+    "coverage": "jest --coverage",
     "serve:dev": "nodemon",
     "start": "node ./src/app.ts",
     "build": "rimraf ./build && tsc",
