@@ -22,9 +22,6 @@ class SelectedTreatment {
 
   @Prop({ required: true })
   duration: number;
-
-  @Prop({ required: false, type: Map })
-  card_template: unknown;
 }
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, collection: 'appointments' })
