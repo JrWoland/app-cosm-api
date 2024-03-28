@@ -10,6 +10,7 @@ import { TreatmentRepository } from './repos/Treatment.repository';
 import { TreatmentModel, TreatmentSchema } from 'src/db/mongoose/treatment.sheema';
 import { TreatmentsController } from './use-cases/Treatments.controller';
 import { CreateTreatmentUseCase } from './use-cases/treatment-create/CreateTreatmentUseCase';
+import { RemoveAppointmentUseCase } from './use-cases/appointment-perma-remove/RemoveAppointmentUseCase';
 @Module({
   imports: [
     CqrsModule,
@@ -19,6 +20,13 @@ import { CreateTreatmentUseCase } from './use-cases/treatment-create/CreateTreat
     ]),
   ],
   controllers: [AppointmentsController, TreatmentsController],
-  providers: [CreateAppointmentUseCase, CreateTreatmentUseCase, GetAppointmentUseCase, AppointmentRepository, TreatmentRepository],
+  providers: [
+    CreateAppointmentUseCase,
+    CreateTreatmentUseCase,
+    RemoveAppointmentUseCase,
+    GetAppointmentUseCase,
+    AppointmentRepository,
+    TreatmentRepository,
+  ],
 })
 export class BeautySalonModule {}

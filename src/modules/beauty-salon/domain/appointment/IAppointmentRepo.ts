@@ -19,7 +19,8 @@ export interface IAppointmentsList {
 
 export interface IDeleteResult {
   id: string;
-  count: number;
+  message: string;
+  success: boolean;
 }
 
 export interface IAppoinmentRepo {

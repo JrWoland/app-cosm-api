@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post, Query, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Query, UnprocessableEntityException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateAppointmentCommand } from './appointment-create/CreateAppointmentCommand';
 import { CreateAppoinmentDTO } from './appointment-create/CreateAppoinmentDTO';
 import { GetAppointmentQuery } from './appointment-get-list/GetAppointmentQuery';
 import { GetAppointmentListDTO } from './appointment-get-list/GetAppointmentDTO';
+import { RemoveAppoinmentDTO } from './appointment-perma-remove/RemoveAppoinmentDTO';
+import { RemoveAppointmentCommand } from './appointment-perma-remove/RemoveAppointmentCommand';
 
+const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 @Controller('appointment')
 export class AppointmentsController {
   constructor(
@@ -27,8 +30,6 @@ export class AppointmentsController {
   async createAppointment(@Body() dto: CreateAppoinmentDTO) {
     const { clientId, date, startTime, status, treatments = [] } = dto;
 
-    const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
-
     const isUnprocesable = !accountId || !date || !clientId || !startTime || !status;
     const noTreatments = treatments?.length === 0;
 
@@ -47,8 +48,12 @@ export class AppointmentsController {
   @Get('list')
   async findAll(@Query() query: GetAppointmentListDTO): Promise<any> {
     const { page = 1, limit = 10, status = '', dateFrom = '', dateTo = '', clientId = '', beautyServiceId = '' } = query;
-    return this.queryBus.execute(
-      new GetAppointmentQuery('d6cd4034-f902-4958-8735-c0e71f383553', clientId, page, limit, status, dateFrom, dateTo, beautyServiceId),
-    );
+    return this.queryBus.execute(new GetAppointmentQuery(accountId, clientId, page, limit, status, dateFrom, dateTo, beautyServiceId));
+  }
+
+  @Delete('delete')
+  async remove(@Body() dto: RemoveAppoinmentDTO): Promise<any> {
+    const { id } = dto;
+    return this.commandBus.execute(new RemoveAppointmentCommand(accountId, id));
   }
 }

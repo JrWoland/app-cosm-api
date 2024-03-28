@@ -32,7 +32,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     }
   }
 
-  async execute(command: CreateAppointmentCommand) {
+  async execute(command: CreateAppointmentCommand): Promise<{ message: string; id: string; success: boolean }> {
     // TODO clientId should belong to account
     const { accountId, clientId, date, startTime, status, treatments } = command;
 
@@ -73,5 +73,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     });
 
     await this.appointmentRepository.save(appointment);
+
+    return { message: 'Appointment created', id: appointment.id.value, success: true };
   }
 }

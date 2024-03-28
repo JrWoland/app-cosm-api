@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Appointment } from '../domain/appointment/Appointment';
 import { AppointmentModel } from 'src/db/mongoose/appointment.sheema';
@@ -81,9 +81,14 @@ export class AppointmentRepository implements IAppoinmentRepo {
   public async deleteOne(appointmentId: AppointmentId, accountId: AccountId): Promise<IDeleteResult> {
     try {
       const appointment = await this.model.deleteOne({ _id: appointmentId.value, account_id: accountId.value });
-      return { count: appointment.deletedCount || 0, id: appointmentId.value };
+
+      if (appointment.deletedCount === 0) {
+        throw new NotFoundException(null, { description: 'Appointment not found.' });
+      }
+
+      return { id: appointmentId.value, message: 'Appointment permanently deleted.', success: true };
     } catch (error) {
-      throw new InternalServerErrorException('Can not delete appointment by appointmentId. ' + error.message);
+      throw new InternalServerErrorException('Can not delete appointment by appointmentId. ' + error);
     }
   }
 
