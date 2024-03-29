@@ -10,7 +10,7 @@ import { TreatmentRepository } from './repos/Treatment.repository';
 import { TreatmentModel, TreatmentSchema } from 'src/db/mongoose/treatment.sheema';
 import { TreatmentsController } from './use-cases/Treatments.controller';
 import { CreateTreatmentUseCase } from './use-cases/treatment-create/CreateTreatmentUseCase';
-import { RemoveAppointmentUseCase } from './use-cases/appointment-perma-remove/RemoveAppointmentUseCase';
+import { RemoveAppointmentUseCase } from './use-cases/appointment-remove/RemoveAppointmentUseCase';
 @Module({
   imports: [
     CqrsModule,

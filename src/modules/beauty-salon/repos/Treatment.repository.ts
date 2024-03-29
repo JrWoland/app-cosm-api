@@ -68,7 +68,7 @@ export class TreatmentRepository implements ITreatmentRepo {
       } else {
         const result = await this.model.updateOne(
           {
-            _id: treatment.id,
+            _id: treatment.id.value,
             account_id: treatment.accountId.value,
           },
           treatmentToSave,

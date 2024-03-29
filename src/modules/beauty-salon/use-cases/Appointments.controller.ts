@@ -4,8 +4,8 @@ import { CreateAppointmentCommand } from './appointment-create/CreateAppointment
 import { CreateAppoinmentDTO } from './appointment-create/CreateAppoinmentDTO';
 import { GetAppointmentQuery } from './appointment-get-list/GetAppointmentQuery';
 import { GetAppointmentListDTO } from './appointment-get-list/GetAppointmentDTO';
-import { RemoveAppoinmentDTO } from './appointment-perma-remove/RemoveAppoinmentDTO';
-import { RemoveAppointmentCommand } from './appointment-perma-remove/RemoveAppointmentCommand';
+import { RemoveAppoinmentDTO } from './appointment-remove/RemoveAppoinmentDTO';
+import { RemoveAppointmentCommand } from './appointment-remove/RemoveAppointmentCommand';
 
 const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 @Controller('appointment')
