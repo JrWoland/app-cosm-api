@@ -11,22 +11,31 @@ import { TreatmentModel, TreatmentSchema } from 'src/db/mongoose/treatment.sheem
 import { TreatmentsController } from './use-cases/Treatments.controller';
 import { CreateTreatmentUseCase } from './use-cases/treatment-create/CreateTreatmentUseCase';
 import { RemoveAppointmentUseCase } from './use-cases/appointment-remove/RemoveAppointmentUseCase';
+import { ClientModel, ClientSchema } from 'src/db/mongoose/client.sheema';
+import { ClientRepository } from './repos/Client.repository';
+import { ClientsController } from './use-cases/Clients.controller';
+import { CreateClientUseCase } from './use-cases/client-create/CreateClientUseCase';
+import { GetClientsListUseCase } from './use-cases/client-get-list/GetClientsListUseCase';
 @Module({
   imports: [
     CqrsModule,
     MongooseModule.forFeature([
       { name: AppointmentModel.name, schema: AppointmentSchema },
       { name: TreatmentModel.name, schema: TreatmentSchema },
+      { name: ClientModel.name, schema: ClientSchema },
     ]),
   ],
-  controllers: [AppointmentsController, TreatmentsController],
+  controllers: [AppointmentsController, TreatmentsController, ClientsController],
   providers: [
     CreateAppointmentUseCase,
     CreateTreatmentUseCase,
-    RemoveAppointmentUseCase,
+    CreateClientUseCase,
     GetAppointmentUseCase,
+    GetClientsListUseCase,
+    RemoveAppointmentUseCase,
     AppointmentRepository,
     TreatmentRepository,
+    ClientRepository,
   ],
 })
 export class BeautySalonModule {}

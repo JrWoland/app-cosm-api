@@ -1,10 +1,14 @@
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ValueObject } from 'src/shared/ValueObject';
 
 type ClientBirthDayProps = string | null;
 
 const BIRTHDAY_ERROR_MESSAGE = 'Birth day format is not valid';
+const VALID_FORMAT = 'YYYY-MM-DD';
 
 export class ClientBirthDay extends ValueObject<ClientBirthDayProps> {
   private constructor(private birth: ClientBirthDayProps) {
@@ -17,11 +21,15 @@ export class ClientBirthDay extends ValueObject<ClientBirthDayProps> {
   }
 
   public static create(birth: ClientBirthDayProps): ClientBirthDay {
+    console.log(typeof birth);
     if (birth === null || birth === '') return new ClientBirthDay(null);
 
     if (!dayjs(new Date(birth)).isValid()) {
-      throw new UnprocessableEntityException(`${BIRTHDAY_ERROR_MESSAGE}: ${birth}. Valid format YYYY-MM-DD.`);
+      throw new UnprocessableEntityException(`${BIRTHDAY_ERROR_MESSAGE}: ${birth}.`);
     }
-    return new ClientBirthDay(birth);
+
+    const formatted = dayjs(birth).format(VALID_FORMAT);
+
+    return new ClientBirthDay(formatted);
   }
 }

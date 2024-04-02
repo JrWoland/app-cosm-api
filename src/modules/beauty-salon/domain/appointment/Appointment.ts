@@ -73,6 +73,8 @@ export class Appointment extends AggregateRoot {
     const { id, accountId, clientId, date, services, startTime, status } = props;
 
     if (services.length <= 0) throw new UnprocessableEntityException('Cannot create appointments without treatments.');
+    if (!accountId) throw new UnprocessableEntityException('Cannot create appointments without accountId.');
+    if (!clientId) throw new UnprocessableEntityException('Cannot create appointments without clientId.');
 
     return new Appointment(id, accountId, clientId, date, startTime, status, services);
   }

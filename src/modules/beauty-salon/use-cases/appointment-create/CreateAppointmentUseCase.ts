@@ -37,6 +37,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     const { accountId, clientId, date, startTime, status, treatments } = command;
 
     const accId = AccountId.create(new UniqueEntityID(accountId));
+    const clientID = ClientId.create(new UniqueEntityID(clientId));
 
     const treatmentsIds = treatments.map((item) => TreatmentId.create(new UniqueEntityID(item.id)));
 
@@ -65,7 +66,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     const appointment = Appointment.create({
       id: AppointmentId.create(),
       accountId: accId,
-      clientId: ClientId.create(new UniqueEntityID(clientId)),
+      clientId: clientID,
       date: AppointmentDate.create(date),
       startTime: AppointmentStartTime.create(startTime),
       status: AppointmentStatus.isStatusValid(status) ? AppointmentStatus.create(status) : AppointmentStatus.create('NEW'),

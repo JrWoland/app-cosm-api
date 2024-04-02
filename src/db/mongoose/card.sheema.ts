@@ -4,7 +4,7 @@ import { ClientModel } from './client.sheema';
 import { TreatmentModel } from './treatment.sheema';
 import { AppointmentModel } from './appointment.sheema';
 
-@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, collection: 'cards' })
 export class CardModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;

@@ -10,7 +10,7 @@ import { ClientPhoneNumber } from './ClientPhone';
 import { ClientEmail } from './ClientEmail';
 
 interface IClientProps {
-  readonly clientId: ClientId;
+  readonly id: ClientId;
   readonly accountId: AccountId;
   readonly name: ClientName;
   readonly surname: ClientSurname;
@@ -22,7 +22,7 @@ interface IClientProps {
 
 export class Client extends AggregateRoot {
   private constructor(
-    private readonly _clientId: ClientId,
+    private readonly _id: ClientId,
     private readonly _accountId: AccountId,
     private _name: ClientName,
     private _surname: ClientSurname,
@@ -34,12 +34,12 @@ export class Client extends AggregateRoot {
     super();
   }
 
-  public get accountId(): AccountId {
-    return this._accountId;
+  public get id(): ClientId {
+    return this._id;
   }
 
-  public get clientId(): ClientId {
-    return this._clientId;
+  public get accountId(): AccountId {
+    return this._accountId;
   }
 
   public get name(): ClientName {
@@ -67,8 +67,8 @@ export class Client extends AggregateRoot {
   }
 
   public static create(props: IClientProps): Client {
-    const { clientId, accountId, name, surname, birthDay, phone, email, status } = props;
+    const { id, accountId, name, surname, birthDay, phone, email, status } = props;
 
-    return new Client(clientId, accountId, name, surname, status, birthDay, phone, email);
+    return new Client(id, accountId, name, surname, status, birthDay, phone, email);
   }
 }
