@@ -23,8 +23,8 @@ export class TreatmentMap implements Mapper<Treatment, TreatmentModel> {
 
   public toDomain(raw: TreatmentModel): Treatment {
     const treatment = Treatment.create({
-      id: AccountId.create(new UniqueEntityID(raw._id)),
-      accountId: TreatmentId.create(new UniqueEntityID(raw.account_id)),
+      id: TreatmentId.create(new UniqueEntityID(raw._id)),
+      accountId: AccountId.create(new UniqueEntityID(raw.account_id)),
       name: TreatmentName.create(raw.name),
       duration: TreatmentDuration.create(raw.default_duration),
       price: TreatmentPrice.create(raw.default_price.value || 0),

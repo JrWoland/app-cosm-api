@@ -17,7 +17,7 @@ export class ClientRepository implements IClientRepo {
       account_id: accountId.value,
       $or: [{ name: new RegExp(filters.client || '', 'i') }, { surname: new RegExp(filters.client || '', 'i') }],
       status: {
-        $regex: filters.status ? new RegExp(filters.status || '', 'i') : 'ACTIVE',
+        $regex: filters.status ? new RegExp(filters.status || '', 'i') : '',
       },
     };
   }
@@ -61,7 +61,7 @@ export class ClientRepository implements IClientRepo {
 
       return new ClientMap().toDomain(client[0]);
     } catch (error) {
-      throw new InternalServerErrorException(`Cant find client by id: ${error.message}`);
+      throw new InternalServerErrorException(`Cant find client by id: ${error}`);
     }
   }
 

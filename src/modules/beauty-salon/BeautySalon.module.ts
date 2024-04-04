@@ -16,6 +16,8 @@ import { ClientRepository } from './repos/Client.repository';
 import { ClientsController } from './use-cases/Clients.controller';
 import { CreateClientUseCase } from './use-cases/client-create/CreateClientUseCase';
 import { GetClientsListUseCase } from './use-cases/client-get-list/GetClientsListUseCase';
+import { ArchiveClientUseCase } from './use-cases/client-archive/ArchiveClientUseCase';
+import { EditClientDetailsUseCase } from './use-cases/client-edit-details/EditClientDetailsUseCase';
 @Module({
   imports: [
     CqrsModule,
@@ -32,6 +34,8 @@ import { GetClientsListUseCase } from './use-cases/client-get-list/GetClientsLis
     CreateClientUseCase,
     GetAppointmentUseCase,
     GetClientsListUseCase,
+    ArchiveClientUseCase,
+    EditClientDetailsUseCase,
     RemoveAppointmentUseCase,
     AppointmentRepository,
     TreatmentRepository,

@@ -16,11 +16,13 @@ export class ClientPhoneNumber extends ValueObject<ClientPhoneNumberProps> {
 
   private static isValid(value: string | null): boolean {
     if (value === null || value === '') return true;
-    if (!value?.startsWith('+')) {
+    const trimmed = value?.trim() || null;
+    if (!trimmed?.startsWith('+')) {
       return false;
     }
+
     const re = /^\d+$/;
-    const hasOnlyDigits = re.test(value.slice(1));
+    const hasOnlyDigits = re.test(trimmed.slice(1));
 
     if (!hasOnlyDigits) {
       return false;
@@ -30,10 +32,9 @@ export class ClientPhoneNumber extends ValueObject<ClientPhoneNumberProps> {
   }
 
   public static create(phone: ClientPhoneNumberProps): ClientPhoneNumber {
-    const trimmed = phone?.trim() || null;
-    if (!ClientPhoneNumber.isValid(trimmed)) {
-      throw new UnprocessableEntityException(`${Phone_ERROR_MESSAGE}: ${phone}`);
+    if (!ClientPhoneNumber.isValid(phone)) {
+      throw new UnprocessableEntityException(`${Phone_ERROR_MESSAGE}: ${phone}. Valid format should start with +XX.`);
     }
-    return new ClientPhoneNumber(trimmed);
+    return new ClientPhoneNumber(phone);
   }
 }

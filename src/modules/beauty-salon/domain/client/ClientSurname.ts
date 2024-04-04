@@ -16,11 +16,11 @@ export class ClientSurname extends ValueObject<string> {
 
   public static create(surname: string): ClientSurname {
     if (surname === null || surname === undefined || surname === '') {
-      throw new UnprocessableEntityException('ClientSurname name cannot be empty.');
+      throw new UnprocessableEntityException('Client surname cannot be empty.');
     }
     if (surname.length < this.minLength || surname.length > this.maxLength) {
       throw new UnprocessableEntityException(
-        `ClientSurname name must have ${this.minLength} to ${this.maxLength} characters. Currently provided ${surname.length} characters.`,
+        `Client surname must have ${this.minLength} to ${this.maxLength} characters. Currently provided ${surname.length} characters.`,
       );
     }
     return new ClientSurname(surname);

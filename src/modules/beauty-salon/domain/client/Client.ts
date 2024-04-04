@@ -66,6 +66,32 @@ export class Client extends AggregateRoot {
     return this._email;
   }
 
+  public updateDetails(client: Pick<IClientProps, 'name' | 'phone' | 'surname' | 'birthDay' | 'email'>) {
+    if (client.name !== undefined) {
+      this._name = client.name;
+    }
+
+    if (client.surname !== undefined) {
+      this._surname = client.surname;
+    }
+
+    if (client.phone !== undefined) {
+      this._phone = client.phone;
+    }
+
+    if (client.birthDay !== undefined) {
+      this._birthDay = client.birthDay;
+    }
+
+    if (client.email !== undefined) {
+      this._email = client.email;
+    }
+  }
+
+  public archive() {
+    this._status = ClientStatus.create('ARCHIVED');
+  }
+
   public static create(props: IClientProps): Client {
     const { id, accountId, name, surname, birthDay, phone, email, status } = props;
 

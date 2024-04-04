@@ -21,7 +21,6 @@ export class ClientBirthDay extends ValueObject<ClientBirthDayProps> {
   }
 
   public static create(birth: ClientBirthDayProps): ClientBirthDay {
-    console.log(typeof birth);
     if (birth === null || birth === '') return new ClientBirthDay(null);
 
     if (!dayjs(new Date(birth)).isValid()) {

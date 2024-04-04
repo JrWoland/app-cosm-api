@@ -6,7 +6,10 @@ export class AccountId extends Entity {
     return this._uniqueEntityId.getValue();
   }
 
-  private constructor(id?: UniqueEntityID) {
+  private constructor(
+    id?: UniqueEntityID,
+    private __name__ = 'AccountId',
+  ) {
     super(id);
   }
 
