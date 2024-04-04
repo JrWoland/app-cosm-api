@@ -8,6 +8,8 @@ import { ArchiveClientDTO } from './client-archive/ArchiveClientDTO';
 import { ArchiveClientCommand } from './client-archive/ArchiveClientCommand';
 import { EditClientDetailsDTO } from './client-edit-details/EditClientDetailsDTO';
 import { EditClientDetailsCommand } from './client-edit-details/EditClientDetailsCommand';
+import { GetClientByIdQuery } from './client-get/GetClientByIdQuery';
+import { GetClientByIdDTO } from './client-get/GetClientByIdDTO';
 
 const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 
@@ -17,6 +19,19 @@ export class ClientsController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
+
+  @Get('')
+  async getClient(@Query() dto: GetClientByIdDTO) {
+    const { id } = dto;
+
+    return await this.queryBus.execute(new GetClientByIdQuery(accountId, id));
+  }
+
+  @Get('list')
+  async findAll(@Query() query: GetClientsListDTO) {
+    const { page = 1, limit = 10, status = '', fullName } = query;
+    return this.queryBus.execute(new GetClientsListQuery(accountId, page, limit, status, fullName));
+  }
 
   @Post('create')
   async createClient(@Body() dto: CreateClientDTO) {
@@ -31,14 +46,8 @@ export class ClientsController {
     return await this.commandBus.execute(new EditClientDetailsCommand(accountId, id, name, surname, birthDay, phone, email));
   }
 
-  @Get('list')
-  async findAll(@Query() query: GetClientsListDTO): Promise<any> {
-    const { page = 1, limit = 10, status = '', fullName } = query;
-    return this.queryBus.execute(new GetClientsListQuery(accountId, page, limit, status, fullName));
-  }
-
   @Put('archive')
-  async archive(@Body() dto: ArchiveClientDTO): Promise<any> {
+  async archive(@Body() dto: ArchiveClientDTO) {
     const { id } = dto;
     return this.commandBus.execute(new ArchiveClientCommand(accountId, id));
   }
