@@ -8,6 +8,7 @@ import { AccountId } from 'src/modules/account/domain/AccountId';
 import { AppointmentId } from '../domain/appointment/AppointmentId';
 import dayjs from 'dayjs';
 import { IAppoinmentRepo, IAppointmetsFilter, IDeleteResult, IAppointmentsList } from '../domain/appointment/IAppointmentRepo';
+import { AppoinmentDetailsMap } from './mappers/AppoinmentDetailsMap';
 
 @Injectable()
 export class AppointmentRepository implements IAppoinmentRepo {
@@ -64,13 +65,14 @@ export class AppointmentRepository implements IAppoinmentRepo {
     try {
       const result = await this.model
         .find(this.buildQuery(accountId, filters))
-        .populate([{ path: 'services.treatment_details', select: 'duration' }])
+        .populate({ path: 'client_details', select: 'name surname' })
+        .populate({ path: 'services.treatment_details', select: 'name' })
         .limit(filters.limit * 1)
         .skip((filters.page - 1) * filters.limit)
         .sort({ date: 'desc' });
 
       const count = await this.count(accountId, filters);
-      const appointmentsList = result.map((appointment) => new AppointmentMap().toDomain(appointment));
+      const appointmentsList = result.map((appointment) => new AppoinmentDetailsMap().toDomain(appointment));
 
       return { count, appointments: appointmentsList };
     } catch (error) {

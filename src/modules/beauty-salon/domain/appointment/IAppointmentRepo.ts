@@ -1,6 +1,7 @@
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { Appointment } from './Appointment';
 import { AppointmentId } from './AppointmentId';
+import { AppointmentDetails } from './AppointmentDetails';
 
 export interface IAppointmetsFilter {
   page: number;
@@ -14,7 +15,7 @@ export interface IAppointmetsFilter {
 
 export interface IAppointmentsList {
   count: number;
-  appointments: Appointment[];
+  appointments: AppointmentDetails[];
 }
 
 export interface IDeleteResult {

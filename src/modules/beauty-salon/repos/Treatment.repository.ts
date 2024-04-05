@@ -18,7 +18,7 @@ export class TreatmentRepository implements ITreatmentRepo {
       const treatment = await this.model.find({ _id: treatmentId.value.toString(), account_id: accountId.value });
 
       if (treatment.length === 0) {
-        throw new UnprocessableEntityException('Treatment does not exists.');
+        throw new UnprocessableEntityException('Treatment does not exist.');
       }
 
       return new TreatmentMap().toDomain(treatment[0]);

@@ -9,16 +9,18 @@ import { AppointmentStatus } from '../../domain/appointment/AppointmentStatus';
 import { AppointmentRepository } from '../../repos/Appointment.repository';
 import { AppointmentId } from '../../domain/appointment/AppointmentId';
 import { UniqueEntityID } from 'src/shared/UniqueId';
-import { AppointmentTreatment } from '../../domain/appointment/AppointmentTreatment';
+import { AppointmentTreatment } from '../../domain/appointment/AppointmentTreatmentDetails';
 import { TreatmentId } from '../../domain/treatment/TreatmentId';
 import { TreatmentRepository } from '../../repos/Treatment.repository';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
+import { ClientRepository } from '../../repos/Client.repository';
 
 @CommandHandler(CreateAppointmentCommand)
 export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointmentCommand> {
   constructor(
     private readonly appointmentRepository: AppointmentRepository,
     private readonly treatmentRepository: TreatmentRepository,
+    private readonly clientRepository: ClientRepository,
   ) {}
 
   private checkMissingTreatments(treatmentsIds: TreatmentId[], actualIds: TreatmentId[]) {
@@ -26,33 +28,36 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     const missingTreatments = treatmentsIds.filter((id) => !resultIds.includes(id.value));
 
     if (missingTreatments.length > 0) {
-      throw new UnprocessableEntityException({
-        description: `Cannot find treatments of id: ${JSON.stringify(missingTreatments.map((id) => id.value).join(','))}`,
-      });
+      throw new NotFoundException(`Cannot find treatments of id: ${JSON.stringify(missingTreatments.map((id) => id.value).join(','))}`);
     }
   }
 
   async execute(command: CreateAppointmentCommand): Promise<{ message: string; id: string; success: boolean }> {
-    // TODO clientId should belong to account
     const { accountId, clientId, date, startTime, status, treatments } = command;
 
-    const accId = AccountId.create(new UniqueEntityID(accountId));
+    const accountID = AccountId.create(new UniqueEntityID(accountId));
     const clientID = ClientId.create(new UniqueEntityID(clientId));
 
     const treatmentsIds = treatments.map((item) => TreatmentId.create(new UniqueEntityID(item.id)));
 
-    const appointmentTreatments = await this.treatmentRepository.findTreatmentsByIds(treatmentsIds, accId);
+    const appointmentTreatments = await this.treatmentRepository.findTreatmentsByIds(treatmentsIds, accountID);
 
     this.checkMissingTreatments(
       treatmentsIds,
       appointmentTreatments.map((item) => item.id),
     );
 
+    const exists = await this.clientRepository.exist(clientID, accountID);
+
+    if (!exists) {
+      throw new NotFoundException(`Client does not exist. id: ${clientID.value}`);
+    }
+
     const treatmentsToSave = treatments.map(({ duration, startTime, id }) => {
       const treatment = appointmentTreatments.find((item) => id === item.id.value);
 
       if (!treatment) {
-        throw new UnprocessableEntityException({ description: `Cannot find treatment id: ${id}.` });
+        throw new NotFoundException(`Cannot find treatment id: ${id}.`);
       }
 
       return AppointmentTreatment.create({
@@ -65,7 +70,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
 
     const appointment = Appointment.create({
       id: AppointmentId.create(),
-      accountId: accId,
+      accountId: accountID,
       clientId: clientID,
       date: AppointmentDate.create(date),
       startTime: AppointmentStartTime.create(startTime),

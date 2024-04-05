@@ -3,7 +3,7 @@ import { AppointmentDate } from './AppointmentDate';
 import { AppointmentDuration } from './AppointmentDuration';
 import { AppointmentStartTime } from './AppointmentStartTime';
 import { AppointmentStatus } from './AppointmentStatus';
-import { AppointmentTreatment } from './AppointmentTreatment';
+import { AppointmentTreatment } from './AppointmentTreatmentDetails';
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { ClientId } from '../client/ClientId';
 import { AppointmentId } from './AppointmentId';

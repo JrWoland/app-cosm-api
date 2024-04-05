@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ClientFilters, IClientRepo } from '../domain/client/IClientRepo';
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { Client } from '../domain/client/Client';
@@ -56,7 +56,7 @@ export class ClientRepository implements IClientRepo {
       });
 
       if (client.length === 0) {
-        throw new InternalServerErrorException('Client does not exists.');
+        throw new NotFoundException(`Client does not exist. id: ${clientId.value}`);
       }
 
       return new ClientMap().toDomain(client[0]);
@@ -65,11 +65,11 @@ export class ClientRepository implements IClientRepo {
     }
   }
 
-  public async exist(client: Client): Promise<boolean> {
+  public async exist(clientId: ClientId, accountId: AccountId): Promise<boolean> {
     try {
       const clientExists = await this.model.exists({
-        _id: client.id.value,
-        account_id: client.accountId.value,
+        _id: clientId.value,
+        account_id: accountId.value,
       });
       return !!clientExists;
     } catch (error) {
@@ -81,7 +81,7 @@ export class ClientRepository implements IClientRepo {
     try {
       const clientToSave = new ClientMap().toPersistence(client);
 
-      const exists = await this.exist(client);
+      const exists = await this.exist(client.id, client.accountId);
 
       if (!exists) {
         const newClient = new this.model(clientToSave);

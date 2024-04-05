@@ -19,6 +19,7 @@ import { GetClientsListUseCase } from './use-cases/client-get-list/GetClientsLis
 import { ArchiveClientUseCase } from './use-cases/client-archive/ArchiveClientUseCase';
 import { EditClientDetailsUseCase } from './use-cases/client-edit-details/EditClientDetailsUseCase';
 import { GetClientByIdUseCase } from './use-cases/client-get/GetClientByIdUseCase';
+import { EditTreatmentDetailsUseCase } from './use-cases/treatment-edit-details/EditTreatmentDetailsUseCase';
 @Module({
   imports: [
     CqrsModule,
@@ -38,6 +39,7 @@ import { GetClientByIdUseCase } from './use-cases/client-get/GetClientByIdUseCas
     GetClientByIdUseCase,
     ArchiveClientUseCase,
     EditClientDetailsUseCase,
+    EditTreatmentDetailsUseCase,
     RemoveAppointmentUseCase,
     AppointmentRepository,
     TreatmentRepository,

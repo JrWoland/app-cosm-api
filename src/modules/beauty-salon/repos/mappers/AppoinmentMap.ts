@@ -9,7 +9,7 @@ import { AppointmentDate } from '../../domain/appointment/AppointmentDate';
 import { AppointmentStartTime } from '../../domain/appointment/AppointmentStartTime';
 import { AppointmentStatus } from '../../domain/appointment/AppointmentStatus';
 import { UniqueEntityID } from 'src/shared/UniqueId';
-import { AppointmentTreatment } from '../../domain/appointment/AppointmentTreatment';
+import { AppointmentTreatment } from '../../domain/appointment/AppointmentTreatmentDetails';
 import { TreatmentId } from '../../domain/treatment/TreatmentId';
 
 export class AppointmentMap implements Mapper<Appointment, AppointmentModel> {

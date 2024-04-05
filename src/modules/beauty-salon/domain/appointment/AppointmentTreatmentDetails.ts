@@ -3,10 +3,10 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { ValueObject } from 'src/shared/ValueObject';
 
 type AppointmentTreatmentProps = {
-  treatmentId: TreatmentId;
-  name: string;
-  startTime: number;
-  duration: number;
+  readonly treatmentId: TreatmentId;
+  readonly name: string;
+  readonly startTime: number;
+  readonly duration: number;
 };
 
 export class AppointmentTreatment extends ValueObject<AppointmentTreatmentProps> {
