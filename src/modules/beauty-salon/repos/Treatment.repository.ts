@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 
-import { ITreatmentRepo } from '../domain/treatment/ITreatmentRepo';
+import { ITreatmentFilter, ITreatmentRepo, ITreatmentsList } from '../domain/treatment/ITreatmentRepo';
 import { TreatmentModel } from 'src/db/mongoose/treatment.sheema';
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { Treatment } from '../domain/treatment/Treatment';
@@ -12,6 +12,43 @@ import { TreatmentMap } from './mappers/TreatmentMap';
 @Injectable()
 export class TreatmentRepository implements ITreatmentRepo {
   constructor(@InjectModel(TreatmentModel.name) private model: Model<TreatmentModel>) {}
+
+  private buildQuery(accountId: AccountId, filters: ITreatmentFilter): FilterQuery<TreatmentModel> {
+    const mongooseQuery: FilterQuery<TreatmentModel> = {
+      account_id: accountId.value,
+    };
+
+    if (filters.name) mongooseQuery.name = { $regex: new RegExp(filters.name || '', 'i') };
+
+    return mongooseQuery;
+  }
+
+  public async count(accountId: AccountId, filters: ITreatmentFilter): Promise<number> {
+    try {
+      const query = this.buildQuery(accountId, filters);
+      const numberOfTreatments = await this.model.countDocuments(query);
+      return numberOfTreatments;
+    } catch (error) {
+      throw new InternalServerErrorException(`Could not count treatments: ${error}`);
+    }
+  }
+
+  public async findAllTreatmentsList(accountId: AccountId, filters: ITreatmentFilter): Promise<ITreatmentsList> {
+    try {
+      const result = await this.model
+        .find(this.buildQuery(accountId, filters))
+        .limit(filters.limit * 1)
+        .skip((filters.page - 1) * filters.limit)
+        .sort({ date: 'desc' });
+
+      const count = await this.count(accountId, filters);
+      const treatments = result.map((treatment) => new TreatmentMap().toDomain(treatment));
+
+      return { count, treatments };
+    } catch (error) {
+      throw new InternalServerErrorException(`Can not find treatments: ${error}`);
+    }
+  }
 
   public async findTreatmentById(treatmentId: TreatmentId, accountId: AccountId): Promise<Treatment> {
     try {

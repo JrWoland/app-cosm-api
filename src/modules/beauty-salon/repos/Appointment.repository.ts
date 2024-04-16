@@ -14,20 +14,6 @@ import { AppoinmentDetailsMap } from './mappers/AppoinmentDetailsMap';
 export class AppointmentRepository implements IAppoinmentRepo {
   constructor(@InjectModel(AppointmentModel.name) private model: Model<AppointmentModel>) {}
 
-  public async findAppointmentById(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment> {
-    try {
-      const appointment = await this.model.findOne({ _id: appointmentId.value, account_id: accountId.value });
-
-      if (!appointment) {
-        throw new UnprocessableEntityException(`Cannot find the entity: ${appointmentId}`);
-      }
-
-      return new AppointmentMap().toDomain(appointment);
-    } catch (error) {
-      throw new InternalServerErrorException(`Internal server error: Could not find appointment: ${appointmentId}`);
-    }
-  }
-
   private dateQuery(filters: IAppointmetsFilter) {
     const dateQuery = {};
     if (filters.dateFrom) Object.assign(dateQuery, { $gte: dayjs(new Date(filters.dateFrom)).startOf('day') });
@@ -49,6 +35,20 @@ export class AppointmentRepository implements IAppoinmentRepo {
     if (filters.status !== undefined) mongooseQuery.status = { $regex: new RegExp(filters.status || '', 'i') };
 
     return mongooseQuery;
+  }
+
+  public async findAppointmentById(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment> {
+    try {
+      const appointment = await this.model.findOne({ _id: appointmentId.value, account_id: accountId.value });
+
+      if (!appointment) {
+        throw new UnprocessableEntityException(`Cannot find the entity: ${appointmentId}`);
+      }
+
+      return new AppointmentMap().toDomain(appointment);
+    } catch (error) {
+      throw new InternalServerErrorException(`Internal server error: Could not find appointment: ${appointmentId}`);
+    }
   }
 
   public async count(accountId: AccountId, filters: IAppointmetsFilter): Promise<number> {
