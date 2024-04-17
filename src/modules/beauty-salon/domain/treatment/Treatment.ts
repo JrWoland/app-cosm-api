@@ -14,6 +14,7 @@ export interface ITreatmentProps {
   readonly price: TreatmentPrice;
   readonly duration: TreatmentDuration;
   readonly defaultCardId: CardId | null;
+  readonly isArchived?: boolean;
 }
 
 export class Treatment extends AggregateRoot {
@@ -24,6 +25,7 @@ export class Treatment extends AggregateRoot {
     private _name: TreatmentName,
     private _price: TreatmentPrice,
     private _duration: TreatmentDuration,
+    private _isArchived: boolean,
   ) {
     super();
   }
@@ -52,6 +54,18 @@ export class Treatment extends AggregateRoot {
     return this._duration;
   }
 
+  public get isArchived(): boolean {
+    return this._isArchived;
+  }
+
+  public archiveTreatment() {
+    this._isArchived = true;
+  }
+
+  public unarchiveTreatment() {
+    this._isArchived = false;
+  }
+
   public updateDetails(treatment: Pick<ITreatmentProps, 'name' | 'duration' | 'price' | 'defaultCardId'>) {
     if (treatment.name !== undefined) {
       this._name = treatment.name;
@@ -71,8 +85,8 @@ export class Treatment extends AggregateRoot {
   }
 
   public static create(props: ITreatmentProps): Treatment {
-    const { id, accountId, defaultCardId, duration, name, price } = props;
+    const { id, accountId, defaultCardId, duration, name, price, isArchived = false } = props;
 
-    return new Treatment(id, accountId, defaultCardId, name, price, duration);
+    return new Treatment(id, accountId, defaultCardId, name, price, duration, isArchived);
   }
 }

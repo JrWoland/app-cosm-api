@@ -22,6 +22,9 @@ export class TreatmentModel {
 
   @Prop({ type: mongoose.Schema.Types.Mixed })
   default_price: { value: number | null; currency: Currency | null };
+
+  @Prop({ required: true, type: mongoose.Schema.Types.Boolean })
+  is_archived: boolean;
 }
 
 export const TreatmentSchema = SchemaFactory.createForClass(TreatmentModel);

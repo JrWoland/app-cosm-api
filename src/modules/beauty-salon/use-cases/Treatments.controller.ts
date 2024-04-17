@@ -6,6 +6,8 @@ import { EditTreatmentDetailsDTO } from './treatment-edit-details/EditTreatmentD
 import { EditTreatmentDetailsCommand } from './treatment-edit-details/EditTreatmentDetailsCommand';
 import { GetTreatmentsListDTO } from './treatment-get-list/GetTreatmentsList';
 import { GetTreatmentsListQuery } from './treatment-get-list/GetTreatmentsListQuery';
+import { ArchiveTreatmentDTO } from './treatment-archive/ArchiveTreatmentDTO';
+import { ArchiveTreatmentCommand } from './treatment-archive/ArchiveTreatmentCommand';
 const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 
 @Controller('treatment')
@@ -33,5 +35,11 @@ export class TreatmentsController {
     const { duration, name, price, defaultCardId, id } = dto;
 
     return await this.commandBus.execute(new EditTreatmentDetailsCommand(accountId, id, name, price, duration, defaultCardId));
+  }
+
+  @Put('archive')
+  async archive(@Body() dto: ArchiveTreatmentDTO) {
+    const { id } = dto;
+    return this.commandBus.execute(new ArchiveTreatmentCommand(accountId, id));
   }
 }
