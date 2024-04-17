@@ -3,4 +3,5 @@ export interface GetTreatmentsListDTO {
   limit: number;
   status: string;
   name: string;
+  archived: boolean;
 }

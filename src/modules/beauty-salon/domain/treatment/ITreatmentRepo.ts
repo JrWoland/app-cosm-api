@@ -7,6 +7,7 @@ export interface ITreatmentFilter {
   limit: number;
   status: string;
   name: string;
+  archived: boolean;
 }
 
 export interface ITreatmentsList {

@@ -19,8 +19,8 @@ export class TreatmentsController {
 
   @Get('list')
   async getTreatmentsList(@Query() query: GetTreatmentsListDTO) {
-    const { name, limit, page, status } = query;
-    return await this.queryBus.execute(new GetTreatmentsListQuery(accountId, page, limit, status, name));
+    const { name, limit, page, status, archived } = query;
+    return await this.queryBus.execute(new GetTreatmentsListQuery(accountId, page, limit, status, name, archived));
   }
 
   @Post('create')

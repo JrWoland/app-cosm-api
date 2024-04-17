@@ -10,6 +10,7 @@ type TreatmentsResponse = {
   defaultDuration: number;
   defaultPrice: number;
   defaultCardId: string | null;
+  isArchived: boolean;
 };
 
 type ResponseResult = {
@@ -26,9 +27,9 @@ export class GetTreatmentsListUseCase implements IQueryHandler<GetTreatmentsList
   async execute(query: GetTreatmentsListQuery): Promise<ResponseResult> {
     const accountId = AccountId.create(new UniqueEntityID(query.accountId));
 
-    const { name, limit, page, status } = query;
+    const { name, limit = 10, page = 1, status, archived } = query;
 
-    const { count, treatments } = await this.treatmentsRepository.findAllTreatmentsList(accountId, { limit, name, page, status });
+    const { count, treatments } = await this.treatmentsRepository.findAllTreatmentsList(accountId, { limit, name, page, status, archived });
 
     const treatmentsResult: TreatmentsResponse[] = treatments.map((treatment) => ({
       id: treatment.id.value,
@@ -36,11 +37,12 @@ export class GetTreatmentsListUseCase implements IQueryHandler<GetTreatmentsList
       defaultDuration: treatment.duration.value,
       defaultPrice: treatment.price.value,
       defaultCardId: treatment.defaultCardId?.value || null,
+      isArchived: treatment.isArchived,
     }));
 
     return {
-      count,
-      limit,
+      count: Number(count),
+      limit: Number(limit),
       page,
       treatments: treatmentsResult,
     };

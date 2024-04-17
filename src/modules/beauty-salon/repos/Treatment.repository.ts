@@ -20,6 +20,8 @@ export class TreatmentRepository implements ITreatmentRepo {
 
     if (filters.name) mongooseQuery.name = { $regex: new RegExp(filters.name || '', 'i') };
 
+    if (filters.archived !== undefined) mongooseQuery.is_archived = filters.archived;
+
     return mongooseQuery;
   }
 

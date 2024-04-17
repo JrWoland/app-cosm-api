@@ -5,5 +5,6 @@ export class GetTreatmentsListQuery {
     public readonly limit: number,
     public readonly status: string,
     public readonly name: string,
+    public readonly archived: boolean,
   ) {}
 }
