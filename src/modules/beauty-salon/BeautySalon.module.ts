@@ -22,6 +22,11 @@ import { GetClientByIdUseCase } from './use-cases/client-get/GetClientByIdUseCas
 import { EditTreatmentDetailsUseCase } from './use-cases/treatment-edit-details/EditTreatmentDetailsUseCase';
 import { GetTreatmentsListUseCase } from './use-cases/treatment-get-list/GetTreatmentsListUseCase';
 import { ArchiveTreatmentUseCase } from './use-cases/treatment-archive/ArchiveTreatmentUseCase';
+import { GetTreatmentByIdUseCase } from './use-cases/treatment-get/GetTreatmentByIdUseCase';
+import { CardsController } from './use-cases/Cards.controller';
+import { CreateCardUseCase } from './use-cases/card-create/CreateCardUseCase';
+import { CardModel, CardSchema } from 'src/db/mongoose/card.sheema';
+import { CardsRepository } from './repos/Cards.repository';
 @Module({
   imports: [
     CqrsModule,
@@ -29,9 +34,10 @@ import { ArchiveTreatmentUseCase } from './use-cases/treatment-archive/ArchiveTr
       { name: AppointmentModel.name, schema: AppointmentSchema },
       { name: TreatmentModel.name, schema: TreatmentSchema },
       { name: ClientModel.name, schema: ClientSchema },
+      { name: CardModel.name, schema: CardSchema },
     ]),
   ],
-  controllers: [AppointmentsController, TreatmentsController, ClientsController],
+  controllers: [AppointmentsController, TreatmentsController, ClientsController, CardsController],
   providers: [
     CreateAppointmentUseCase,
     CreateTreatmentUseCase,
@@ -40,6 +46,8 @@ import { ArchiveTreatmentUseCase } from './use-cases/treatment-archive/ArchiveTr
     GetClientsListUseCase,
     GetClientByIdUseCase,
     GetTreatmentsListUseCase,
+    GetTreatmentByIdUseCase,
+    CreateCardUseCase,
     ArchiveClientUseCase,
     ArchiveTreatmentUseCase,
     EditClientDetailsUseCase,
@@ -48,6 +56,7 @@ import { ArchiveTreatmentUseCase } from './use-cases/treatment-archive/ArchiveTr
     AppointmentRepository,
     TreatmentRepository,
     ClientRepository,
+    CardsRepository,
   ],
 })
 export class BeautySalonModule {}

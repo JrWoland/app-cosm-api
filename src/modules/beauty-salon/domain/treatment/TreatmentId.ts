@@ -1,19 +1,19 @@
-import { Entity } from 'src/shared/Entity';
 import { UniqueEntityID } from 'src/shared/UniqueId';
+import { ValueObject } from 'src/shared/ValueObject';
 
-export class TreatmentId extends Entity {
+export class TreatmentId extends ValueObject<{ value: UniqueEntityID }> {
   get value(): string {
-    return this._uniqueEntityId.getValue();
+    return this.id.getValue();
   }
 
   private constructor(
-    id?: UniqueEntityID,
+    private id: UniqueEntityID,
     private __name__ = 'TreatmentId',
   ) {
-    super(id);
+    super({ value: id });
   }
 
-  public static create(id?: UniqueEntityID): TreatmentId {
+  public static create(id: UniqueEntityID): TreatmentId {
     return new TreatmentId(id);
   }
 }

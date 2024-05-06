@@ -1,28 +1,40 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { ClientModel } from './client.sheema';
-import { TreatmentModel } from './treatment.sheema';
-import { AppointmentModel } from './appointment.sheema';
+
+@Schema()
+class Template {
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID })
+  _id: string;
+
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel' })
+  account_id: string;
+
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  fields: Record<string, any>[];
+}
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, collection: 'cards' })
 export class CardModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel' })
   account_id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AppointmentModel' })
-  appointment: AppointmentModel;
+  @Prop({ required: false, type: mongoose.Schema.Types.UUID, ref: 'AppointmentModel' })
+  appointment: string | null;
 
   @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'ClientModel' })
-  client: ClientModel;
-
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'TreatmentModel' })
-  treatment: TreatmentModel;
+  client: string;
 
   @Prop({ required: true })
-  template: unknown[];
+  date: Date;
+
+  @Prop({ required: true, type: Template })
+  template: Template;
 }
 
 export const CardSchema = SchemaFactory.createForClass(CardModel);

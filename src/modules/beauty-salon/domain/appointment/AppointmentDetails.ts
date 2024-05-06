@@ -4,18 +4,18 @@ import { AppointmentStartTime } from './AppointmentStartTime';
 import { AppointmentStatus } from './AppointmentStatus';
 import { AppointmentTreatment } from './AppointmentTreatmentDetails';
 import { AppointmentId } from './AppointmentId';
-import { UnprocessableEntityException } from '@nestjs/common';
+
 import { ValueObject } from 'src/shared/ValueObject';
 import { AppointmentClientDetails } from './AppointmentClientDetails';
 
 interface IAppointmentDetailsProps {
   readonly id: AppointmentId;
-  readonly clientDetails: AppointmentClientDetails;
+  readonly clientDetails: AppointmentClientDetails | null;
   readonly date: AppointmentDate;
   readonly duration: AppointmentDuration;
   readonly startTime: AppointmentStartTime;
   readonly status: AppointmentStatus;
-  readonly services: AppointmentTreatment[];
+  readonly services: AppointmentTreatment[] | null;
 }
 
 export class AppointmentDetails extends ValueObject<IAppointmentDetailsProps> {
@@ -28,7 +28,7 @@ export class AppointmentDetails extends ValueObject<IAppointmentDetailsProps> {
   }
 
   get clientDetails() {
-    return this.appointmentDetails.clientDetails;
+    return this.appointmentDetails?.clientDetails?.value || null;
   }
 
   get date() {
@@ -52,10 +52,6 @@ export class AppointmentDetails extends ValueObject<IAppointmentDetailsProps> {
   }
 
   public static create(props: IAppointmentDetailsProps): AppointmentDetails {
-    const { services } = props;
-
-    if (services.length <= 0) throw new UnprocessableEntityException('Cannot create appointments details without treatments.');
-
     return new AppointmentDetails(props);
   }
 }

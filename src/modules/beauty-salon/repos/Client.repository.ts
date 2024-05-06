@@ -44,7 +44,7 @@ export class ClientRepository implements IClientRepo {
 
       return { clients: clientsList, count };
     } catch (error) {
-      throw new Error(`Can not find clients: ${error}`);
+      throw new InternalServerErrorException(`Can not find clients: ${error}`);
     }
   }
 

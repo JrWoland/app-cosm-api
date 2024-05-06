@@ -36,7 +36,7 @@ export class GetTreatmentsListUseCase implements IQueryHandler<GetTreatmentsList
       name: treatment.name.value,
       defaultDuration: treatment.duration.value,
       defaultPrice: treatment.price.value,
-      defaultCardId: treatment.defaultCardId?.value || null,
+      defaultCardId: treatment.defaultCardId?.value.getValue() || null,
       isArchived: treatment.isArchived,
     }));
 

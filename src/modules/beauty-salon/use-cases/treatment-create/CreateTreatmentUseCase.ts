@@ -25,7 +25,7 @@ export class CreateTreatmentUseCase implements ICommandHandler<CreateTreatmentCo
     const accId = AccountId.create(new UniqueEntityID(accountId));
 
     const treatment = Treatment.create({
-      id: TreatmentId.create(),
+      id: TreatmentId.create(new UniqueEntityID()),
       accountId: accId,
       name: TreatmentName.create(name),
       price: TreatmentPrice.create(price),
@@ -34,5 +34,7 @@ export class CreateTreatmentUseCase implements ICommandHandler<CreateTreatmentCo
     });
 
     await this.treatmentRepository.save(treatment);
+
+    return { message: 'Treatment created', id: treatment.id.value, success: true };
   }
 }

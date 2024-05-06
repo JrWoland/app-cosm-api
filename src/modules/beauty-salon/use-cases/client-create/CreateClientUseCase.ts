@@ -36,5 +36,7 @@ export class CreateClientUseCase implements ICommandHandler<CreateClientCommand>
     });
 
     await this.clientRepository.save(client);
+
+    return { message: 'Client created', id: client.id.value, success: true };
   }
 }

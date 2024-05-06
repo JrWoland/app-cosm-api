@@ -16,12 +16,12 @@ type ResponseResult = {
   page: number;
   appointments: {
     id: string;
-    client: { id: string; name: string; surname: string };
+    client?: { id?: string; name?: string; surname?: string };
     date: string;
     status: 'CLIENT_NOT_APPEARD' | 'DECLINED' | 'FINISHED' | 'NEW';
     duration: number;
     startTime: number;
-    treatments: TreatmentType[];
+    treatments?: TreatmentType[];
   }[];
 };
 
@@ -47,15 +47,15 @@ export class GetAppointmentUseCase implements IQueryHandler<GetAppointmentQuery>
     const appoinmentsList = appointments.map((appointment) => ({
       id: appointment.id.value,
       client: {
-        id: appointment.clientDetails.value.id.value,
-        name: appointment.clientDetails.value.name,
-        surname: appointment.clientDetails.value.surname,
+        id: appointment.clientDetails?.id.value,
+        name: appointment.clientDetails?.name,
+        surname: appointment.clientDetails?.surname,
       },
       date: appointment.date.value.toISOString(),
       status: appointment.status.value,
       duration: appointment.duration.value,
       startTime: appointment.startTime.value,
-      treatments: appointment.services.map(({ duration, name, startTime, treatmentId }) => ({
+      treatments: (appointment.services || []).map(({ duration, name, startTime, treatmentId }) => ({
         duration,
         name,
         startTime,

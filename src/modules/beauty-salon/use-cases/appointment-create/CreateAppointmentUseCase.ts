@@ -69,7 +69,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     });
 
     const appointment = Appointment.create({
-      id: AppointmentId.create(),
+      id: AppointmentId.create(new UniqueEntityID()),
       accountId: accountID,
       clientId: clientID,
       date: AppointmentDate.create(date),
