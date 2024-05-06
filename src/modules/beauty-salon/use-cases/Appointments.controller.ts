@@ -39,7 +39,7 @@ export class AppointmentsController {
       );
     }
     if (noTreatments) {
-      throw new UnprocessableEntityException('Cannot create appointment without treatmens.');
+      throw new UnprocessableEntityException('Cannot create appointment without treatments.');
     }
 
     return await this.commandBus.execute(new CreateAppointmentCommand(accountId, date, clientId, startTime, status, treatments));
