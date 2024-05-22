@@ -1,5 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CardFilters, ICardsRepo } from '../domain/card/ICardsRepo';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { CardFilters, ICardsRepo, IDeleteCardResult } from '../domain/card/ICardsRepo';
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { Card } from '../domain/card/Card';
 import { CardId } from '../domain/card/CardId';
@@ -20,6 +20,8 @@ export class CardsRepository implements ICardsRepo {
     if (filters.clientId) mongooseQuery.client = filters.clientId;
 
     if (filters.appointmentId) mongooseQuery.appointment = filters.appointmentId;
+
+    if (filters.templateName) mongooseQuery.template.name = filters.templateName;
 
     return mongooseQuery;
   }
@@ -51,13 +53,40 @@ export class CardsRepository implements ICardsRepo {
     }
   }
 
-  //   async findCardById(cardId: CardId, accountId: AccountId): Promise<Card> {
-  //     throw new Error('Method not implemented.');
-  //   }
+  public async deleteOne(cardId: CardId, accountId: AccountId): Promise<IDeleteCardResult> {
+    try {
+      const card = await this.model.deleteOne({ _id: cardId.value, account_id: accountId.value });
+
+      if (card.deletedCount === 0) {
+        throw new NotFoundException(null, { description: 'Card not found.' });
+      }
+
+      return { id: cardId.value, message: 'Card permanently deleted.', success: true };
+    } catch (error) {
+      throw new InternalServerErrorException('Can not delete Card by cardId. ' + error);
+    }
+  }
+
+  async findCardById(cardId: CardId, accountId: AccountId): Promise<Card> {
+    try {
+      const card = await this.model.find({
+        _id: cardId.value,
+        account_id: accountId.value,
+      });
+
+      if (card.length === 0) {
+        throw new NotFoundException(`Card does not exist. id: ${cardId.value}`);
+      }
+
+      return new CardMap().toDomain(card[0]);
+    } catch (error) {
+      throw new InternalServerErrorException(`Cant find card by id: ${error}`);
+    }
+  }
 
   async exist(cardId: CardId, accountId: AccountId): Promise<boolean> {
     try {
-      const doc = await this.model.exists({ _id: cardId.value.getValue(), account_id: accountId.value });
+      const doc = await this.model.exists({ _id: cardId.value, account_id: accountId.value });
       return !!doc;
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -77,7 +106,7 @@ export class CardsRepository implements ICardsRepo {
 
       await this.model.findOneAndUpdate(
         {
-          _id: card.id.value.getValue(),
+          _id: card.id.value,
           account_id: card.accountId.value,
         },
         cardToSave,

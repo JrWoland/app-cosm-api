@@ -29,7 +29,7 @@ export class AppointmentModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, index: true })
   account_id: string;
 
   @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'ClientModel' })

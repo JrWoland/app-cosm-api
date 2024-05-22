@@ -19,7 +19,7 @@ export class CardMap implements Mapper<Card, CardModel> {
     };
 
     return {
-      _id: card.id.value.getValue(),
+      _id: card.id.value,
       account_id: card.accountId.value,
       appointment: card.appointmentId?.value || null,
       client: card.clientId.value,

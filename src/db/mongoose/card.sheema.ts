@@ -6,7 +6,7 @@ class Template {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel' })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel', index: true })
   account_id: string;
 
   @Prop({ required: true })
@@ -21,7 +21,7 @@ export class CardModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel' })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'AccountModel', index: true })
   account_id: string;
 
   @Prop({ required: false, type: mongoose.Schema.Types.UUID, ref: 'AppointmentModel' })

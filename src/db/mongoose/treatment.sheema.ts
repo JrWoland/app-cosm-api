@@ -8,7 +8,7 @@ export class TreatmentModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'Account' })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'Account', index: true })
   account_id: string;
 
   @Prop({ required: false, type: mongoose.Schema.Types.UUID, ref: 'Card' })

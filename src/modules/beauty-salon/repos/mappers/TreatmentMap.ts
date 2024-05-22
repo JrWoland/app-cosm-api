@@ -17,7 +17,7 @@ export class TreatmentMap implements Mapper<Treatment, TreatmentModel> {
       name: treatment.name.value,
       default_price: { value: treatment.price.value, currency: null },
       default_duration: treatment.duration.value,
-      default_card_id: treatment.defaultCardId?.value.getValue() || null,
+      default_card_id: treatment.defaultCardId?.value || null,
       is_archived: treatment.isArchived,
     };
   }

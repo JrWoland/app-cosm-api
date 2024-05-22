@@ -7,7 +7,7 @@ export class ClientModel {
   @Prop({ type: mongoose.Schema.Types.UUID, required: true })
   _id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'Account' })
+  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'Account', index: true })
   account_id: string;
 
   @Prop({ required: true, type: mongoose.Schema.Types.String })

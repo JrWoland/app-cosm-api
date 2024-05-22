@@ -9,10 +9,17 @@ export interface CardFilters {
   appointmentId?: string;
   templateName?: string;
 }
+
+export interface IDeleteCardResult {
+  id: string;
+  message: string;
+  success: boolean;
+}
 export interface ICardsRepo {
-  // count(accountId: AccountId, filters: CardFilters): Promise<number>;
-  // findAllCards(accountId: AccountId, filters: CardFilters): Promise<{ count: number; cards: Card[] }>;
-  // findCardById(cardId: CardId, accountId: AccountId): Promise<Card>;
+  count(accountId: AccountId, filters: CardFilters): Promise<number>;
+  findCardById(cardId: CardId, accountId: AccountId): Promise<Card>;
+  findAllCards(accountId: AccountId, filters: CardFilters): Promise<{ count: number; cards: Card[] }>;
+  deleteOne(cardId: CardId, accountId: AccountId): Promise<IDeleteCardResult>;
   exist(cardId: CardId, accountId: AccountId): Promise<boolean>;
   save(card: Card): Promise<void>;
 }

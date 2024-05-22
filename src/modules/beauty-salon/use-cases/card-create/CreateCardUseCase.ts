@@ -56,6 +56,6 @@ export class CreateCardUseCase implements ICommandHandler<CreateCardCommand> {
 
     await this.cardRepository.save(card);
 
-    return { id: card.id.value.getValue(), message: 'Success', success: true };
+    return { id: card.id.value, message: 'Success', success: true };
   }
 }

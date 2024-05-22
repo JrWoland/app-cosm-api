@@ -27,6 +27,9 @@ import { CardsController } from './use-cases/Cards.controller';
 import { CreateCardUseCase } from './use-cases/card-create/CreateCardUseCase';
 import { CardModel, CardSchema } from 'src/db/mongoose/card.sheema';
 import { CardsRepository } from './repos/Cards.repository';
+import { GetCardByIdUseCase } from './use-cases/card-get/GetCardByIdUseCase';
+import { GetCardsListUseCase } from './use-cases/card-get-list/GetCardsListUseCase';
+import { DeleteCardByIdUseCase } from './use-cases/card-delete/DeleteCardByIdUseCase';
 @Module({
   imports: [
     CqrsModule,
@@ -47,6 +50,9 @@ import { CardsRepository } from './repos/Cards.repository';
     GetClientByIdUseCase,
     GetTreatmentsListUseCase,
     GetTreatmentByIdUseCase,
+    GetCardByIdUseCase,
+    GetCardsListUseCase,
+    DeleteCardByIdUseCase,
     CreateCardUseCase,
     ArchiveClientUseCase,
     ArchiveTreatmentUseCase,

@@ -33,7 +33,7 @@ export class GetTreatmentByIdUseCase implements IQueryHandler<GetTreatmentByIdQu
       duration: treatment.duration.value,
       price: treatment.price.value,
       isArchived: treatment.isArchived,
-      defaultCardId: treatment.defaultCardId?.value.getValue(),
+      defaultCardId: treatment.defaultCardId?.value,
     };
   }
 }
