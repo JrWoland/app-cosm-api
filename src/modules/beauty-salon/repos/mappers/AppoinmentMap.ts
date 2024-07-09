@@ -11,6 +11,7 @@ import { AppointmentStatus } from '../../domain/appointment/AppointmentStatus';
 import { UniqueEntityID } from 'src/shared/UniqueId';
 import { AppointmentTreatment } from '../../domain/appointment/AppointmentTreatmentDetails';
 import { TreatmentId } from '../../domain/treatment/TreatmentId';
+import { AppointmentClientDetails } from '../../domain/appointment/AppointmentClientDetails';
 
 export class AppointmentMap implements Mapper<Appointment, AppointmentModel> {
   // toPersistence(appointment: Appointment): AppointmentModel {
@@ -43,13 +44,19 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentModel> {
       }),
     );
 
+    const clientDetails = AppointmentClientDetails.create({
+      id: ClientId.create(new UniqueEntityID(raw.client_details.ref._id)),
+      name: raw.client_details.ref.name || raw.client_details.name,
+      surname: raw.client_details.ref.surname || raw.client_details.surname,
+    });
+
     const appointment = Appointment.create({
       id: AppointmentId.create(new UniqueEntityID(String(raw._id))),
       accountId: AccountId.create(new UniqueEntityID(raw.account_id)),
-      clientId: ClientId.create(new UniqueEntityID(raw._id)),
       date: AppointmentDate.create(raw.date.toISOString()),
       startTime: AppointmentStartTime.create(raw.start_time),
       status: AppointmentStatus.create(raw.status),
+      client: clientDetails,
       services: treatments,
     });
 

@@ -21,6 +21,9 @@ export class EditClientDetailsUseCase implements ICommandHandler<EditClientDetai
     if (!accountId) {
       throw new UnprocessableEntityException('Missing account id.');
     }
+    if (!clientId) {
+      throw new UnprocessableEntityException('Missing clientId id.');
+    }
 
     const acocuntID = AccountId.create(new UniqueEntityID(accountId));
     const clientID = ClientId.create(new UniqueEntityID(clientId));

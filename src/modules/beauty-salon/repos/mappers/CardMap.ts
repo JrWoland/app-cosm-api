@@ -8,11 +8,12 @@ import { ClientId } from '../../domain/client/ClientId';
 import { CardDate } from '../../domain/card/CardDate';
 import { CardTemplate } from '../../domain/card/CardTemplate';
 import { UniqueEntityID } from 'src/shared/UniqueId';
+import { CardTemplateField } from '../../domain/card/CardTemplateField';
 
 export class CardMap implements Mapper<Card, CardModel> {
   toPersistence(card: Card): CardModel {
     const template = {
-      _id: card.template.id.getValue(),
+      _id: card.template.id.value,
       account_id: card.template.accountId.value,
       name: card.template.name,
       fields: card.template.fields,
@@ -33,13 +34,15 @@ export class CardMap implements Mapper<Card, CardModel> {
       {
         accountId: AccountId.create(new UniqueEntityID(card.account_id)),
         name: card?.template?.name,
-        fields: card?.template?.fields.map((item) => ({
-          description: item.description,
-          identifier: item.identifier,
-          label: item.label,
-          optionalValues: item.optionalValues,
-          value: item.value,
-        })),
+        fields: card?.template?.fields.map((item) =>
+          CardTemplateField.create({
+            description: item.description,
+            identifier: item.identifier,
+            label: item.label,
+            optionalValues: item.optionalValues,
+            value: item.value,
+          }),
+        ),
       },
       new UniqueEntityID(card.template._id),
     );

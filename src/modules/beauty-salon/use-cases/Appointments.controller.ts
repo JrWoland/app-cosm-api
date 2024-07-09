@@ -6,6 +6,8 @@ import { GetAppointmentQuery } from './appointment-get-list/GetAppointmentQuery'
 import { GetAppointmentListDTO } from './appointment-get-list/GetAppointmentDTO';
 import { RemoveAppoinmentDTO } from './appointment-remove/RemoveAppoinmentDTO';
 import { RemoveAppointmentCommand } from './appointment-remove/RemoveAppointmentCommand';
+import { GetAppointmentByIdDTO } from './appointment-get/GetAppointmentByIdDTO';
+import { GetAppointmentByIdQuery } from './appointment-get/GetAppointmentByIdQuery';
 
 const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 @Controller('appointment')
@@ -43,6 +45,12 @@ export class AppointmentsController {
     }
 
     return await this.commandBus.execute(new CreateAppointmentCommand(accountId, date, clientId, startTime, status, treatments));
+  }
+
+  @Get('')
+  async findOne(@Query() query: GetAppointmentByIdDTO): Promise<any> {
+    const { id } = query;
+    return this.queryBus.execute(new GetAppointmentByIdQuery(accountId, id));
   }
 
   @Get('list')

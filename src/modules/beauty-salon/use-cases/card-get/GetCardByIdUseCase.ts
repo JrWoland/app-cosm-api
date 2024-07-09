@@ -18,7 +18,7 @@ export class GetCardByIdUseCase implements IQueryHandler<GetCardByIdQuery> {
     const card = await this.cardRepository.findCardById(cardID, accountID);
 
     const template = {
-      id: card.template.id.getValue(),
+      id: card.template.id.value,
       name: card.template.name,
       fields: card.template.fields,
     };

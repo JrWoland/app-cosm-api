@@ -5,14 +5,14 @@ import { AppointmentStartTime } from './AppointmentStartTime';
 import { AppointmentStatus } from './AppointmentStatus';
 import { AppointmentTreatment } from './AppointmentTreatmentDetails';
 import { AccountId } from 'src/modules/account/domain/AccountId';
-import { ClientId } from '../client/ClientId';
 import { AppointmentId } from './AppointmentId';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { AppointmentClientDetails } from './AppointmentClientDetails';
 
 interface IAppointmentProps {
   readonly id: AppointmentId;
   readonly accountId: AccountId;
-  readonly clientId: ClientId;
+  readonly client: AppointmentClientDetails;
   readonly date: AppointmentDate;
   readonly startTime: AppointmentStartTime;
   readonly status: AppointmentStatus;
@@ -23,7 +23,7 @@ export class Appointment extends AggregateRoot {
   private constructor(
     private _id: AppointmentId,
     private _accountId: AccountId,
-    private _clientId: ClientId,
+    private _client: AppointmentClientDetails,
     private _date: AppointmentDate,
     private _startTime: AppointmentStartTime,
     private _status: AppointmentStatus,
@@ -40,8 +40,8 @@ export class Appointment extends AggregateRoot {
     return this._accountId;
   }
 
-  public get clientId(): ClientId {
-    return this._clientId;
+  public get client(): AppointmentClientDetails {
+    return this._client;
   }
 
   public get date(): AppointmentDate {
@@ -70,12 +70,12 @@ export class Appointment extends AggregateRoot {
   }
 
   public static create(props: IAppointmentProps): Appointment {
-    const { id, accountId, clientId, date, services, startTime, status } = props;
+    const { id, accountId, client, date, services, startTime, status } = props;
 
     if (services.length <= 0) throw new UnprocessableEntityException('Cannot create appointments without treatments.');
     if (!accountId) throw new UnprocessableEntityException('Cannot create appointments without accountId.');
-    if (!clientId) throw new UnprocessableEntityException('Cannot create appointments without clientId.');
+    if (!client) throw new UnprocessableEntityException('Cannot create appointments without client.');
 
-    return new Appointment(id, accountId, clientId, date, startTime, status, services);
+    return new Appointment(id, accountId, client, date, startTime, status, services);
   }
 }

@@ -39,7 +39,7 @@ export class GetCardsListUseCase implements IQueryHandler<GetCardsListQuery> {
       clientId: item.clientId.value,
       date: item.date.value.toISOString(),
       template: {
-        id: item.template.id.getValue(),
+        id: item.template.id.value,
         name: item.template.name,
       },
     }));

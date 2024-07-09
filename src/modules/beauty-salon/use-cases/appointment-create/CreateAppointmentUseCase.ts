@@ -14,6 +14,7 @@ import { TreatmentId } from '../../domain/treatment/TreatmentId';
 import { TreatmentRepository } from '../../repos/Treatment.repository';
 import { NotFoundException } from '@nestjs/common';
 import { ClientRepository } from '../../repos/Client.repository';
+import { AppointmentClientDetails } from '../../domain/appointment/AppointmentClientDetails';
 
 @CommandHandler(CreateAppointmentCommand)
 export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointmentCommand> {
@@ -47,11 +48,17 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
       appointmentTreatments.map((item) => item.id),
     );
 
-    const exists = await this.clientRepository.exist(clientID, accountID);
+    const client = await this.clientRepository.findClientById(clientID, accountID);
 
-    if (!exists) {
+    if (!client) {
       throw new NotFoundException(`Client does not exist. id: ${clientID.value}`);
     }
+
+    const clientDetails = AppointmentClientDetails.create({
+      id: client.id,
+      name: client.name.value,
+      surname: client.surname.value,
+    });
 
     const treatmentsToSave = treatments.map(({ duration, startTime, id }) => {
       const treatment = appointmentTreatments.find((item) => id === item.id.value);
@@ -71,7 +78,7 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
     const appointment = Appointment.create({
       id: AppointmentId.create(new UniqueEntityID()),
       accountId: accountID,
-      clientId: clientID,
+      client: clientDetails,
       date: AppointmentDate.create(date),
       startTime: AppointmentStartTime.create(startTime),
       status: AppointmentStatus.isStatusValid(status) ? AppointmentStatus.create(status) : AppointmentStatus.create('NEW'),

@@ -2,8 +2,8 @@ import { UniqueEntityID } from 'src/shared/UniqueId';
 import { ValueObject } from 'src/shared/ValueObject';
 
 export class CardTemplateId extends ValueObject<{ value: UniqueEntityID }> {
-  get value(): UniqueEntityID {
-    return this.id;
+  get value(): string {
+    return this.id.getValue();
   }
 
   private constructor(

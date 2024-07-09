@@ -15,7 +15,6 @@ import { TreatmentId } from '../../domain/treatment/TreatmentId';
 
 export class AppoinmentDetailsMap implements Mapper<AppointmentDetails, AppointmentModel> {
   toDomain(raw: AppointmentModel): AppointmentDetails {
-    let clientDetails: AppointmentClientDetails | null = null;
     let treatments: AppointmentTreatment[] | null = null;
     if (raw.services.length !== 0) {
       treatments = raw.services.map((service) =>
@@ -28,12 +27,11 @@ export class AppoinmentDetailsMap implements Mapper<AppointmentDetails, Appointm
       );
     }
 
-    if (raw.client_details)
-      clientDetails = AppointmentClientDetails.create({
-        id: ClientId.create(new UniqueEntityID(raw.client_details._id)),
-        name: raw.client_details.name,
-        surname: raw.client_details.surname,
-      });
+    const clientDetails = AppointmentClientDetails.create({
+      id: ClientId.create(new UniqueEntityID(raw.client_details.ref._id)),
+      name: raw.client_details.ref.name || raw.client_details.name,
+      surname: raw.client_details.ref.surname || raw.client_details.surname,
+    });
 
     return AppointmentDetails.create({
       id: AppointmentId.create(new UniqueEntityID(raw._id)),

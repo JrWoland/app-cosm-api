@@ -8,7 +8,7 @@ import { CardId } from '../../domain/card/CardId';
 import { AppointmentId } from '../../domain/appointment/AppointmentId';
 import { CardDate } from '../../domain/card/CardDate';
 import { CardTemplate } from '../../domain/card/CardTemplate';
-import { lashesTemplate } from '../../domain/card/defaultTemplates/LashesTemplate';
+// import { lashesTemplate } from '../../domain/card/defaultTemplates/LashesTemplate';
 import { CardsRepository } from '../../repos/Cards.repository';
 import { randomUUID } from 'crypto';
 import { ClientRepository } from '../../repos/Client.repository';
@@ -28,7 +28,7 @@ export class CreateCardUseCase implements ICommandHandler<CreateCardCommand> {
     const clientID = ClientId.create(new UniqueEntityID(clientId));
     const appointmentID = appointmentId ? AppointmentId.create(new UniqueEntityID(appointmentId)) : null;
 
-    const fields = lashesTemplate;
+    // const fields = lashesTemplate;
 
     const clientExists = await this.clientRepository.exist(clientID, accountID);
 
@@ -40,7 +40,7 @@ export class CreateCardUseCase implements ICommandHandler<CreateCardCommand> {
       {
         accountId: accountID,
         name: 'Rzęsy',
-        fields: fields,
+        fields: [],
       },
       new UniqueEntityID(randomUUID()),
     );

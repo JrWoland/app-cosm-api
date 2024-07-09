@@ -23,6 +23,17 @@ class SelectedTreatment {
   @Prop({ required: true })
   duration: number;
 }
+@Schema({ _id: false })
+class SelectedClient {
+  @Prop({ required: true, ref: 'ClientModel', type: mongoose.Schema.Types.UUID })
+  ref: ClientModel;
+
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  surname: string;
+}
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, collection: 'appointments' })
 export class AppointmentModel {
@@ -32,8 +43,8 @@ export class AppointmentModel {
   @Prop({ required: true, type: mongoose.Schema.Types.UUID, index: true })
   account_id: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.UUID, ref: 'ClientModel' })
-  client_details: ClientModel;
+  @Prop({ required: true, type: SelectedClient })
+  client_details: SelectedClient;
 
   @Prop({ required: true })
   date: Date;

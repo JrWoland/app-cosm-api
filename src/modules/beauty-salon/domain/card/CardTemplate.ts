@@ -3,19 +3,13 @@ import { has } from 'lodash';
 import { AccountId } from 'src/modules/account/domain/AccountId';
 import { UniqueEntityID } from 'src/shared/UniqueId';
 import { UnprocessableEntityException } from '@nestjs/common';
-
-export interface ICardField {
-  identifier: string;
-  label: string;
-  value: string[] | number[];
-  optionalValues: string[] | number[];
-  description: string;
-}
+import { CardTemplateId } from './CardTemplateId';
+import { CardTemplateField } from './CardTemplateField';
 
 export interface ICardTemplate {
   accountId: AccountId;
   name: string;
-  fields: ICardField[];
+  fields: CardTemplateField[];
 }
 
 export class CardTemplate extends Entity<ICardTemplate> {
@@ -26,8 +20,8 @@ export class CardTemplate extends Entity<ICardTemplate> {
     super(props, _id);
   }
 
-  get id(): UniqueEntityID {
-    return this._uniqueEntityId;
+  get id(): CardTemplateId {
+    return CardTemplateId.create(this._uniqueEntityId);
   }
 
   get accountId() {
@@ -42,7 +36,7 @@ export class CardTemplate extends Entity<ICardTemplate> {
     return this.props.fields;
   }
 
-  private static validateFields(fields: ICardField[]): boolean {
+  private static validateFields(fields: CardTemplateField[]): boolean {
     const result = fields.every(
       (item) => has(item, 'identifier') && has(item, 'label') && has(item, 'value') && has(item, 'optionalValues') && has(item, 'description'),
     );
@@ -51,7 +45,7 @@ export class CardTemplate extends Entity<ICardTemplate> {
 
   public static create(props: ICardTemplate, id?: UniqueEntityID) {
     if (!this.validateFields(props.fields)) {
-      throw new UnprocessableEntityException('Unprocessable card fields.');
+      throw new UnprocessableEntityException('Unprocessable card template fields.');
     }
     if (!props.name) {
       throw new UnprocessableEntityException('Template name is missing.');

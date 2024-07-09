@@ -26,7 +26,7 @@ export class AppointmentRepository implements IAppoinmentRepo {
       account_id: accountId.value,
     };
 
-    if (filters.clientId) mongooseQuery.client_id = filters.clientId;
+    if (filters.clientId) mongooseQuery['client_details.ref'] = filters.clientId;
 
     if (filters.beautyServiceId) mongooseQuery['services._id'] = { $in: [filters.beautyServiceId] };
 
@@ -39,7 +39,10 @@ export class AppointmentRepository implements IAppoinmentRepo {
 
   public async findAppointmentById(appointmentId: AppointmentId, accountId: AccountId): Promise<Appointment> {
     try {
-      const appointment = await this.model.findOne({ _id: appointmentId.value, account_id: accountId.value });
+      const appointment = await this.model
+        .findOne({ _id: appointmentId.value, account_id: accountId.value })
+        .populate({ path: 'client_details.ref', select: 'name surname' })
+        .populate({ path: 'services.treatment_details', select: 'name' });
 
       if (!appointment) {
         throw new UnprocessableEntityException(`Cannot find the entity: ${appointmentId}`);
@@ -65,7 +68,7 @@ export class AppointmentRepository implements IAppoinmentRepo {
     try {
       const result = await this.model
         .find(this.buildQuery(accountId, filters))
-        .populate({ path: 'client_details', select: 'name surname' })
+        .populate({ path: 'client_details.ref', select: 'name surname' })
         .populate({ path: 'services.treatment_details', select: 'name' })
         .limit(filters.limit * 1)
         .skip((filters.page - 1) * filters.limit)
@@ -108,7 +111,11 @@ export class AppointmentRepository implements IAppoinmentRepo {
       const appointmentToSave = {
         _id: appointment.id.value,
         account_id: appointment.accountId.value,
-        client_details: appointment.clientId.value,
+        client_details: {
+          id: appointment.client.value.id.value,
+          name: appointment.client.value.name,
+          surname: appointment.client.value.surname,
+        },
         date: appointment.date.value,
         duration: appointment.duration.value,
         status: appointment.status.value,
