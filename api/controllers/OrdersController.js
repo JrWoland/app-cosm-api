@@ -14,8 +14,8 @@ class OrdersController {
           order: docs.map(doc => ({
             id: doc._id,
             product: doc,
-            quantity: doc
-          }))
+            quantity: doc,
+          })),
         };
         res.status(200).json(response);
       })
@@ -26,13 +26,13 @@ class OrdersController {
       .then(product => {
         if (!product) {
           return res.status(500).json({
-            message: 'Product does not exist'
+            message: 'Product does not exist',
           });
         }
         const order = new Order({
           _id: mongsoose.Types.ObjectId(),
           quantity: req.body.quantity,
-          product: product
+          product: product,
         });
         return order.save();
       })
@@ -42,14 +42,14 @@ class OrdersController {
           createdOrder: {
             id: result._id,
             product: result.product,
-            quantity: result.quantity
-          }
+            quantity: result.quantity,
+          },
         });
       })
       .catch(err => {
         console.log(err);
         res.status(500).json({
-          error: err
+          error: err,
         });
       });
   }
@@ -62,7 +62,7 @@ class OrdersController {
           return res.status(404).json({ message: 'Order not found' });
         }
         res.status(200).json({
-          order: order
+          order: order,
         });
       })
       .catch(err => res.status(500).json({ error: err }));
@@ -72,7 +72,7 @@ class OrdersController {
       .exec()
       .then(result =>
         res.status(200).json({
-          message: `Order deleted ${req.params.orderId}`
+          message: `Order deleted ${req.params.orderId}`,
         })
       )
       .catch(err => res.status(500).json({ error: err }));

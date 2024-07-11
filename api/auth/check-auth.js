@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const APP_CONFIG = require('../../localSettings.js')
+const APP_CONFIG = require('../../localSettings.js');
 module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     next();
   } catch (err) {
     return res.status(401).json({
-      message: 'Auth failed. Login first.'
+      message: 'Auth failed. Login first.',
     });
   }
 };

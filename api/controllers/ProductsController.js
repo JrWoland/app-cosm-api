@@ -13,8 +13,8 @@ class ProductsController {
             _id: doc._id,
             name: doc.name,
             price: doc.price,
-            productImage: doc.productImage
-          }))
+            productImage: doc.productImage,
+          })),
         };
         res.status(200).json(response);
       })
@@ -28,7 +28,7 @@ class ProductsController {
       _id: new mongsoose.Types.ObjectId(),
       name: req.body.name,
       price: req.body.price,
-      productImage: req.file.path
+      productImage: req.file.path,
     });
 
     product
@@ -40,8 +40,8 @@ class ProductsController {
             _id: result._id,
             name: result.name,
             price: result.price,
-            productImage: result.productImage
-          }
+            productImage: result.productImage,
+          },
         });
       })
       .catch(err => {
@@ -80,7 +80,7 @@ class ProductsController {
       .then(result => {
         res.status(200).json({
           message: `Updated ${id}`,
-          databaseDetailsResult: result
+          databaseDetailsResult: result,
         });
       })
       .catch(err => {
@@ -96,7 +96,7 @@ class ProductsController {
       .then(result => {
         res.status(200).json({
           message: `Deleted ${id}`,
-          databaseDetailsResult: result
+          databaseDetailsResult: result,
         });
       })
       .catch(err => {

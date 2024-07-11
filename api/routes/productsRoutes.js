@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, `${uniqueSuffix} ${file.originalname}`);
-  }
+  },
 });
 
 const fileFilter = (req, file, cb) => {
@@ -32,8 +32,8 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fieldSize: 1024 * 1024
-  }
+    fieldSize: 1024 * 1024,
+  },
 });
 
 router.get('/', ProductsController.getAllProducts);
