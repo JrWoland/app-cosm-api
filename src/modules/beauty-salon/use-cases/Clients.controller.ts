@@ -10,6 +10,8 @@ import { EditClientDetailsDTO } from './client-edit-details/EditClientDetailsDTO
 import { EditClientDetailsCommand } from './client-edit-details/EditClientDetailsCommand';
 import { GetClientByIdQuery } from './client-get/GetClientByIdQuery';
 import { GetClientByIdDTO } from './client-get/GetClientByIdDTO';
+import { ActivateClientDTO } from './client-activate/ActivateClientDTO';
+import { ActivateClientCommand } from './client-activate/ActivateClientCommand';
 
 const accountId = 'd6cd4034-f902-4958-8735-c0e71f383553';
 
@@ -50,5 +52,11 @@ export class ClientsController {
   async archive(@Body() dto: ArchiveClientDTO) {
     const { id } = dto;
     return this.commandBus.execute(new ArchiveClientCommand(accountId, id));
+  }
+
+  @Put('activate')
+  async activate(@Body() dto: ActivateClientDTO) {
+    const { id } = dto;
+    return this.commandBus.execute(new ActivateClientCommand(accountId, id));
   }
 }

@@ -43,16 +43,16 @@ export class CreateAppointmentUseCase implements ICommandHandler<CreateAppointme
 
     const appointmentTreatments = await this.treatmentRepository.findTreatmentsByIds(treatmentsIds, accountID);
 
-    this.checkMissingTreatments(
-      treatmentsIds,
-      appointmentTreatments.map((item) => item.id),
-    );
-
     const client = await this.clientRepository.findClientById(clientID, accountID);
 
     if (!client) {
       throw new NotFoundException(`Client does not exist. id: ${clientID.value}`);
     }
+
+    this.checkMissingTreatments(
+      treatmentsIds,
+      appointmentTreatments.map((item) => item.id),
+    );
 
     const clientDetails = AppointmentClientDetails.create({
       id: client.id,

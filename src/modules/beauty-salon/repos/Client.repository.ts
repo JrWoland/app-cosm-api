@@ -48,18 +48,18 @@ export class ClientRepository implements IClientRepo {
     }
   }
 
-  public async findClientById(clientId: ClientId, accountId: AccountId): Promise<Client> {
+  public async findClientById(clientId: ClientId, accountId: AccountId): Promise<Client | null> {
     try {
-      const client = await this.model.find({
+      const client = await this.model.findOne({
         _id: clientId.value,
         account_id: accountId.value,
       });
 
-      if (client.length === 0) {
+      if (!client) {
         throw new NotFoundException(`Client does not exist. id: ${clientId.value}`);
       }
 
-      return new ClientMap().toDomain(client[0]);
+      return new ClientMap().toDomain(client);
     } catch (error) {
       throw new InternalServerErrorException(`Cant find client by id: ${error}`);
     }

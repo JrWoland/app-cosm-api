@@ -1,4 +1,4 @@
-import { IsArray, IsDefined } from 'class-validator';
+import { IsDefined, ArrayNotEmpty } from 'class-validator';
 
 export class TreatmentDTO {
   @IsDefined()
@@ -23,6 +23,6 @@ export class CreateAppoinmentDTO {
   @IsDefined()
   status: string;
 
-  @IsArray()
+  @ArrayNotEmpty()
   treatments: TreatmentDTO[];
 }

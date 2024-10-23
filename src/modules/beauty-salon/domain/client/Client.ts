@@ -92,6 +92,14 @@ export class Client extends AggregateRoot {
     this._status = ClientStatus.create('ARCHIVED');
   }
 
+  public activate() {
+    this._status = ClientStatus.create('ACTIVE');
+  }
+
+  public banned() {
+    this._status = ClientStatus.create('BANNED');
+  }
+
   public static create(props: IClientProps): Client {
     const { id, accountId, name, surname, birthDay, phone, email, status } = props;
 

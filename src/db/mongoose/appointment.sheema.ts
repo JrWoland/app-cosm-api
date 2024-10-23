@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { TreatmentModel } from './treatment.sheema';
-import { ClientModel } from './client.sheema';
 
 export type AppointmentDocument = mongoose.Document<AppointmentModel>;
 
@@ -26,7 +25,7 @@ class SelectedTreatment {
 @Schema({ _id: false })
 class SelectedClient {
   @Prop({ required: true, ref: 'ClientModel', type: mongoose.Schema.Types.UUID })
-  ref: ClientModel;
+  _id: string;
 
   @Prop({ required: true })
   name: string;

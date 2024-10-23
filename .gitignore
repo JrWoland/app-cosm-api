@@ -11,6 +11,14 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Variables
+.env
+
+# Other
+/local
+*.local.js
+*.local.ts
+
 # OS
 .DS_Store
 

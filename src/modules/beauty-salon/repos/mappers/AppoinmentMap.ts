@@ -45,9 +45,9 @@ export class AppointmentMap implements Mapper<Appointment, AppointmentModel> {
     );
 
     const clientDetails = AppointmentClientDetails.create({
-      id: ClientId.create(new UniqueEntityID(raw.client_details.ref._id)),
-      name: raw.client_details.ref.name || raw.client_details.name,
-      surname: raw.client_details.ref.surname || raw.client_details.surname,
+      id: ClientId.create(new UniqueEntityID(raw.client_details._id)),
+      name: raw.client_details.name || raw.client_details.name,
+      surname: raw.client_details.surname || raw.client_details.surname,
     });
 
     const appointment = Appointment.create({

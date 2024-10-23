@@ -23,6 +23,7 @@ import { ClientsController } from './Clients.controller';
 import { CardsController } from './Cards.controller';
 import { CardTemplatesController } from './CardTemplates.controller';
 import { GetAppointmentByIdUseCase } from './appointment-get/GetAppointmentByIdUseCase';
+import { ActivateClientUseCase } from './client-activate/ActivateClientUseCase';
 
 export const controllers = [AppointmentsController, TreatmentsController, ClientsController, CardsController, CardTemplatesController];
 
@@ -44,6 +45,7 @@ export const useCases = [
   CreateCardTemplateUseCase,
   ArchiveClientUseCase,
   ArchiveTreatmentUseCase,
+  ActivateClientUseCase,
   EditClientDetailsUseCase,
   EditTreatmentDetailsUseCase,
   RemoveAppointmentUseCase,

@@ -11,7 +11,7 @@ export interface ClientFilters {
 export interface IClientRepo {
   count(accountId: AccountId, filters: ClientFilters): Promise<number>;
   findAllClients(accountId: AccountId, filters: ClientFilters): Promise<{ count: number; clients: Client[] }>;
-  findClientById(clientId: ClientId, accountId: AccountId): Promise<Client>;
+  findClientById(clientId: ClientId, accountId: AccountId): Promise<Client | null>;
   exist(clientId: ClientId, accountId: AccountId): Promise<boolean>;
   save(client: Client): Promise<void>;
 }

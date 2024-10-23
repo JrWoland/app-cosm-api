@@ -30,6 +30,10 @@ export class EditClientDetailsUseCase implements ICommandHandler<EditClientDetai
 
     const client = await this.clientRepository.findClientById(clientID, acocuntID);
 
+    if (!client) {
+      return { id: clientID.value, message: 'Client not found', success: false };
+    }
+
     client.updateDetails({
       name: ClientName.create(name),
       surname: ClientSurname.create(surname),

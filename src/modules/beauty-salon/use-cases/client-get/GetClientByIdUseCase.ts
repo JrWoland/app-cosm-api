@@ -19,11 +19,15 @@ type ResponseResult = {
 export class GetClientByIdUseCase implements IQueryHandler<GetClientByIdQuery> {
   constructor(private readonly clientsRepository: ClientRepository) {}
 
-  async execute(query: GetClientByIdQuery): Promise<ResponseResult> {
+  async execute(query: GetClientByIdQuery): Promise<ResponseResult | null> {
     const accountID = AccountId.create(new UniqueEntityID(query.accountId));
     const clientID = ClientId.create(new UniqueEntityID(query.clientId));
 
     const client = await this.clientsRepository.findClientById(clientID, accountID);
+
+    if (!client) {
+      return null;
+    }
 
     return {
       id: client.id.value,

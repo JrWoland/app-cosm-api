@@ -112,7 +112,7 @@ export class AppointmentRepository implements IAppoinmentRepo {
         _id: appointment.id.value,
         account_id: appointment.accountId.value,
         client_details: {
-          id: appointment.client.value.id.value,
+          _id: appointment.client.value.id.value,
           name: appointment.client.value.name,
           surname: appointment.client.value.surname,
         },
